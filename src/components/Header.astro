@@ -1,0 +1,188 @@
+---
+import Logo from './Logo.astro';
+import Icon from './Icon.astro';
+import { nav } from '../data/site';
+---
+
+<header class="header" data-header>
+  <div class="container header__inner">
+    <a href="#inicio" class="header__brand" aria-label="BUILDEV, ir al inicio">
+      <Logo variant="dark" showTagline={false} />
+    </a>
+
+    <nav class="header__nav" id="main-nav" aria-label="Principal">
+      <ul>
+        {
+          nav.map((item) => (
+            <li>
+              <a href={item.href} data-nav-link>
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <a href="#contacto" class="btn btn--primary header__cta" data-nav-link>Hablemos</a>
+    </nav>
+
+    <button class="header__toggle" type="button" aria-controls="main-nav" aria-expanded="false" data-menu-toggle>
+      <span class="sr-only">Abrir menú</span>
+      <Icon name="menu" class="icon-open" />
+      <Icon name="close" class="icon-close" />
+    </button>
+  </div>
+</header>
+
+<style>
+  .header {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: 50;
+    height: var(--header-h);
+    transition:
+      background-color 0.3s ease,
+      box-shadow 0.3s ease;
+  }
+  .header.is-scrolled,
+  .header.is-open {
+    background: rgb(28 37 45 / 0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 8px 30px -12px rgb(0 0 0 / 0.4);
+  }
+  .header__inner {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+  }
+  .header__brand {
+    font-size: 15px;
+  }
+  .header__nav {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+  }
+  .header__nav ul {
+    display: flex;
+    gap: 28px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .header__nav ul a {
+    color: rgb(255 255 255 / 0.82);
+    font-weight: 600;
+    font-size: 0.92rem;
+    position: relative;
+    padding-block: 6px;
+  }
+  .header__nav ul a::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--c-lime);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.25s ease;
+  }
+  .header__nav ul a:hover {
+    color: #fff;
+  }
+  .header__nav ul a:hover::after {
+    transform: scaleX(1);
+  }
+  .header__cta {
+    min-height: 42px;
+    padding: 8px 22px;
+  }
+  .header__toggle {
+    display: none;
+    background: none;
+    border: 0;
+    color: #fff;
+    padding: 8px;
+    cursor: pointer;
+  }
+  .header__toggle :global(.icon-close) {
+    display: none;
+  }
+
+  @media (max-width: 880px) {
+    .header__toggle {
+      display: block;
+    }
+    .header__nav {
+      position: fixed;
+      top: var(--header-h);
+      left: 0;
+      right: 0;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 16px;
+      padding: 16px 20px 28px;
+      background: rgb(28 37 45 / 0.97);
+      border-top: 1px solid rgb(255 255 255 / 0.08);
+      transform: translateY(-8px);
+      opacity: 0;
+      visibility: hidden;
+      transition:
+        opacity 0.2s ease,
+        transform 0.2s ease,
+        visibility 0.2s;
+    }
+    .header.is-open .header__nav {
+      opacity: 1;
+      transform: none;
+      visibility: visible;
+    }
+    .header__nav ul {
+      flex-direction: column;
+      gap: 0;
+    }
+    .header__nav ul a {
+      display: block;
+      padding: 14px 4px;
+      font-size: 1.05rem;
+      border-bottom: 1px solid rgb(255 255 255 / 0.06);
+    }
+    .header__nav ul a::after {
+      display: none;
+    }
+    .header.is-open :global(.icon-open) {
+      display: none;
+    }
+    .header.is-open :global(.icon-close) {
+      display: block;
+    }
+  }
+</style>
+
+<script>
+  const header = document.querySelector<HTMLElement>('[data-header]');
+  const toggle = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
+
+  if (header && toggle) {
+    const onScroll = () => header.classList.toggle('is-scrolled', window.scrollY > 20);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+
+    const setOpen = (open: boolean) => {
+      header.classList.toggle('is-open', open);
+      toggle.setAttribute('aria-expanded', String(open));
+      toggle.querySelector('.sr-only')!.textContent = open ? 'Cerrar menú' : 'Abrir menú';
+    };
+
+    toggle.addEventListener('click', () => setOpen(!header.classList.contains('is-open')));
+    header.querySelectorAll('[data-nav-link]').forEach((link) => link.addEventListener('click', () => setOpen(false)));
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') setOpen(false);
+    });
+  }
+</script>

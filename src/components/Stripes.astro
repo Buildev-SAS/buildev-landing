@@ -1,0 +1,40 @@
+---
+// Textura de franjas diagonales del manual de marca.
+interface Props {
+  class?: string;
+  muted?: boolean;
+}
+
+const { class: className, muted = false } = Astro.props;
+
+const stripes = [
+  { x: 40, y: 250, len: 150, w: 22, c: '#A6D936' },
+  { x: 90, y: 300, len: 120, w: 14, c: '#00B8D9' },
+  { x: 120, y: 230, len: 220, w: 26, c: '#0091C7' },
+  { x: 150, y: 330, len: 180, w: 16, c: '#A6D936' },
+  { x: 230, y: 260, len: 250, w: 28, c: '#00B8D9' },
+  { x: 250, y: 360, len: 150, w: 18, c: '#E9EEF2' },
+  { x: 330, y: 250, len: 260, w: 30, c: '#0091C7' },
+  { x: 360, y: 350, len: 200, w: 20, c: '#A6D936' },
+  { x: 440, y: 270, len: 190, w: 24, c: '#00B8D9' },
+  { x: 470, y: 370, len: 130, w: 14, c: '#E9EEF2' },
+  { x: 520, y: 300, len: 170, w: 22, c: '#A6D936' },
+];
+---
+
+<svg class={className} viewBox="0 0 640 400" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+  <g stroke-linecap="round" opacity={muted ? 0.35 : 1}>
+    {
+      stripes.map((s) => (
+        <line
+          x1={s.x}
+          y1={s.y}
+          x2={s.x + s.len * 0.7}
+          y2={s.y - s.len * 0.7}
+          stroke={s.c}
+          stroke-width={s.w}
+        />
+      ))
+    }
+  </g>
+</svg>

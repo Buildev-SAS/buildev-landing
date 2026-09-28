@@ -1,0 +1,300 @@
+---
+import Icon from './Icon.astro';
+import Stripes from './Stripes.astro';
+
+const features = [
+  'Reservas en línea 24/7 con enlace personalizado',
+  'Agenda por profesional y control de horarios',
+  'Confirmaciones automáticas por WhatsApp',
+  'Sincronización con Google Calendar',
+  'Personalización con logo, colores y tipografía',
+];
+
+const days = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
+const slots = [
+  { time: '09:00', name: 'Corte clásico', who: 'Andrea', tone: 'lime' },
+  { time: '10:30', name: 'Consulta general', who: 'Dr. Ruiz', tone: 'cyan' },
+  { time: '12:00', name: 'Entrenamiento', who: 'Carlos', tone: 'blue' },
+];
+---
+
+<section class="section projects" id="proyectos">
+  <Stripes class="projects__stripes" muted />
+  <div class="container">
+    <header class="projects__head reveal">
+      <span class="eyebrow">En producción</span>
+      <h2 class="section-title">Construcciones que ya están funcionando</h2>
+      <p class="section-lead">
+        Nuestros productos operan en producción y ayudan a negocios reales todos los días.
+      </p>
+    </header>
+
+    <article class="showcase reveal">
+      <div class="showcase__copy">
+        <span class="showcase__tag"><Icon name="calendar" size={16} /> Plataforma SaaS</span>
+        <h3>Agendorio</h3>
+        <p class="showcase__lead">
+          Plataforma de agendamiento en línea para profesionales y negocios de servicios: barberías, salones de belleza,
+          consultorios, gimnasios y estudios. Tus clientes reservan solos y tú te enfocas en atenderlos.
+        </p>
+        <ul class="showcase__list">
+          {
+            features.map((f) => (
+              <li>
+                <Icon name="check" size={18} /> {f}
+              </li>
+            ))
+          }
+        </ul>
+        <a href="https://agendorio.buildev.co" target="_blank" rel="noopener" class="btn btn--primary">
+          Visitar agendorio.buildev.co <Icon name="external" size={17} />
+        </a>
+      </div>
+
+      <div class="showcase__visual" aria-hidden="true">
+        <div class="app">
+          <div class="app__top">
+            <strong>Agenda de hoy</strong>
+            <span class="app__pill">3 citas</span>
+          </div>
+          <div class="app__days">
+            {days.map((d, i) => <span class:list={{ active: i === 2 }}>{d}<b>{12 + i}</b></span>)}
+          </div>
+          <ul class="app__slots">
+            {
+              slots.map((s) => (
+                <li class={`tone-${s.tone}`}>
+                  <time>{s.time}</time>
+                  <div>
+                    <strong>{s.name}</strong>
+                    <small>con {s.who}</small>
+                  </div>
+                  <span class="ok">
+                    <Icon name="check" size={14} />
+                  </span>
+                </li>
+              ))
+            }
+          </ul>
+          <div class="app__toast">
+            <Icon name="chat" size={18} />
+            <span>Recordatorio enviado por WhatsApp</span>
+          </div>
+        </div>
+      </div>
+    </article>
+  </div>
+</section>
+
+<style>
+  .projects {
+    position: relative;
+    overflow: hidden;
+    background: var(--c-bg-soft);
+  }
+  .projects :global(.projects__stripes) {
+    position: absolute;
+    right: -200px;
+    top: -80px;
+    width: 520px;
+    height: auto;
+    pointer-events: none;
+  }
+  .projects .container {
+    position: relative;
+  }
+  .projects__head {
+    max-width: 640px;
+  }
+
+  .showcase {
+    margin-top: 56px;
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 48px;
+    align-items: center;
+    padding: clamp(28px, 5vw, 56px);
+    border-radius: 24px;
+    background: linear-gradient(150deg, var(--c-ink-900), var(--c-ink));
+    color: #fff;
+    box-shadow: var(--shadow-lg);
+  }
+  .showcase__tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: rgb(0 184 217 / 0.15);
+    color: #6fdcf0;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+  .showcase h3 {
+    margin-top: 18px;
+    font-size: clamp(2rem, 4vw, 2.6rem);
+  }
+  .showcase__lead {
+    margin-top: 14px;
+    color: rgb(255 255 255 / 0.75);
+  }
+  .showcase__list {
+    list-style: none;
+    margin: 24px 0 32px;
+    padding: 0;
+    display: grid;
+    gap: 10px;
+    font-size: 0.95rem;
+    color: rgb(255 255 255 / 0.88);
+  }
+  .showcase__list li {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .showcase__list :global(svg) {
+    flex-shrink: 0;
+    margin-top: 3px;
+    color: var(--c-lime);
+  }
+
+  /* Mockup de la app */
+  .app {
+    position: relative;
+    padding: 22px;
+    border-radius: 20px;
+    background: #fff;
+    color: var(--c-ink);
+    box-shadow: 0 30px 60px -24px rgb(0 0 0 / 0.55);
+  }
+  .app__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .app__pill {
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: rgb(166 217 54 / 0.2);
+    color: #4d7a0f;
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+  .app__days {
+    margin-top: 18px;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+  }
+  .app__days span {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 8px 0;
+    border-radius: 10px;
+    font-size: 0.7rem;
+    color: var(--c-muted);
+  }
+  .app__days b {
+    font-size: 0.92rem;
+    color: var(--c-ink);
+  }
+  .app__days .active {
+    background: var(--grad-cool);
+    color: rgb(255 255 255 / 0.8);
+  }
+  .app__days .active b {
+    color: #fff;
+  }
+  .app__slots {
+    list-style: none;
+    margin: 18px 0 0;
+    padding: 0;
+    display: grid;
+    gap: 10px;
+  }
+  .app__slots li {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: var(--c-bg-soft);
+    border-left: 4px solid var(--tone);
+  }
+  .tone-lime { --tone: var(--c-lime); }
+  .tone-cyan { --tone: var(--c-cyan); }
+  .tone-blue { --tone: var(--c-blue); }
+  .app__slots time {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--c-muted);
+  }
+  .app__slots div {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.3;
+    min-width: 0;
+  }
+  .app__slots strong {
+    font-size: 0.9rem;
+  }
+  .app__slots small {
+    font-size: 0.75rem;
+    color: var(--c-muted);
+  }
+  .ok {
+    margin-left: auto;
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--tone);
+    color: #fff;
+  }
+  .app__toast {
+    position: absolute;
+    right: -14px;
+    bottom: -22px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    border-radius: 14px;
+    background: var(--c-ink-900);
+    color: #fff;
+    font-size: 0.82rem;
+    font-weight: 600;
+    box-shadow: var(--shadow-lg);
+  }
+  .app__toast :global(svg) {
+    color: var(--c-lime);
+  }
+
+  @media (max-width: 960px) {
+    .showcase {
+      grid-template-columns: 1fr;
+    }
+    .showcase__visual {
+      max-width: 460px;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+  }
+  @media (max-width: 480px) {
+    .app__toast {
+      position: static;
+      margin-top: 14px;
+    }
+    .app__slots time {
+      font-size: 0.72rem;
+    }
+    .showcase .btn {
+      width: 100%;
+      font-size: 0.88rem;
+      padding-inline: 16px;
+    }
+  }
+</style>

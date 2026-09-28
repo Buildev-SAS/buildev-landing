@@ -1,0 +1,236 @@
+---
+import Icon from './Icon.astro';
+import Stripes from './Stripes.astro';
+import { site } from '../data/site';
+
+const waText = encodeURIComponent('Hola BUILDEV, quiero información sobre un proyecto de software.');
+---
+
+<section class="section contact" id="contacto">
+  <Stripes class="contact__stripes" />
+  <div class="container contact__grid">
+    <div class="contact__info reveal">
+      <span class="eyebrow">Contacto</span>
+      <h2 class="section-title">¿Tienes una idea? Construyámosla juntos</h2>
+      <p class="contact__lead">
+        Cuéntanos sobre tu proyecto y te respondemos con una propuesta clara, sin compromiso.
+      </p>
+
+      <ul class="contact__channels">
+        <li>
+          <a href={`mailto:${site.email}`}>
+            <span class="ch-icon"><Icon name="mail" size={20} /></span>
+            <span><small>Correo</small>{site.email}</span>
+          </a>
+        </li>
+        <li>
+          <a href={`https://wa.me/${site.whatsapp}?text=${waText}`} target="_blank" rel="noopener">
+            <span class="ch-icon"><Icon name="chat" size={20} /></span>
+            <span><small>WhatsApp</small>Escríbenos directamente</span>
+          </a>
+        </li>
+        <li>
+          <span class="ch-row">
+            <span class="ch-icon"><Icon name="pin" size={20} /></span>
+            <span><small>Ubicación</small>{site.city}</span>
+          </span>
+        </li>
+      </ul>
+    </div>
+
+    <form
+      class="form reveal"
+      name="contacto"
+      method="POST"
+      action="/gracias"
+      data-netlify="true"
+      netlify-honeypot="empresa-web"
+    >
+      <input type="hidden" name="form-name" value="contacto" />
+      <p class="sr-only">
+        <label>No llenes este campo: <input name="empresa-web" tabindex="-1" autocomplete="off" /></label>
+      </p>
+
+      <div class="form__row">
+        <label>
+          <span>Nombre *</span>
+          <input type="text" name="nombre" required autocomplete="name" placeholder="Tu nombre" />
+        </label>
+        <label>
+          <span>Empresa</span>
+          <input type="text" name="empresa" autocomplete="organization" placeholder="Nombre de tu empresa" />
+        </label>
+      </div>
+      <div class="form__row">
+        <label>
+          <span>Correo *</span>
+          <input type="email" name="correo" required autocomplete="email" placeholder="tucorreo@empresa.com" />
+        </label>
+        <label>
+          <span>Teléfono</span>
+          <input type="tel" name="telefono" autocomplete="tel" placeholder="+57 300 000 0000" />
+        </label>
+      </div>
+      <label>
+        <span>¿Qué necesitas?</span>
+        <select name="servicio">
+          <option>Software a la medida</option>
+          <option>Aplicación web</option>
+          <option>App móvil</option>
+          <option>Automatización de procesos</option>
+          <option>Integraciones y APIs</option>
+          <option>Otro</option>
+        </select>
+      </label>
+      <label>
+        <span>Mensaje *</span>
+        <textarea name="mensaje" rows="4" required placeholder="Cuéntanos brevemente sobre tu proyecto"></textarea>
+      </label>
+      <button type="submit" class="btn btn--primary form__submit">
+        Enviar mensaje <Icon name="arrow" size={18} />
+      </button>
+    </form>
+  </div>
+</section>
+
+<style>
+  .contact {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(160deg, var(--c-ink-900), var(--c-ink));
+    color: #fff;
+  }
+  .contact :global(.contact__stripes) {
+    position: absolute;
+    right: -140px;
+    top: -60px;
+    width: 620px;
+    height: auto;
+    opacity: 0.14;
+    pointer-events: none;
+  }
+  .contact__grid {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 1.1fr;
+    gap: clamp(40px, 6vw, 80px);
+    align-items: start;
+  }
+  .contact .eyebrow {
+    color: #6fdcf0;
+  }
+  .contact__lead {
+    margin-top: 16px;
+    font-size: 1.08rem;
+    color: rgb(255 255 255 / 0.72);
+  }
+  .contact__channels {
+    list-style: none;
+    margin: 36px 0 0;
+    padding: 0;
+    display: grid;
+    gap: 14px;
+  }
+  .contact__channels a,
+  .ch-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 18px;
+    border-radius: 14px;
+    border: 1px solid rgb(255 255 255 / 0.1);
+    background: rgb(255 255 255 / 0.04);
+    font-weight: 600;
+    overflow-wrap: anywhere;
+    transition:
+      background-color 0.2s ease,
+      border-color 0.2s ease;
+  }
+  .contact__channels a:hover {
+    background: rgb(255 255 255 / 0.08);
+    border-color: rgb(166 217 54 / 0.5);
+  }
+  .contact__channels small {
+    display: block;
+    font-size: 0.74rem;
+    font-weight: 500;
+    color: rgb(255 255 255 / 0.55);
+  }
+  .ch-icon {
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: rgb(166 217 54 / 0.15);
+    color: var(--c-lime);
+  }
+
+  .form {
+    display: grid;
+    gap: 18px;
+    padding: clamp(24px, 4vw, 40px);
+    border-radius: 22px;
+    background: #fff;
+    color: var(--c-ink);
+    box-shadow: 0 40px 80px -30px rgb(0 0 0 / 0.6);
+  }
+  .form__row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+  }
+  .form label {
+    display: grid;
+    gap: 6px;
+  }
+  .form label > span {
+    font-size: 0.82rem;
+    font-weight: 600;
+  }
+  .form input,
+  .form select,
+  .form textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: var(--radius-sm);
+    border: 1.5px solid var(--c-border);
+    background: var(--c-bg-soft);
+    font: inherit;
+    font-size: 0.95rem;
+    color: var(--c-ink);
+    transition:
+      border-color 0.2s ease,
+      background-color 0.2s ease;
+  }
+  .form textarea {
+    resize: vertical;
+    min-height: 110px;
+  }
+  .form input:focus,
+  .form select:focus,
+  .form textarea:focus {
+    outline: none;
+    border-color: var(--c-cyan);
+    background: #fff;
+  }
+  .form__submit {
+    justify-self: start;
+    margin-top: 4px;
+  }
+
+  @media (max-width: 900px) {
+    .contact__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 560px) {
+    .form__row {
+      grid-template-columns: 1fr;
+    }
+    .form__submit {
+      justify-self: stretch;
+    }
+  }
+</style>

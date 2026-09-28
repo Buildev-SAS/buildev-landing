@@ -1,0 +1,75 @@
+---
+import Icon, { type IconName } from './Icon.astro';
+
+const values: { icon: IconName; label: string }[] = [
+  { icon: 'rocket', label: 'Innovación' },
+  { icon: 'shield', label: 'Confianza' },
+  { icon: 'users', label: 'Trabajo en equipo' },
+  { icon: 'code', label: 'Soluciones reales' },
+  { icon: 'growth', label: 'Crecimiento' },
+];
+---
+
+<section class="values" aria-label="Nuestros valores">
+  <div class="container">
+    <ul class="values__list">
+      {
+        values.map((v, i) => (
+          <li class="reveal" style={`transition-delay:${i * 70}ms`}>
+            <Icon name={v.icon} size={32} />
+            <span>{v.label}</span>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .values {
+    padding-block: 56px;
+    border-block: 1px solid var(--c-border);
+  }
+  .values__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+  }
+  .values__list li {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 12px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.92rem;
+    color: var(--c-muted);
+  }
+  .values__list li + li {
+    border-left: 1px solid var(--c-border);
+  }
+  .values__list :global(svg) {
+    color: var(--c-blue);
+  }
+  .values__list li:nth-child(odd) :global(svg) {
+    color: #6cc04a;
+  }
+
+  @media (max-width: 760px) {
+    .values__list {
+      grid-template-columns: repeat(3, 1fr);
+      row-gap: 28px;
+    }
+    .values__list li + li {
+      border-left: 0;
+    }
+  }
+  @media (max-width: 420px) {
+    .values__list {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>

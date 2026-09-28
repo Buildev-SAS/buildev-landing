@@ -1,0 +1,138 @@
+---
+import Icon, { type IconName } from './Icon.astro';
+
+const services: { icon: IconName; title: string; text: string }[] = [
+  {
+    icon: 'code',
+    title: 'Software a la medida',
+    text: 'Construimos plataformas y sistemas diseñados para la forma en que trabaja tu empresa, no al revés.',
+  },
+  {
+    icon: 'monitor',
+    title: 'Aplicaciones web',
+    text: 'Portales, paneles administrativos y productos SaaS rápidos, modernos y fáciles de usar.',
+  },
+  {
+    icon: 'phone',
+    title: 'Apps móviles',
+    text: 'Experiencias móviles que acercan tu servicio a tus clientes, disponibles donde ellos estén.',
+  },
+  {
+    icon: 'zap',
+    title: 'Automatización de procesos',
+    text: 'Eliminamos tareas repetitivas y reducimos errores para que tu equipo se enfoque en lo importante.',
+  },
+  {
+    icon: 'link',
+    title: 'Integraciones y APIs',
+    text: 'Conectamos tus sistemas, pasarelas de pago, WhatsApp y servicios de terceros en un solo flujo.',
+  },
+  {
+    icon: 'cloud',
+    title: 'Cloud y despliegue',
+    text: 'Infraestructura en la nube escalable, monitoreada y segura, lista para crecer con tu operación.',
+  },
+];
+---
+
+<section class="section services" id="servicios">
+  <div class="container">
+    <header class="services__head reveal">
+      <span class="eyebrow">Servicios</span>
+      <h2 class="section-title">Tecnología que resuelve problemas reales</h2>
+      <p class="section-lead">
+        Acompañamos a tu empresa desde la idea hasta la puesta en producción, con soluciones pensadas para
+        durar y escalar.
+      </p>
+    </header>
+
+    <div class="services__grid">
+      {
+        services.map((s, i) => (
+          <article class="card reveal" style={`transition-delay:${(i % 3) * 80}ms`}>
+            <span class="card__icon">
+              <Icon name={s.icon} size={26} />
+            </span>
+            <h3>{s.title}</h3>
+            <p>{s.text}</p>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .services {
+    background: var(--c-bg-soft);
+  }
+  .services__head {
+    max-width: 680px;
+  }
+  .services__grid {
+    margin-top: 56px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+  .card {
+    position: relative;
+    padding: 32px 28px;
+    border-radius: var(--radius);
+    background: #fff;
+    border: 1px solid var(--c-border);
+    overflow: hidden;
+    transition:
+      transform 0.25s ease,
+      box-shadow 0.25s ease,
+      border-color 0.25s ease,
+      opacity 0.7s ease;
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto;
+    height: 4px;
+    background: var(--grad-brand);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.35s ease;
+  }
+  .card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-lg);
+    border-color: transparent;
+  }
+  .card:hover::before {
+    transform: scaleX(1);
+  }
+  .card__icon {
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, rgb(166 217 54 / 0.16), rgb(0 184 217 / 0.16));
+    color: var(--c-blue);
+  }
+  .card h3 {
+    margin-top: 22px;
+    font-size: 1.18rem;
+  }
+  .card p {
+    margin-top: 10px;
+    color: var(--c-muted);
+    font-size: 0.96rem;
+  }
+
+  @media (max-width: 960px) {
+    .services__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (max-width: 620px) {
+    .services__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

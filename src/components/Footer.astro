@@ -1,0 +1,101 @@
+---
+import Logo from './Logo.astro';
+import { nav, site } from '../data/site';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="footer">
+  <div class="container footer__grid">
+    <div>
+      <Logo class="footer__logo" />
+      <p class="footer__claim">Ideas que construyen el futuro.</p>
+    </div>
+
+    <nav aria-label="Pie de página">
+      <h4>Navegación</h4>
+      <ul>
+        {nav.map((item) => <li><a href={item.href}>{item.label}</a></li>)}
+      </ul>
+    </nav>
+
+    <div>
+      <h4>Contacto</h4>
+      <ul>
+        <li><a href={`mailto:${site.email}`}>{site.email}</a></li>
+        <li><a href="https://agendorio.buildev.co" target="_blank" rel="noopener">agendorio.buildev.co</a></li>
+        <li>{site.city}</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="container footer__bottom">
+    <span>© {year} BUILDEV. Todos los derechos reservados.</span>
+    <span>Software Solutions &amp; Innovation</span>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    padding-top: 64px;
+    background: #fff;
+    border-top: 4px solid transparent;
+    border-image: var(--grad-brand) 1;
+  }
+  .footer__grid {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr 1fr;
+    gap: 40px;
+  }
+  .footer :global(.footer__logo) {
+    font-size: 17px;
+  }
+  .footer__claim {
+    margin-top: 18px;
+    color: var(--c-muted);
+    font-weight: 600;
+  }
+  .footer h4 {
+    font-size: 0.8rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--c-blue);
+  }
+  .footer ul {
+    list-style: none;
+    margin: 16px 0 0;
+    padding: 0;
+    display: grid;
+    gap: 10px;
+    font-size: 0.94rem;
+    color: var(--c-muted);
+  }
+  .footer ul a:hover {
+    color: var(--c-ink);
+  }
+  .footer__bottom {
+    margin-top: 48px;
+    padding-block: 22px;
+    border-top: 1px solid var(--c-border);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: 0.84rem;
+    color: var(--c-muted);
+  }
+
+  @media (max-width: 760px) {
+    .footer__grid {
+      grid-template-columns: 1fr 1fr;
+    }
+    .footer__grid > :first-child {
+      grid-column: 1 / -1;
+    }
+  }
+  @media (max-width: 420px) {
+    .footer :global(.footer__logo) {
+      font-size: 14px;
+    }
+  }
+</style>
