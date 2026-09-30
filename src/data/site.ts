@@ -6,7 +6,7 @@ export const site = {
   email: 'desarrollo@buildev.co',
   // Número en formato internacional sin "+" ni espacios, ej: 573001234567
   whatsapp: '573183797890',
-  city: 'Medellín, Colombia',
+  city: 'Cali, Colombia',
 };
 
 export const nav = [
