@@ -4,17 +4,63 @@ import Stripes from './Stripes.astro';
 
 const features = [
   'Reservas en línea 24/7 con enlace personalizado',
+  'Asistente de WhatsApp con IA que agenda por chat',
   'Agenda por profesional y control de horarios',
-  'Confirmaciones automáticas por WhatsApp',
+  'Confirmaciones y recordatorios automáticos por WhatsApp',
   'Sincronización con Google Calendar',
   'Personalización con logo, colores y tipografía',
 ];
 
-const days = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
-const slots = [
-  { time: '09:00', name: 'Corte clásico', who: 'Andrea', tone: 'lime' },
-  { time: '10:30', name: 'Consulta general', who: 'Dr. Ruiz', tone: 'cyan' },
-  { time: '12:00', name: 'Entrenamiento', who: 'Carlos', tone: 'blue' },
+const appointments = [
+  { hour: '1 p. m.', name: 'Ana Rodríguez', range: '1:00 – 2:00 p. m.', service: 'Limpieza facial', status: 'Confirmada' },
+  { hour: '2 p. m.', name: 'Carlos Pérez', range: '2:00 – 3:00 p. m.', service: 'Consulta de nutrición', status: 'Confirmada' },
+  {
+    hour: '3 p. m.',
+    name: 'Diego Silva',
+    range: '3:30 – 4:30 p. m.',
+    service: 'Masaje relajante',
+    status: 'Nueva · por WhatsApp',
+    whatsapp: true,
+  },
+];
+
+// Página pública de reservas de un negocio de ejemplo, con su enlace propio.
+const booking = {
+  url: 'agendorio.buildev.co/estudio-vital',
+  initials: 'EV',
+  name: 'Estudio Vital',
+  category: 'Belleza y bienestar',
+  steps: ['Servicio', 'Profesional', 'Horario', 'Tus datos'],
+  step: 2,
+  service: 'Masaje relajante',
+  duration: '60 min',
+  pro: 'Laura',
+  price: '$ 90.000',
+  days: [
+    { label: 'Mié', num: 14 },
+    { label: 'Jue', num: 15 },
+    { label: 'Vie', num: 16 },
+    { label: 'Sáb', num: 17 },
+    { label: 'Dom', num: 18 },
+  ],
+  // 3:30 ya la tomó Diego por WhatsApp.
+  times: [
+    { label: '10:00 a. m.' },
+    { label: '11:30 a. m.' },
+    { label: '12:30 p. m.' },
+    { label: '3:30 p. m.', taken: true },
+    { label: '4:30 p. m.' },
+    { label: '5:00 p. m.', selected: true },
+  ],
+};
+
+// Cada negocio pinta su agenda con su color; el primero es el verde del logo de Agendorio.
+const brandColors = [
+  { name: 'Verde Agendorio', value: '#00b28b' },
+  { name: 'Azul', value: '#3b82f6' },
+  { name: 'Violeta', value: '#8b5cf6' },
+  { name: 'Coral', value: '#f2675a' },
+  { name: 'Ámbar', value: '#f0a020' },
 ];
 ---
 
@@ -32,7 +78,9 @@ const slots = [
     <article class="showcase reveal">
       <div class="showcase__copy">
         <span class="showcase__tag"><Icon name="calendar" size={16} /> Plataforma SaaS</span>
-        <h3>Agendorio</h3>
+        <h3 class="showcase__brand">
+          <img src="/agendorio-white.svg" alt="Agendorio" width="491" height="136" />
+        </h3>
         <p class="showcase__lead">
           Plataforma de agendamiento en línea para profesionales y negocios de servicios: barberías, salones de belleza,
           consultorios, gimnasios y estudios. Tus clientes reservan solos y tú te enfocas en atenderlos.
@@ -51,42 +99,172 @@ const slots = [
         </a>
       </div>
 
-      <div class="showcase__visual" aria-hidden="true">
-        <div class="app">
-          <div class="app__top">
-            <strong>Agenda de hoy</strong>
-            <span class="app__pill">3 citas</span>
+      <div class="showcase__visual" data-brand-scope>
+        <div class="mock-tabs" role="group" aria-label="Cómo reservan tus clientes" data-mock-tabs>
+          <button type="button" data-view="whatsapp" aria-pressed="true">
+            <Icon name="whatsapp" size={15} /> Agenda + WhatsApp
+          </button>
+          <button type="button" data-view="link" aria-pressed="false">
+            <Icon name="link" size={15} /> Enlace de reservas
+          </button>
+        </div>
+
+        <div class="mock-stack">
+          <div class="mock agenda is-active" data-view="whatsapp" aria-hidden="true">
+            <div class="agenda__top">
+              <div>
+                <strong>Agenda · Hoy</strong>
+                <small>Miércoles 14 · 3 citas</small>
+              </div>
+              <span class="agenda__live">En vivo</span>
+            </div>
+
+            <ol class="agenda__slots">
+              {
+                appointments.map((a) => (
+                  <li>
+                    <span class="agenda__hour">{a.hour}</span>
+                    <div class:list={['agenda__event', { 'is-new': a.whatsapp }]}>
+                      <strong>
+                        {a.whatsapp && <Icon name="whatsapp" size={13} class="agenda__wa" />}
+                        {a.name}
+                      </strong>
+                      <small>
+                        {a.range} · {a.service}
+                      </small>
+                      <em>{a.status}</em>
+                      <span class="agenda__pay">
+                        <Icon name="dollar" size={15} />
+                      </span>
+                    </div>
+                  </li>
+                ))
+              }
+            </ol>
+
+            <div class="agenda__chat">
+              <p class="agenda__chat-head">
+                <Icon name="whatsapp" size={14} /> Asistente de WhatsApp
+                <span><Icon name="sparkles" size={11} /> Con IA</span>
+              </p>
+              <p class="msg msg--in">
+                Hola, ¿me agendas un masaje relajante con Laura para hoy a las 3 y media de la tarde? A nombre de Diego Silva.
+              </p>
+              <p class="msg msg--out">
+                ¡Hecho, Diego! Masaje relajante con Laura, hoy a las 3:30&nbsp;p.&nbsp;m. Te envío un recordatorio una hora antes.
+              </p>
+            </div>
           </div>
-          <div class="app__days">
-            {days.map((d, i) => <span class:list={{ active: i === 2 }}>{d}<b>{12 + i}</b></span>)}
+
+          <div class="mock booking" data-view="link" aria-hidden="true">
+            <div class="booking__bar">
+              <span class="booking__dots"><i></i><i></i><i></i></span>
+              <span class="booking__url"><Icon name="lock" size={11} /> {booking.url}</span>
+            </div>
+            <div class="booking__cover"></div>
+            <div class="booking__biz">
+              <span class="booking__logo">{booking.initials}</span>
+              <div>
+                <small><Icon name="leaf" size={12} /> {booking.category}</small>
+                <strong>{booking.name}</strong>
+              </div>
+              <span class="booking__wa"><Icon name="whatsapp" size={15} /></span>
+            </div>
+
+            <ol class="booking__steps">
+              {
+                booking.steps.map((s, i) => (
+                  <li class:list={{ done: i < booking.step, current: i === booking.step }}>
+                    <b>{i < booking.step ? <Icon name="check" size={11} /> : i + 1}</b>
+                    <span>{s}</span>
+                  </li>
+                ))
+              }
+            </ol>
+
+            <div class="booking__body">
+              <div class="booking__pick">
+                <div>
+                  <strong>{booking.service}</strong>
+                  <small>
+                    <Icon name="clock" size={12} /> {booking.duration} · con {booking.pro}
+                  </small>
+                </div>
+                <b>{booking.price}</b>
+              </div>
+              <p class="booking__title">Elige un horario</p>
+              <div class="booking__days">
+                {
+                  booking.days.map((d, i) => (
+                    <span class:list={{ active: i === 0 }}>
+                      {d.label}
+                      <b>{d.num}</b>
+                    </span>
+                  ))
+                }
+              </div>
+              <div class="booking__times">
+                {booking.times.map((t) => <span class:list={{ taken: t.taken, active: t.selected }}>{t.label}</span>)}
+              </div>
+              <span class="booking__cta">
+                Continuar con tus datos <Icon name="arrow" size={15} />
+              </span>
+            </div>
           </div>
-          <ul class="app__slots">
-            {
-              slots.map((s) => (
-                <li class={`tone-${s.tone}`}>
-                  <time>{s.time}</time>
-                  <div>
-                    <strong>{s.name}</strong>
-                    <small>con {s.who}</small>
-                  </div>
-                  <span class="ok">
-                    <Icon name="check" size={14} />
-                  </span>
-                </li>
-              ))
-            }
-          </ul>
-          <div class="app__toast">
-            <Icon name="chat" size={18} />
-            <span>Recordatorio enviado por WhatsApp</span>
-          </div>
+        </div>
+
+        <div class="brand-picker" role="group" aria-label="Prueba otros colores de marca" data-brand-picker>
+          <span>Tus colores</span>
+          {
+            brandColors.map((c, i) => (
+              <button
+                type="button"
+                style={`--swatch: ${c.value}`}
+                data-color={c.value}
+                aria-label={c.name}
+                aria-pressed={i === 0 ? 'true' : 'false'}
+              />
+            ))
+          }
         </div>
       </div>
     </article>
   </div>
 </section>
 
+<script>
+  const scope = document.querySelector<HTMLElement>('[data-brand-scope]');
+
+  // Alterna entre la agenda (con el chat de WhatsApp) y la página pública de reservas.
+  const tabs = scope?.querySelectorAll<HTMLButtonElement>('[data-mock-tabs] button') ?? [];
+  const views = scope?.querySelectorAll<HTMLElement>('.mock-stack > [data-view]') ?? [];
+
+  tabs.forEach((tab) => {
+    tab.addEventListener('click', () => {
+      tabs.forEach((t) => t.setAttribute('aria-pressed', String(t === tab)));
+      views.forEach((v) => v.classList.toggle('is-active', v.dataset.view === tab.dataset.view));
+    });
+  });
+
+  // Cambia el color de acento del mockup, como lo hace cada negocio desde su panel.
+  const swatches = scope?.querySelectorAll<HTMLButtonElement>('[data-brand-picker] button') ?? [];
+
+  swatches.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      scope!.style.setProperty('--ag-accent', btn.dataset.color!);
+      swatches.forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+    });
+  });
+</script>
+
 <style>
+  /* Registrado como color para que el cambio de marca se anime suave. */
+  @property --ag-accent {
+    syntax: '<color>';
+    inherits: true;
+    initial-value: #00b28b;
+  }
+
   .projects {
     position: relative;
     overflow: hidden;
@@ -125,14 +303,19 @@ const slots = [
     gap: 8px;
     padding: 6px 14px;
     border-radius: 999px;
-    background: rgb(0 184 217 / 0.15);
-    color: #6fdcf0;
+    background: rgb(0 178 139 / 0.16);
+    color: #4fd8b4;
     font-size: 0.8rem;
     font-weight: 600;
   }
-  .showcase h3 {
+  .showcase__brand {
     margin-top: 18px;
-    font-size: clamp(2rem, 4vw, 2.6rem);
+    line-height: 0;
+  }
+  .showcase__brand img {
+    height: clamp(48px, 7vw, 64px);
+    width: auto;
+    max-width: 100%;
   }
   .showcase__lead {
     margin-top: 14px;
@@ -155,122 +338,549 @@ const slots = [
   .showcase__list :global(svg) {
     flex-shrink: 0;
     margin-top: 3px;
-    color: var(--c-lime);
+    color: #2ccfa3;
   }
 
-  /* Mockup de la app */
-  .app {
+  /* Mockup de la agenda de Agendorio */
+  .showcase__visual {
+    --ag-accent: #00b28b;
+    --ag-ink: #0c1518;
+    --ag-text: #eef4f3;
+    --ag-muted: rgb(238 244 243 / 0.62);
+    --ag-line: rgb(255 255 255 / 0.08);
     position: relative;
-    padding: 22px;
-    border-radius: 20px;
-    background: #fff;
-    color: var(--c-ink);
-    box-shadow: 0 30px 60px -24px rgb(0 0 0 / 0.55);
+    transition: --ag-accent 0.5s ease;
   }
-  .app__top {
+  .showcase__visual::before {
+    content: '';
+    position: absolute;
+    inset: 8% -8% -6%;
+    background: radial-gradient(closest-side, color-mix(in srgb, var(--ag-accent) 32%, transparent), transparent);
+    filter: blur(24px);
+    pointer-events: none;
+  }
+  .mock-tabs {
+    position: relative;
+    display: flex;
+    gap: 4px;
+    width: fit-content;
+    margin: 0 auto 14px;
+    padding: 4px;
+    border-radius: 999px;
+    border: 1px solid rgb(255 255 255 / 0.08);
+    background: rgb(255 255 255 / 0.05);
+  }
+  .mock-tabs button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 8px 14px;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: rgb(255 255 255 / 0.68);
+    font: inherit;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease;
+  }
+  .mock-tabs button:hover {
+    color: #fff;
+  }
+  .mock-tabs button[aria-pressed='true'] {
+    background: color-mix(in srgb, var(--ag-accent) 24%, transparent);
+    color: #fff;
+  }
+  .mock-tabs button:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 2px;
+  }
+
+  /* Las dos vistas ocupan la misma celda: el alto no salta al cambiar. */
+  .mock-stack {
+    display: grid;
+  }
+  .mock {
+    grid-area: 1 / 1;
+    position: relative;
+    overflow: hidden;
+    border-radius: 20px;
+    border: 1px solid rgb(255 255 255 / 0.1);
+    background: color-mix(in srgb, var(--ag-accent) 9%, var(--ag-ink));
+    color: var(--ag-text);
+    box-shadow: 0 30px 60px -24px rgb(0 0 0 / 0.6);
+    transition:
+      opacity 0.35s ease,
+      transform 0.35s ease,
+      visibility 0.35s;
+  }
+  .mock:not(.is-active) {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(8px);
+  }
+  .agenda__top {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 12px;
+    padding: 18px 20px;
+    border-bottom: 1px solid var(--ag-line);
   }
-  .app__pill {
-    padding: 4px 10px;
+  .agenda__top div {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.35;
+  }
+  .agenda__top small {
+    font-size: 0.75rem;
+    color: var(--ag-muted);
+  }
+  .agenda__live {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    flex-shrink: 0;
+    padding: 5px 11px;
     border-radius: 999px;
-    background: rgb(166 217 54 / 0.2);
-    color: #4d7a0f;
-    font-size: 0.75rem;
+    background: color-mix(in srgb, var(--ag-accent) 18%, transparent);
+    color: color-mix(in srgb, var(--ag-accent) 65%, #fff);
+    font-size: 0.66rem;
     font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
   }
-  .app__days {
-    margin-top: 18px;
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 6px;
+  .agenda__live::before {
+    content: '';
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--ag-accent);
+    animation: agenda-live 2s ease-out infinite;
   }
-  .app__days span {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 2px;
-    padding: 8px 0;
-    border-radius: 10px;
-    font-size: 0.7rem;
-    color: var(--c-muted);
+  @keyframes agenda-live {
+    0% {
+      box-shadow: 0 0 0 0 color-mix(in srgb, var(--ag-accent) 70%, transparent);
+    }
+    70%,
+    100% {
+      box-shadow: 0 0 0 7px transparent;
+    }
   }
-  .app__days b {
-    font-size: 0.92rem;
-    color: var(--c-ink);
-  }
-  .app__days .active {
-    background: var(--grad-cool);
-    color: rgb(255 255 255 / 0.8);
-  }
-  .app__days .active b {
-    color: #fff;
-  }
-  .app__slots {
+
+  .agenda__slots {
     list-style: none;
-    margin: 18px 0 0;
-    padding: 0;
+    margin: 0;
+    padding: 0 20px 0 0;
+  }
+  .agenda__slots li {
     display: grid;
-    gap: 10px;
+    grid-template-columns: 56px 1fr;
   }
-  .app__slots li {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    padding: 12px 14px;
-    border-radius: 12px;
-    background: var(--c-bg-soft);
-    border-left: 4px solid var(--tone);
+  .agenda__slots li + li {
+    border-top: 1px dashed var(--ag-line);
   }
-  .tone-lime { --tone: var(--c-lime); }
-  .tone-cyan { --tone: var(--c-cyan); }
-  .tone-blue { --tone: var(--c-blue); }
-  .app__slots time {
-    font-size: 0.8rem;
-    font-weight: 700;
-    color: var(--c-muted);
+  .agenda__hour {
+    padding: 12px 10px 0 0;
+    border-right: 1px solid var(--ag-line);
+    text-align: right;
+    font-size: 0.66rem;
+    color: var(--ag-muted);
   }
-  .app__slots div {
+  .agenda__event {
+    position: relative;
     display: flex;
     flex-direction: column;
-    line-height: 1.3;
-    min-width: 0;
+    margin: 8px 0 8px 10px;
+    padding: 10px 46px 10px 14px;
+    border-left: 3px solid var(--ag-accent);
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--ag-accent) 17%, var(--ag-ink));
+    line-height: 1.35;
   }
-  .app__slots strong {
-    font-size: 0.9rem;
+  .agenda__event.is-new {
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ag-accent) 45%, transparent);
   }
-  .app__slots small {
-    font-size: 0.75rem;
-    color: var(--c-muted);
+  .agenda__event strong {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.86rem;
   }
-  .ok {
-    margin-left: auto;
+  .agenda__event small {
+    font-size: 0.72rem;
+    color: var(--ag-muted);
+  }
+  .agenda__event em {
+    margin-top: 8px;
+    font-style: normal;
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--ag-accent) 60%, #fff);
+  }
+  .agenda :global(.agenda__wa) {
+    color: #25d366;
+  }
+  .agenda__pay {
+    position: absolute;
+    top: 9px;
+    right: 10px;
     display: grid;
     place-items: center;
-    width: 24px;
-    height: 24px;
+    width: 26px;
+    height: 26px;
     border-radius: 50%;
-    background: var(--tone);
-    color: #fff;
+    border: 1px solid var(--ag-line);
+    background: rgb(0 0 0 / 0.25);
+    color: var(--ag-muted);
   }
-  .app__toast {
-    position: absolute;
-    right: -14px;
-    bottom: -22px;
+
+  .agenda__chat {
+    display: grid;
+    gap: 8px;
+    padding: 14px 20px 28px;
+    border-top: 1px solid var(--ag-line);
+    background: rgb(0 0 0 / 0.2);
+  }
+  .agenda__chat-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 7px;
+    white-space: nowrap;
+    margin-bottom: 2px;
+    font-size: 0.64rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #3ddc84;
+  }
+  .agenda__chat-head span {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 7px;
+    border-radius: 6px;
+    background: rgb(255 255 255 / 0.08);
+    color: var(--ag-text);
+  }
+  .msg {
+    max-width: 86%;
+    padding: 9px 12px;
+    border-radius: 12px;
+    font-size: 0.76rem;
+    line-height: 1.45;
+  }
+  .msg--in {
+    justify-self: start;
+    border-top-left-radius: 4px;
+    background: rgb(255 255 255 / 0.08);
+  }
+  .msg--out {
+    justify-self: end;
+    border-top-right-radius: 4px;
+    background: #005c4b;
+  }
+
+  /* Página pública de reservas */
+  .booking {
+    display: flex;
+    flex-direction: column;
+  }
+  .booking__bar {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 12px 16px;
-    border-radius: 14px;
-    background: var(--c-ink-900);
-    color: #fff;
-    font-size: 0.82rem;
-    font-weight: 600;
-    box-shadow: var(--shadow-lg);
+    gap: 12px;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--ag-line);
+    background: rgb(0 0 0 / 0.25);
   }
-  .app__toast :global(svg) {
-    color: var(--c-lime);
+  .booking__dots {
+    display: flex;
+    gap: 5px;
+  }
+  .booking__dots i {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgb(255 255 255 / 0.18);
+  }
+  .booking__url {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+    padding: 4px 12px;
+    border-radius: 999px;
+    background: rgb(255 255 255 / 0.06);
+    font-size: 0.7rem;
+    color: var(--ag-muted);
+    white-space: nowrap;
+  }
+  .booking__cover {
+    height: 64px;
+    background:
+      repeating-linear-gradient(135deg, rgb(255 255 255 / 0.05) 0 2px, transparent 2px 14px),
+      linear-gradient(120deg, color-mix(in srgb, var(--ag-accent) 70%, var(--ag-ink)), color-mix(in srgb, var(--ag-accent) 20%, var(--ag-ink)));
+  }
+  .booking__biz {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 0 20px;
+  }
+  .booking__biz div {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+    padding-top: 8px;
+    line-height: 1.3;
+  }
+  .booking__biz small {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.68rem;
+    color: var(--ag-muted);
+  }
+  .booking__biz strong {
+    font-size: 0.98rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .booking__logo {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 54px;
+    height: 54px;
+    margin-top: -24px;
+    border-radius: 14px;
+    border: 3px solid color-mix(in srgb, var(--ag-accent) 9%, var(--ag-ink));
+    background: linear-gradient(140deg, var(--ag-accent), color-mix(in srgb, var(--ag-accent) 45%, #000));
+    font-size: 1.05rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+  .booking__wa {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    margin-top: 10px;
+    border-radius: 50%;
+    background: rgb(37 211 102 / 0.14);
+    color: #25d366;
+  }
+
+  .booking__steps {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 16px 20px 0;
+    padding: 0 0 14px;
+    border-bottom: 1px solid var(--ag-line);
+    font-size: 0.66rem;
+    color: var(--ag-muted);
+  }
+  .booking__steps li {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+  }
+  .booking__steps li + li::before {
+    content: '';
+    width: 12px;
+    height: 1px;
+    margin-right: 2px;
+    background: rgb(255 255 255 / 0.2);
+  }
+  .booking__steps b {
+    display: grid;
+    place-items: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 1px solid rgb(255 255 255 / 0.2);
+    font-size: 0.62rem;
+  }
+  .booking__steps .done b {
+    border-color: var(--ag-accent);
+    background: var(--ag-accent);
+    color: var(--ag-ink);
+  }
+  .booking__steps .current {
+    color: var(--ag-text);
+    font-weight: 700;
+  }
+  .booking__steps .current b {
+    border-color: var(--ag-accent);
+    color: color-mix(in srgb, var(--ag-accent) 60%, #fff);
+  }
+
+  .booking__body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: 14px 20px 30px;
+  }
+  .booking__pick {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    border: 1px solid color-mix(in srgb, var(--ag-accent) 40%, transparent);
+    background: color-mix(in srgb, var(--ag-accent) 14%, var(--ag-ink));
+  }
+  .booking__pick div {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.35;
+  }
+  .booking__pick strong {
+    font-size: 0.86rem;
+  }
+  .booking__pick small {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.7rem;
+    color: var(--ag-muted);
+  }
+  .booking__pick > b {
+    font-size: 0.82rem;
+    color: color-mix(in srgb, var(--ag-accent) 55%, #fff);
+    white-space: nowrap;
+  }
+  .booking__title {
+    margin-top: 14px;
+    font-size: 0.86rem;
+    font-weight: 700;
+  }
+  .booking__days {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+    margin-top: 10px;
+  }
+  .booking__days span {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 6px 0;
+    border-radius: 10px;
+    border: 1px solid var(--ag-line);
+    font-size: 0.64rem;
+    line-height: 1.3;
+    color: var(--ag-muted);
+  }
+  .booking__days b {
+    font-size: 0.88rem;
+    color: var(--ag-text);
+  }
+  .booking__days .active {
+    border-color: var(--ag-accent);
+    background: var(--ag-accent);
+    color: color-mix(in srgb, var(--ag-ink) 75%, transparent);
+  }
+  .booking__days .active b {
+    color: var(--ag-ink);
+  }
+  .booking__times {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    margin: 10px 0 14px;
+  }
+  .booking__times span {
+    padding: 7px 4px;
+    border-radius: 8px;
+    border: 1px solid var(--ag-line);
+    background: rgb(255 255 255 / 0.03);
+    text-align: center;
+    font-size: 0.7rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .booking__times .taken {
+    color: rgb(238 244 243 / 0.3);
+    text-decoration: line-through;
+    background: transparent;
+  }
+  .booking__times .active {
+    border-color: var(--ag-accent);
+    background: color-mix(in srgb, var(--ag-accent) 26%, var(--ag-ink));
+    color: #fff;
+  }
+  .booking__cta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: auto;
+    padding: 11px;
+    border-radius: 10px;
+    background: var(--ag-accent);
+    color: var(--ag-ink);
+    font-size: 0.82rem;
+    font-weight: 700;
+  }
+
+  .brand-picker {
+    position: absolute;
+    left: -16px;
+    bottom: -24px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 14px;
+    border-radius: 14px;
+    border: 1px solid rgb(255 255 255 / 0.08);
+    background: var(--c-ink-900);
+    box-shadow: var(--shadow-lg);
+    font-size: 0.78rem;
+    font-weight: 600;
+  }
+  .brand-picker span {
+    margin-right: 4px;
+  }
+  .brand-picker button {
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: var(--swatch);
+    box-shadow: 0 0 0 2px var(--c-ink-900);
+    cursor: pointer;
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+  .brand-picker button:hover {
+    transform: scale(1.12);
+  }
+  .brand-picker button[aria-pressed='true'] {
+    box-shadow:
+      0 0 0 2px var(--c-ink-900),
+      0 0 0 4px var(--swatch);
+  }
+  .brand-picker button:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 4px;
   }
 
   @media (max-width: 960px) {
@@ -284,17 +894,86 @@ const slots = [
     }
   }
   @media (max-width: 480px) {
-    .app__toast {
+    .agenda__chat {
+      padding-bottom: 18px;
+    }
+    .brand-picker {
       position: static;
+      width: fit-content;
       margin-top: 14px;
     }
-    .app__slots time {
-      font-size: 0.72rem;
+    .agenda__top,
+    .agenda__chat {
+      padding-inline: 16px;
+    }
+    .agenda__slots {
+      padding-right: 14px;
+    }
+    .agenda__slots li {
+      grid-template-columns: 50px 1fr;
+    }
+    .agenda__hour {
+      padding-right: 8px;
+      font-size: 0.62rem;
+    }
+    .agenda__chat-head {
+      letter-spacing: 0.04em;
+    }
+    .agenda__event {
+      margin-left: 8px;
+      padding-right: 40px;
+    }
+    .agenda__event small {
+      font-size: 0.68rem;
+    }
+    .mock-tabs {
+      width: 100%;
+    }
+    .mock-tabs button {
+      flex: 1;
+      padding-inline: 8px;
+      font-size: 0.74rem;
+      white-space: nowrap;
+    }
+    .mock-tabs :global(svg) {
+      display: none;
+    }
+    /* En móvil cada vista toma su propio alto para no dejar huecos. */
+    .mock:not(.is-active) {
+      display: none;
+    }
+    .booking__biz strong {
+      white-space: normal;
+    }
+    .booking__biz,
+    .booking__body {
+      padding-inline: 16px;
+    }
+    .booking__body {
+      padding-bottom: 18px;
+    }
+    .booking__steps {
+      margin-inline: 16px;
+    }
+    .booking__steps li:not(.current) span {
+      display: none;
+    }
+    .booking__times span {
+      font-size: 0.66rem;
     }
     .showcase .btn {
       width: 100%;
       font-size: 0.88rem;
       padding-inline: 16px;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .showcase__visual,
+    .mock {
+      transition: none;
+    }
+    .agenda__live::before {
+      animation: none;
     }
   }
 </style>
