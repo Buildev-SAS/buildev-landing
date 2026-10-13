@@ -1,0 +1,157 @@
+/* Tarjeta de proyecto: base que comparten los componentes de src/components/projects.
+   Cada proyecto la ajusta en su componente; --accent es su color de marca. */
+.showcase {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 48px;
+  align-items: center;
+  padding: clamp(28px, 5vw, 56px);
+  border-radius: 24px;
+  background: linear-gradient(150deg, var(--c-ink-900), var(--c-ink));
+  color: #fff;
+  box-shadow: var(--shadow-lg);
+}
+.showcase__tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgb(0 178 139 / 0.16);
+  color: #4fd8b4;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+.showcase__brand {
+  margin-top: 18px;
+  line-height: 0;
+}
+.showcase__brand img {
+  height: clamp(48px, 7vw, 64px);
+  width: auto;
+  max-width: 100%;
+}
+.showcase__lead {
+  margin-top: 14px;
+  color: rgb(255 255 255 / 0.75);
+}
+.showcase__list {
+  list-style: none;
+  margin: 24px 0 32px;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+  font-size: 0.95rem;
+  color: rgb(255 255 255 / 0.88);
+}
+.showcase__list li {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.showcase__list svg {
+  flex-shrink: 0;
+  margin-top: 3px;
+  color: #2ccfa3;
+}
+.showcase__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px 18px;
+}
+.showcase__visual {
+  position: relative;
+}
+.showcase__visual::before {
+  content: '';
+  position: absolute;
+  inset: 8% -8% -6%;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--accent) 32%, transparent), transparent);
+  filter: blur(24px);
+  pointer-events: none;
+}
+.mock-tabs {
+  position: relative;
+  display: flex;
+  gap: 4px;
+  width: fit-content;
+  margin: 0 auto 14px;
+  padding: 4px;
+  border-radius: 999px;
+  border: 1px solid rgb(255 255 255 / 0.08);
+  background: rgb(255 255 255 / 0.05);
+}
+.mock-tabs button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 8px 14px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: rgb(255 255 255 / 0.68);
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+.mock-tabs button:hover {
+  color: #fff;
+}
+.mock-tabs button[aria-pressed='true'] {
+  background: color-mix(in srgb, var(--accent) 24%, transparent);
+  color: #fff;
+}
+.mock-tabs button:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+@media (max-width: 960px) {
+  /* En el carrusel todas las tarjetas miden lo que la más alta: el sobrante queda entre el texto y la vista. */
+  .showcase {
+    grid-template-columns: minmax(0, 1fr);
+    align-content: space-between;
+  }
+  .showcase__visual {
+    max-width: 460px;
+    width: 100%;
+    margin-bottom: 20px;
+  }
+}
+@media (max-width: 480px) {
+  .mock-tabs {
+    width: 100%;
+  }
+  /* Mismo ancho para todas; si el texto no cabe, parte en dos líneas en vez de salirse. */
+  .mock-tabs button {
+    flex: 1 1 0;
+    min-width: 0;
+    padding-inline: 8px;
+    font-size: 0.74rem;
+    line-height: 1.25;
+  }
+  .mock-tabs svg {
+    display: none;
+  }
+  .showcase .btn {
+    width: 100%;
+    font-size: 0.88rem;
+    padding-inline: 16px;
+  }
+}
+@media (max-width: 360px) {
+  .showcase {
+    padding: 22px 18px;
+  }
+  .mock-tabs {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    border-radius: 20px;
+  }
+}

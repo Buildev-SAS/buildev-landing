@@ -24,6 +24,7 @@ const year = new Date().getFullYear();
       <ul>
         <li><a href={`mailto:${site.email}`}>{site.email}</a></li>
         <li><a href="https://agendorio.buildev.co" target="_blank" rel="noopener">agendorio.buildev.co</a></li>
+        <li><a href="https://rentablo.buildev.co" target="_blank" rel="noopener">rentablo.buildev.co</a></li>
         <li>{site.city}</li>
       </ul>
     </div>
@@ -69,6 +70,7 @@ const year = new Date().getFullYear();
     gap: 10px;
     font-size: 0.94rem;
     color: var(--c-muted);
+    overflow-wrap: anywhere;
   }
   .footer ul a:hover {
     color: var(--c-ink);
@@ -94,6 +96,11 @@ const year = new Date().getFullYear();
     }
   }
   @media (max-width: 420px) {
+    /* Las dos columnas no caben con el correo y los dominios: van una debajo de la otra. */
+    .footer__grid {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 32px;
+    }
     .footer :global(.footer__logo) {
       font-size: 14px;
     }

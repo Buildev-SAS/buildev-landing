@@ -1,0 +1,431 @@
+---
+import Icon from '../Icon.astro';
+
+// Rentablo: app móvil que reparte cada venta entre insumos, sueldo y utilidad.
+// Cuando la app esté en Google Play, cambia `published` a true para mostrar el sello con el enlace.
+const rentablo = {
+  url: 'https://rentablo.buildev.co',
+  play: { url: 'https://play.google.com/store/apps/details?id=co.buildev.rentablo', published: true },
+};
+
+const rentabloFeatures = [
+  'Registro de ventas en segundos, con clientes y servicios',
+  'Reparto automático entre insumos, sueldo y utilidad',
+  'Ganancia por día, semana, mes o año',
+  'Lo más vendido y los mejores clientes',
+  'Agenda de citas sincronizada con Google Calendar',
+  'Reportes en PDF para guardar o compartir',
+];
+
+// Pantallas recortadas de las capturas de la ficha de Google Play (public/rentablo).
+const screens = [
+  { view: 'inicio', label: 'Inicio', alt: 'Inicio de Rentablo: ganancia neta y reparto en insumos, sueldo y utilidad' },
+  { view: 'venta', label: 'Venta', alt: 'Registrar una venta en Rentablo y ver cómo se reparte' },
+  { view: 'estadisticas', label: 'Métricas', alt: 'Estadísticas de Rentablo: ganancia del día y a dónde fue el dinero' },
+  { view: 'agenda', label: 'Agenda', alt: 'Agenda de citas de Rentablo' },
+];
+
+// Perfiles de reparto de la app (insumos · sueldo · utilidad) aplicados a una venta de ejemplo.
+const sale = 65000;
+const splitParts = ['Insumos', 'Sueldo', 'Utilidad'];
+const splitProfiles = [
+  { name: 'Equilibrado', split: [20, 50, 30] },
+  { name: 'Crecer', split: [20, 40, 40] },
+  { name: 'Vivo de esto', split: [15, 65, 20] },
+];
+const pesos = (n: number) => '$' + Math.round(n).toLocaleString('es-CO');
+---
+
+<article class="showcase showcase--rentablo">
+  <div class="showcase__copy">
+    <span class="showcase__tag"><Icon name="phone" size={16} /> App móvil · Android</span>
+    <h3 class="showcase__brand">
+      <img src="/rentablo-white.svg" alt="Rentablo" width="297" height="87" />
+    </h3>
+    <p class="showcase__lead">
+      App para independientes y negocios de servicios: manicuristas, estilistas, barberías, spas y tiendas. Registras
+      cada venta y Rentablo la reparte sola entre insumos, tu sueldo y la utilidad del negocio.
+    </p>
+    <ul class="showcase__list">
+      {
+        rentabloFeatures.map((f) => (
+          <li>
+            <Icon name="check" size={18} /> {f}
+          </li>
+        ))
+      }
+    </ul>
+    <div class="showcase__actions">
+      <a href={rentablo.url} target="_blank" rel="noopener" class="btn btn--primary">
+        Visitar rentablo.buildev.co <Icon name="external" size={17} />
+      </a>
+      {
+        rentablo.play.published ? (
+          <a href={rentablo.play.url} target="_blank" rel="noopener" class="showcase__play">
+            <img src="/rentablo/google-play.png" alt="Descargar en Google Play" width="646" height="250" />
+          </a>
+        ) : (
+          <span class="showcase__soon">
+            <Icon name="phone" size={16} /> Muy pronto en Google Play
+          </span>
+        )
+      }
+    </div>
+  </div>
+
+  <div class="showcase__visual" data-rentablo>
+    <div class="split" data-split data-sale={sale}>
+      <p class="split__head">Una venta de <b>{pesos(sale)}</b></p>
+      <div class="split__bar" aria-hidden="true">
+        {splitProfiles[0].split.map((pct) => <i style={`width: ${pct}%`} />)}
+      </div>
+      <dl class="split__parts" aria-live="polite">
+        {
+          splitParts.map((part, i) => (
+            <div>
+              <dt>
+                {part} <span data-pct>{splitProfiles[0].split[i]}%</span>
+              </dt>
+              <dd data-amount>{pesos((sale * splitProfiles[0].split[i]) / 100)}</dd>
+            </div>
+          ))
+        }
+      </dl>
+      <div class="split__profiles" role="group" aria-label="Perfiles de reparto" data-split-profiles>
+        {
+          splitProfiles.map((p, i) => (
+            <button type="button" data-split={p.split.join(',')} aria-pressed={i === 0 ? 'true' : 'false'}>
+              {p.name}
+            </button>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="device">
+      <div class="mock-tabs" role="group" aria-label="Pantallas de la app" data-rentablo-tabs>
+        {
+          screens.map((s, i) => (
+            <button type="button" data-view={s.view} aria-pressed={i === 0 ? 'true' : 'false'}>
+              {s.label}
+            </button>
+          ))
+        }
+      </div>
+
+      <div class="phone">
+        <div class="phone__screen">
+          {
+            screens.map((s, i) => (
+              <img
+                class:list={['phone__shot', { 'is-active': i === 0 }]}
+                data-view={s.view}
+                src={`/rentablo/${s.view}.webp`}
+                alt={s.alt}
+                width="600"
+                height="1051"
+                loading="lazy"
+                decoding="async"
+              />
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</article>
+
+<script>
+  const pesos = (n: number) => '$' + Math.round(n).toLocaleString('es-CO');
+
+  // El carrusel puede repetir la tarjeta: cada copia maneja sus propios controles.
+  document.querySelectorAll<HTMLElement>('[data-rentablo]').forEach((rentablo) => {
+    // Cambia la pantalla del teléfono.
+    const screenTabs = rentablo.querySelectorAll<HTMLButtonElement>('[data-rentablo-tabs] button');
+    const shots = rentablo.querySelectorAll<HTMLElement>('.phone__shot');
+
+    screenTabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        screenTabs.forEach((t) => t.setAttribute('aria-pressed', String(t === tab)));
+        shots.forEach((s) => s.classList.toggle('is-active', s.dataset.view === tab.dataset.view));
+      });
+    });
+
+    // Reparte la venta de ejemplo con el perfil elegido, como lo hace la app.
+    const split = rentablo.querySelector<HTMLElement>('[data-split]');
+    const sale = Number(split?.dataset.sale);
+    const bars = split?.querySelectorAll<HTMLElement>('.split__bar i') ?? [];
+    const pcts = split?.querySelectorAll('[data-pct]') ?? [];
+    const amounts = split?.querySelectorAll('[data-amount]') ?? [];
+    const profiles = split?.querySelectorAll<HTMLButtonElement>('[data-split-profiles] button') ?? [];
+
+    profiles.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        profiles.forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+        btn.dataset.split!.split(',').forEach((value, i) => {
+          const pct = Number(value);
+          bars[i].style.width = `${pct}%`;
+          pcts[i].textContent = `${pct}%`;
+          amounts[i].textContent = pesos((sale * pct) / 100);
+        });
+      });
+    });
+  });
+</script>
+
+<style>
+  /* Rentablo: tarjeta con la paleta verde de su marca y el teléfono saliendo por el borde inferior. */
+  .showcase--rentablo {
+    --rb-pad: clamp(28px, 5vw, 56px);
+    --rb-mint: #8ee5c4;
+    --rb-green: #57b89a;
+    --rb-insumos: #e87ba4;
+    --rb-sueldo: #9085e9;
+    --rb-utilidad: #eb6834;
+    grid-template-columns: 1.1fr 1fr;
+    padding: var(--rb-pad);
+    overflow: hidden;
+    background:
+      radial-gradient(90% 70% at 0% 0%, rgb(87 184 154 / 0.2), transparent 60%),
+      linear-gradient(160deg, #0f4d45, #0a312c 55%, #061e1b);
+  }
+  .showcase--rentablo .showcase__tag {
+    background: rgb(87 184 154 / 0.18);
+    color: var(--rb-mint);
+  }
+  .showcase--rentablo .showcase__list :global(svg) {
+    color: var(--rb-mint);
+  }
+  .showcase__soon {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 48px;
+    padding: 10px 20px;
+    border-radius: 999px;
+    border: 1px dashed rgb(255 255 255 / 0.3);
+    color: rgb(255 255 255 / 0.82);
+    font-size: 0.86rem;
+    font-weight: 600;
+  }
+  .showcase__play {
+    border-radius: 10px;
+    transition: transform 0.2s ease;
+  }
+  .showcase__play:hover {
+    transform: translateY(-2px);
+  }
+  .showcase__play img {
+    height: 52px;
+    width: auto;
+  }
+
+  .showcase--rentablo .showcase__visual {
+    --accent: var(--rb-green);
+    order: -1;
+    align-self: end;
+    margin-bottom: calc(-1 * var(--rb-pad));
+  }
+  /* El teléfono va a la derecha para que la tarjeta de reparto no tape la pantalla. */
+  .device {
+    width: min(100%, 320px);
+    margin-left: auto;
+  }
+  .phone {
+    position: relative;
+    padding: 10px 10px 0;
+    border: 1px solid rgb(255 255 255 / 0.12);
+    border-bottom: 0;
+    border-radius: 46px 46px 0 0;
+    background: #0a1f1c;
+    box-shadow: 0 -10px 60px -20px rgb(0 0 0 / 0.55);
+  }
+  .phone__screen {
+    display: grid;
+    overflow: hidden;
+    border-radius: 36px 36px 0 0;
+    background: #fff;
+  }
+  .phone__shot {
+    grid-area: 1 / 1;
+    width: 100%;
+    height: auto;
+    transition:
+      opacity 0.35s ease,
+      visibility 0.35s;
+  }
+  .phone__shot:not(.is-active) {
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  .split {
+    position: absolute;
+    z-index: 1;
+    left: -32px;
+    bottom: 56px;
+    width: 248px;
+    padding: 14px 16px;
+    border-radius: 16px;
+    border: 1px solid rgb(255 255 255 / 0.1);
+    background: rgb(12 43 39 / 0.94);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 24px 50px -20px rgb(0 0 0 / 0.65);
+  }
+  .split__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: 0.64rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--rb-mint);
+  }
+  .split__head b {
+    font-size: 0.92rem;
+    letter-spacing: 0;
+    color: #fff;
+  }
+  .split__bar {
+    display: flex;
+    gap: 3px;
+    height: 8px;
+    margin-top: 10px;
+  }
+  .split__bar i {
+    border-radius: 999px;
+    transition: width 0.5s ease;
+  }
+  .split__bar i:nth-child(1),
+  .split__parts div:nth-child(1) {
+    --dot: var(--rb-insumos);
+  }
+  .split__bar i:nth-child(2),
+  .split__parts div:nth-child(2) {
+    --dot: var(--rb-sueldo);
+  }
+  .split__bar i:nth-child(3),
+  .split__parts div:nth-child(3) {
+    --dot: var(--rb-utilidad);
+  }
+  .split__bar i {
+    background: var(--dot);
+  }
+  .split__parts {
+    display: grid;
+    gap: 6px;
+    margin: 12px 0;
+  }
+  .split__parts div {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .split__parts dt {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 0.74rem;
+    color: rgb(255 255 255 / 0.72);
+    white-space: nowrap;
+  }
+  .split__parts dt::before {
+    content: '';
+    flex-shrink: 0;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--dot);
+  }
+  .split__parts dt span {
+    color: rgb(255 255 255 / 0.45);
+  }
+  .split__parts dd {
+    margin: 0;
+    font-size: 0.84rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+  .split__profiles {
+    display: flex;
+    gap: 4px;
+    padding: 3px;
+    border-radius: 999px;
+    background: rgb(255 255 255 / 0.06);
+  }
+  .split__profiles button {
+    flex: auto;
+    padding: 6px 5px;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: rgb(255 255 255 / 0.68);
+    font: inherit;
+    font-size: 0.68rem;
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease;
+  }
+  .split__profiles button:hover {
+    color: #fff;
+  }
+  .split__profiles button[aria-pressed='true'] {
+    background: rgb(87 184 154 / 0.3);
+    color: #fff;
+  }
+  .split__profiles button:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 2px;
+  }
+
+  @media (max-width: 960px) {
+    .showcase--rentablo {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .showcase--rentablo .showcase__visual {
+      order: 0;
+      max-width: 560px;
+    }
+    .split {
+      left: 0;
+    }
+  }
+  /* Sin espacio al lado del teléfono, la tarjeta de reparto va encima de las pestañas. */
+  @media (max-width: 640px) {
+    .split {
+      position: static;
+      width: auto;
+      margin-bottom: 18px;
+    }
+    .device {
+      margin-inline: auto;
+    }
+  }
+  @media (max-width: 360px) {
+    .showcase--rentablo {
+      --rb-pad: 18px;
+    }
+  }
+  @media (max-width: 480px) {
+    .showcase__soon {
+      width: 100%;
+      justify-content: center;
+    }
+    .showcase__play {
+      margin-inline: auto;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .phone__shot,
+    .split__bar i,
+    .showcase__play {
+      transition: none;
+    }
+  }
+</style>

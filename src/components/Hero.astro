@@ -252,8 +252,9 @@ import Stripes from './Stripes.astro';
   }
 
   @media (max-width: 960px) {
+    /* minmax(0, …): el bloque de código no puede ensanchar la columna más allá de la pantalla. */
     .hero__inner {
-      grid-template-columns: 1fr;
+      grid-template-columns: minmax(0, 1fr);
       gap: 48px;
     }
     .hero__visual {
@@ -266,6 +267,14 @@ import Stripes from './Stripes.astro';
     }
     .float-card--b {
       right: 8px;
+    }
+  }
+  /* En pantallas angostas el código parte sus líneas en vez de cortarse. */
+  @media (max-width: 420px) {
+    .window__code {
+      padding-inline: 16px;
+      font-size: 0.74rem;
+      white-space: pre-wrap;
     }
   }
 </style>

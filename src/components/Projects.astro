@@ -1,70 +1,26 @@
 ---
-import Icon from './Icon.astro';
+import Icon, { type IconName } from './Icon.astro';
 import Stripes from './Stripes.astro';
+import Agendorio from './projects/Agendorio.astro';
+import Rentablo from './projects/Rentablo.astro';
+import '../styles/showcase.css';
 
-const features = [
-  'Reservas en línea 24/7 con enlace personalizado',
-  'Asistente de WhatsApp con IA que agenda por chat',
-  'Agenda por profesional y control de horarios',
-  'Confirmaciones y recordatorios automáticos por WhatsApp',
-  'Sincronización con Google Calendar',
-  'Personalización con logo, colores y tipografía',
+// Proyectos del carrusel, en orden. Para sumar uno, crea su tarjeta en ./projects y agrégalo aquí;
+// `color` es el fondo de su botón en el selector (el mismo de su tarjeta).
+const projects: { id: string; name: string; type: string; icon: IconName; color: string; Card: typeof Agendorio }[] = [
+  { id: 'agendorio', name: 'Agendorio', type: 'Plataforma SaaS', icon: 'calendar', color: '#1c252d', Card: Agendorio },
+  { id: 'rentablo', name: 'Rentablo', type: 'App móvil', icon: 'phone', color: '#0f4d45', Card: Rentablo },
 ];
 
-const appointments = [
-  { hour: '1 p. m.', name: 'Ana Rodríguez', range: '1:00 – 2:00 p. m.', service: 'Limpieza facial', status: 'Confirmada' },
-  { hour: '2 p. m.', name: 'Carlos Pérez', range: '2:00 – 3:00 p. m.', service: 'Consulta de nutrición', status: 'Confirmada' },
-  {
-    hour: '3 p. m.',
-    name: 'Diego Silva',
-    range: '3:30 – 4:30 p. m.',
-    service: 'Masaje relajante',
-    status: 'Nueva · por WhatsApp',
-    whatsapp: true,
-  },
-];
+// El carrusel da la vuelta y muestra un proyecto a cada lado del activo;
+// con menos de tres se repiten para que ningún lado quede vacío.
+const slides = projects.length < 3 ? [...projects, ...projects] : projects;
 
-// Página pública de reservas de un negocio de ejemplo, con su enlace propio.
-const booking = {
-  url: 'agendorio.buildev.co/estudio-vital',
-  initials: 'EV',
-  name: 'Estudio Vital',
-  category: 'Belleza y bienestar',
-  steps: ['Servicio', 'Profesional', 'Horario', 'Tus datos'],
-  step: 2,
-  service: 'Masaje relajante',
-  duration: '60 min',
-  pro: 'Laura',
-  price: '$ 90.000',
-  days: [
-    { label: 'Mié', num: 14 },
-    { label: 'Jue', num: 15 },
-    { label: 'Vie', num: 16 },
-    { label: 'Sáb', num: 17 },
-    { label: 'Dom', num: 18 },
-  ],
-  // 3:30 ya la tomó Diego por WhatsApp.
-  times: [
-    { label: '10:00 a. m.' },
-    { label: '11:30 a. m.' },
-    { label: '12:30 p. m.' },
-    { label: '3:30 p. m.', taken: true },
-    { label: '4:30 p. m.' },
-    { label: '5:00 p. m.', selected: true },
-  ],
-};
-
-// Cada negocio pinta su agenda con su color; el primero es el verde del logo de Agendorio.
-const brandColors = [
-  { name: 'Verde Agendorio', value: '#00b28b' },
-  { name: 'Azul', value: '#3b82f6' },
-  { name: 'Violeta', value: '#8b5cf6' },
-  { name: 'Coral', value: '#f2675a' },
-  { name: 'Ámbar', value: '#f0a020' },
-];
+// Posición inicial de cada tarjeta: 0 al centro, ±1 a los lados, el resto escondidas.
+const relOf = (i: number) => (i > slides.length / 2 ? i - slides.length : i);
 ---
 
-<section class="section projects" id="proyectos">
+<section class="section projects" id="proyectos" data-carousel>
   <Stripes class="projects__stripes" muted />
   <div class="container">
     <header class="projects__head reveal">
@@ -75,196 +31,168 @@ const brandColors = [
       </p>
     </header>
 
-    <article class="showcase reveal">
-      <div class="showcase__copy">
-        <span class="showcase__tag"><Icon name="calendar" size={16} /> Plataforma SaaS</span>
-        <h3 class="showcase__brand">
-          <img src="/agendorio-white.svg" alt="Agendorio" width="491" height="136" />
-        </h3>
-        <p class="showcase__lead">
-          Plataforma de agendamiento en línea para profesionales y negocios de servicios: barberías, salones de belleza,
-          consultorios, gimnasios y estudios. Tus clientes reservan solos y tú te enfocas en atenderlos.
-        </p>
-        <ul class="showcase__list">
-          {
-            features.map((f) => (
-              <li>
-                <Icon name="check" size={18} /> {f}
-              </li>
-            ))
-          }
-        </ul>
-        <a href="https://agendorio.buildev.co" target="_blank" rel="noopener" class="btn btn--primary">
-          Visitar agendorio.buildev.co <Icon name="external" size={17} />
-        </a>
-      </div>
-
-      <div class="showcase__visual" data-brand-scope>
-        <div class="mock-tabs" role="group" aria-label="Cómo reservan tus clientes" data-mock-tabs>
-          <button type="button" data-view="whatsapp" aria-pressed="true">
-            <Icon name="whatsapp" size={15} /> Agenda + WhatsApp
+    <div class="picker reveal" role="group" aria-label="Elige un proyecto" data-picker>
+      {
+        projects.map((p, i) => (
+          <button
+            type="button"
+            class="picker__item"
+            style={`--pick-color: ${p.color}`}
+            aria-controls={`proyecto-${p.id}`}
+            aria-pressed={i === 0 ? 'true' : 'false'}
+          >
+            <span class="picker__icon">
+              <Icon name={p.icon} size={18} />
+            </span>
+            <span class="picker__text">
+              <strong>{p.name}</strong>
+              <small>{p.type}</small>
+            </span>
           </button>
-          <button type="button" data-view="link" aria-pressed="false">
-            <Icon name="link" size={15} /> Enlace de reservas
-          </button>
-        </div>
+        ))
+      }
+    </div>
+  </div>
 
-        <div class="mock-stack">
-          <div class="mock agenda is-active" data-view="whatsapp" aria-hidden="true">
-            <div class="agenda__top">
-              <div>
-                <strong>Agenda · Hoy</strong>
-                <small>Miércoles 14 · 3 citas</small>
-              </div>
-              <span class="agenda__live">En vivo</span>
+  <div class="carousel reveal" role="region" aria-roledescription="carrusel" aria-label="Proyectos">
+    <div class="carousel__stage" data-stage>
+      {
+        slides.map(({ id, name, Card }, i) => {
+          const project = i % projects.length;
+          const rel = relOf(i);
+          return (
+            <div
+              class:list={['carousel__slide', { 'is-active': rel === 0, 'is-side': Math.abs(rel) === 1 }]}
+              id={i === project ? `proyecto-${id}` : undefined}
+              style={`--rel: ${rel}`}
+              data-project={project}
+              role="group"
+              aria-roledescription="proyecto"
+              aria-label={`${project + 1} de ${projects.length}: ${name}`}
+              inert={rel !== 0}
+            >
+              <Card />
             </div>
-
-            <ol class="agenda__slots">
-              {
-                appointments.map((a) => (
-                  <li>
-                    <span class="agenda__hour">{a.hour}</span>
-                    <div class:list={['agenda__event', { 'is-new': a.whatsapp }]}>
-                      <strong>
-                        {a.whatsapp && <Icon name="whatsapp" size={13} class="agenda__wa" />}
-                        {a.name}
-                      </strong>
-                      <small>
-                        {a.range} · {a.service}
-                      </small>
-                      <em>{a.status}</em>
-                      <span class="agenda__pay">
-                        <Icon name="dollar" size={15} />
-                      </span>
-                    </div>
-                  </li>
-                ))
-              }
-            </ol>
-
-            <div class="agenda__chat">
-              <p class="agenda__chat-head">
-                <Icon name="whatsapp" size={14} /> Asistente de WhatsApp
-                <span><Icon name="sparkles" size={11} /> Con IA</span>
-              </p>
-              <p class="msg msg--in">
-                Hola, ¿me agendas un masaje relajante con Laura para hoy a las 3 y media de la tarde? A nombre de Diego Silva.
-              </p>
-              <p class="msg msg--out">
-                ¡Hecho, Diego! Masaje relajante con Laura, hoy a las 3:30&nbsp;p.&nbsp;m. Te envío un recordatorio una hora antes.
-              </p>
-            </div>
-          </div>
-
-          <div class="mock booking" data-view="link" aria-hidden="true">
-            <div class="booking__bar">
-              <span class="booking__dots"><i></i><i></i><i></i></span>
-              <span class="booking__url"><Icon name="lock" size={11} /> {booking.url}</span>
-            </div>
-            <div class="booking__cover"></div>
-            <div class="booking__biz">
-              <span class="booking__logo">{booking.initials}</span>
-              <div>
-                <small><Icon name="leaf" size={12} /> {booking.category}</small>
-                <strong>{booking.name}</strong>
-              </div>
-              <span class="booking__wa"><Icon name="whatsapp" size={15} /></span>
-            </div>
-
-            <ol class="booking__steps">
-              {
-                booking.steps.map((s, i) => (
-                  <li class:list={{ done: i < booking.step, current: i === booking.step }}>
-                    <b>{i < booking.step ? <Icon name="check" size={11} /> : i + 1}</b>
-                    <span>{s}</span>
-                  </li>
-                ))
-              }
-            </ol>
-
-            <div class="booking__body">
-              <div class="booking__pick">
-                <div>
-                  <strong>{booking.service}</strong>
-                  <small>
-                    <Icon name="clock" size={12} /> {booking.duration} · con {booking.pro}
-                  </small>
-                </div>
-                <b>{booking.price}</b>
-              </div>
-              <p class="booking__title">Elige un horario</p>
-              <div class="booking__days">
-                {
-                  booking.days.map((d, i) => (
-                    <span class:list={{ active: i === 0 }}>
-                      {d.label}
-                      <b>{d.num}</b>
-                    </span>
-                  ))
-                }
-              </div>
-              <div class="booking__times">
-                {booking.times.map((t) => <span class:list={{ taken: t.taken, active: t.selected }}>{t.label}</span>)}
-              </div>
-              <span class="booking__cta">
-                Continuar con tus datos <Icon name="arrow" size={15} />
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <div class="brand-picker" role="group" aria-label="Prueba otros colores de marca" data-brand-picker>
-          <span>Tus colores</span>
-          {
-            brandColors.map((c, i) => (
-              <button
-                type="button"
-                style={`--swatch: ${c.value}`}
-                data-color={c.value}
-                aria-label={c.name}
-                aria-pressed={i === 0 ? 'true' : 'false'}
-              />
-            ))
-          }
-        </div>
-      </div>
-    </article>
+          );
+        })
+      }
+    </div>
+    <button type="button" class="carousel__arrow carousel__arrow--prev" aria-label="Proyecto anterior" data-prev>
+      <Icon name="arrow" size={20} />
+    </button>
+    <button type="button" class="carousel__arrow carousel__arrow--next" aria-label="Proyecto siguiente" data-next>
+      <Icon name="arrow" size={20} />
+    </button>
   </div>
 </section>
 
 <script>
-  const scope = document.querySelector<HTMLElement>('[data-brand-scope]');
+  const root = document.querySelector<HTMLElement>('[data-carousel]');
+  const stage = root?.querySelector<HTMLElement>('[data-stage]');
+  const slides = [...(stage?.children ?? [])] as HTMLElement[];
+  const picks = [...(root?.querySelectorAll<HTMLButtonElement>('[data-picker] button') ?? [])];
+  let current = 0;
 
-  // Alterna entre la agenda (con el chat de WhatsApp) y la página pública de reservas.
-  const tabs = scope?.querySelectorAll<HTMLButtonElement>('[data-mock-tabs] button') ?? [];
-  const views = scope?.querySelectorAll<HTMLElement>('.mock-stack > [data-view]') ?? [];
+  // Posición de cada tarjeta respecto a la activa: 0 al centro, ±1 a los lados, el resto escondidas.
+  const relOf = (i: number) => {
+    const n = slides.length;
+    const rel = (((i - current) % n) + n) % n;
+    return rel > n / 2 ? rel - n : rel;
+  };
 
-  tabs.forEach((tab) => {
-    tab.addEventListener('click', () => {
-      tabs.forEach((t) => t.setAttribute('aria-pressed', String(t === tab)));
-      views.forEach((v) => v.classList.toggle('is-active', v.dataset.view === tab.dataset.view));
+  const place = (slide: HTMLElement, rel: number) => {
+    slide.style.setProperty('--rel', String(rel));
+    slide.classList.toggle('is-active', rel === 0);
+    slide.classList.toggle('is-side', Math.abs(rel) === 1);
+    if (rel !== 0) slide.classList.remove('is-entering');
+    slide.inert = rel !== 0;
+  };
+
+  const goTo = (index: number) => {
+    const target = ((index % slides.length) + slides.length) % slides.length;
+    if (target === current) return;
+    // Lado por el que llega la tarjeta: el contenido entra desde ahí.
+    stage?.style.setProperty('--dir', String(Math.sign(relOf(target))));
+    current = target;
+    slides.forEach((slide, i) => {
+      const rel = relOf(i);
+      const before = Number(slide.style.getPropertyValue('--rel'));
+      // Al dar la vuelta, la tarjeta pasa escondida al otro lado en vez de cruzar por delante.
+      if (Math.abs(rel - before) > 1 && Math.abs(rel) < 2) {
+        slide.classList.add('is-jumping');
+        place(slide, Math.sign(rel) * 2);
+        void slide.offsetWidth;
+        slide.classList.remove('is-jumping');
+      }
+      place(slide, rel);
+    });
+    // Reinicia la entrada escalonada del contenido en la tarjeta que llega.
+    const incoming = slides[current];
+    incoming.classList.remove('is-entering');
+    void incoming.offsetWidth;
+    incoming.classList.add('is-entering');
+    const project = Number(incoming.dataset.project);
+    picks.forEach((pick, i) => pick.setAttribute('aria-pressed', String(i === project)));
+  };
+
+  // El selector lleva a la copia más cercana del proyecto elegido.
+  picks.forEach((pick, project) => {
+    pick.addEventListener('click', () => {
+      const nearest = slides
+        .map((slide, i) => ({ i, project: Number(slide.dataset.project), distance: Math.abs(relOf(i)) }))
+        .filter((s) => s.project === project)
+        .sort((a, b) => a.distance - b.distance)[0];
+      goTo(nearest.i);
     });
   });
 
-  // Cambia el color de acento del mockup, como lo hace cada negocio desde su panel.
-  const swatches = scope?.querySelectorAll<HTMLButtonElement>('[data-brand-picker] button') ?? [];
+  root?.querySelector('[data-prev]')?.addEventListener('click', () => goTo(current - 1));
+  root?.querySelector('[data-next]')?.addEventListener('click', () => goTo(current + 1));
 
-  swatches.forEach((btn) => {
-    btn.addEventListener('click', () => {
-      scope!.style.setProperty('--ag-accent', btn.dataset.color!);
-      swatches.forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
-    });
+  // Con el foco en el selector o en las flechas, las teclas ← y → también cambian de proyecto.
+  root?.addEventListener('keydown', (e) => {
+    if (!(e.target as HTMLElement).closest('[data-picker], .carousel__arrow')) return;
+    if (e.key === 'ArrowLeft') goTo(current - 1);
+    if (e.key === 'ArrowRight') goTo(current + 1);
   });
+
+  // Las tarjetas de los lados no reciben clics: el clic cae en el escenario y lleva hacia ese lado.
+  stage?.addEventListener('click', (e) => {
+    if ((e.target as HTMLElement).closest('.carousel__slide.is-active')) return;
+    const { left, right } = slides[current].getBoundingClientRect();
+    if (e.clientX < left) goTo(current - 1);
+    else if (e.clientX > right) goTo(current + 1);
+  });
+
+  // Deslizar con el dedo: las tarjetas siguen al dedo y, pasado el umbral, cambia de proyecto.
+  let pointer: number | null = null;
+  let startX = 0;
+  let dx = 0;
+
+  stage?.addEventListener('pointerdown', (e) => {
+    if (e.pointerType === 'mouse') return;
+    pointer = e.pointerId;
+    startX = e.clientX;
+    dx = 0;
+  });
+  stage?.addEventListener('pointermove', (e) => {
+    if (e.pointerId !== pointer) return;
+    dx = e.clientX - startX;
+    if (Math.abs(dx) > 8) stage.classList.add('is-dragging');
+    if (stage.classList.contains('is-dragging')) stage.style.setProperty('--drag', `${dx}px`);
+  });
+  const release = (e: PointerEvent) => {
+    if (e.pointerId !== pointer) return;
+    pointer = null;
+    stage?.classList.remove('is-dragging');
+    stage?.style.setProperty('--drag', '0px');
+    if (Math.abs(dx) > 60) goTo(current + (dx < 0 ? 1 : -1));
+  };
+  stage?.addEventListener('pointerup', release);
+  stage?.addEventListener('pointercancel', release);
 </script>
 
 <style>
-  /* Registrado como color para que el cambio de marca se anime suave. */
-  @property --ag-accent {
-    syntax: '<color>';
-    inherits: true;
-    initial-value: #00b28b;
-  }
-
   .projects {
     position: relative;
     overflow: hidden;
@@ -285,695 +213,286 @@ const brandColors = [
     max-width: 640px;
   }
 
-  .showcase {
-    margin-top: 56px;
-    display: grid;
-    grid-template-columns: 1.1fr 1fr;
-    gap: 48px;
-    align-items: center;
-    padding: clamp(28px, 5vw, 56px);
-    border-radius: 24px;
-    background: linear-gradient(150deg, var(--c-ink-900), var(--c-ink));
-    color: #fff;
-    box-shadow: var(--shadow-lg);
-  }
-  .showcase__tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 6px 14px;
-    border-radius: 999px;
-    background: rgb(0 178 139 / 0.16);
-    color: #4fd8b4;
-    font-size: 0.8rem;
-    font-weight: 600;
-  }
-  .showcase__brand {
-    margin-top: 18px;
-    line-height: 0;
-  }
-  .showcase__brand img {
-    height: clamp(48px, 7vw, 64px);
-    width: auto;
-    max-width: 100%;
-  }
-  .showcase__lead {
-    margin-top: 14px;
-    color: rgb(255 255 255 / 0.75);
-  }
-  .showcase__list {
-    list-style: none;
-    margin: 24px 0 32px;
-    padding: 0;
-    display: grid;
-    gap: 10px;
-    font-size: 0.95rem;
-    color: rgb(255 255 255 / 0.88);
-  }
-  .showcase__list li {
+  /* Selector de proyectos */
+  .picker {
+    position: relative;
     display: flex;
     gap: 10px;
-    align-items: flex-start;
+    margin: 40px -4px 0;
+    /* Espacio para el anillo de foco sin que el desplazamiento lo recorte. */
+    padding: 4px;
+    overflow-x: auto;
+    scrollbar-width: none;
   }
-  .showcase__list :global(svg) {
+  .picker::-webkit-scrollbar {
+    display: none;
+  }
+  .picker__item {
+    display: inline-flex;
     flex-shrink: 0;
-    margin-top: 3px;
-    color: #2ccfa3;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 18px 8px 8px;
+    border-radius: 16px;
+    border: 1px solid var(--c-border);
+    background: #fff;
+    color: var(--c-ink);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition:
+      background-color 0.25s ease,
+      border-color 0.25s ease,
+      color 0.25s ease;
+  }
+  .picker__item:hover {
+    border-color: #c3ced6;
+  }
+  .picker__icon {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 11px;
+    background: var(--c-bg-soft);
+    color: var(--c-blue);
+    transition:
+      background-color 0.25s ease,
+      color 0.25s ease;
+  }
+  .picker__text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.25;
+  }
+  .picker__item strong {
+    font-size: 0.92rem;
+  }
+  .picker__item small {
+    font-size: 0.74rem;
+    color: var(--c-muted);
+    transition: color 0.25s ease;
+  }
+  .picker__item[aria-pressed='true'] {
+    border-color: var(--pick-color);
+    background: var(--pick-color);
+    color: #fff;
+  }
+  .picker__item[aria-pressed='true'] .picker__icon {
+    background: rgb(255 255 255 / 0.12);
+    color: var(--c-lime);
+  }
+  .picker__item[aria-pressed='true'] small {
+    color: rgb(255 255 255 / 0.65);
   }
 
-  /* Mockup de la agenda de Agendorio */
-  .showcase__visual {
-    --ag-accent: #00b28b;
-    --ag-ink: #0c1518;
-    --ag-text: #eef4f3;
-    --ag-muted: rgb(238 244 243 / 0.62);
-    --ag-line: rgb(255 255 255 / 0.08);
+  /* Carrusel: la tarjeta activa al centro y las vecinas asomando a los lados, más chicas y desvanecidas. */
+  .carousel {
+    --gap: 32px;
+    --peek: 28px;
+    --side-scale: 0.9;
+    --slide-w: min(1140px, 100% - 2 * (var(--gap) + var(--peek)));
     position: relative;
-    transition: --ag-accent 0.5s ease;
+    margin-top: 24px;
   }
-  .showcase__visual::before {
-    content: '';
-    position: absolute;
-    inset: 8% -8% -6%;
-    background: radial-gradient(closest-side, color-mix(in srgb, var(--ag-accent) 32%, transparent), transparent);
-    filter: blur(24px);
+  .carousel__stage {
+    display: grid;
+    touch-action: pan-y;
+    cursor: pointer;
+    mask-image: linear-gradient(
+      90deg,
+      transparent,
+      #000 calc(50% - var(--slide-w) / 2),
+      #000 calc(50% + var(--slide-w) / 2),
+      transparent
+    );
+  }
+  /* Todas ocupan la misma celda: la sección mide lo que la tarjeta más alta y no salta al cambiar. */
+  .carousel__slide {
+    --scale: 1;
+    grid-area: 1 / 1;
+    justify-self: center;
+    display: grid;
+    /* La tarjeta no puede ser más ancha que su espacio, aunque su contenido lo pida. */
+    grid-template-columns: minmax(0, 1fr);
+    width: var(--slide-w);
+    transform: translateX(calc(var(--rel) * (100% * (1 + var(--side-scale)) / 2 + var(--gap)) + var(--drag, 0px)))
+      scale(var(--scale));
+    transition:
+      transform 0.6s cubic-bezier(0.22, 0.61, 0.36, 1),
+      opacity 0.6s ease,
+      visibility 0.6s;
+  }
+  .carousel__slide.is-active {
+    cursor: auto;
+  }
+  .carousel__slide:not(.is-active) {
+    --scale: var(--side-scale);
     pointer-events: none;
   }
-  .mock-tabs {
-    position: relative;
-    display: flex;
-    gap: 4px;
-    width: fit-content;
-    margin: 0 auto 14px;
-    padding: 4px;
-    border-radius: 999px;
-    border: 1px solid rgb(255 255 255 / 0.08);
-    background: rgb(255 255 255 / 0.05);
+  .carousel__slide.is-side {
+    opacity: 0.5;
   }
-  .mock-tabs button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 7px;
-    padding: 8px 14px;
+  .carousel__slide:not(.is-active, .is-side) {
+    opacity: 0;
+    visibility: hidden;
+  }
+  .carousel__stage.is-dragging .carousel__slide,
+  .carousel__slide.is-jumping {
+    transition: none;
+  }
+
+  /* Al llegar, el contenido de la tarjeta entra escalonado desde el lado por el que viene. */
+  .carousel__slide.is-entering
+    :global(:is(.showcase__tag, .showcase__brand, .showcase__lead, .showcase__list li, .showcase__copy > .btn, .showcase__actions)) {
+    animation: project-in 0.55s cubic-bezier(0.22, 0.61, 0.36, 1) backwards;
+  }
+  .carousel__slide.is-entering :global(.showcase__visual) {
+    animation: project-visual-in 0.7s cubic-bezier(0.22, 0.61, 0.36, 1) 0.1s backwards;
+  }
+  .carousel__slide.is-entering :global(.showcase__tag) {
+    animation-delay: 0.1s;
+  }
+  .carousel__slide.is-entering :global(.showcase__brand) {
+    animation-delay: 0.15s;
+  }
+  .carousel__slide.is-entering :global(.showcase__lead) {
+    animation-delay: 0.2s;
+  }
+  .carousel__slide.is-entering :global(.showcase__list li:nth-child(1)) {
+    animation-delay: 0.25s;
+  }
+  .carousel__slide.is-entering :global(.showcase__list li:nth-child(2)) {
+    animation-delay: 0.29s;
+  }
+  .carousel__slide.is-entering :global(.showcase__list li:nth-child(3)) {
+    animation-delay: 0.33s;
+  }
+  .carousel__slide.is-entering :global(.showcase__list li:nth-child(4)) {
+    animation-delay: 0.37s;
+  }
+  .carousel__slide.is-entering :global(.showcase__list li:nth-child(5)) {
+    animation-delay: 0.41s;
+  }
+  .carousel__slide.is-entering :global(.showcase__list li:nth-child(n + 6)) {
+    animation-delay: 0.45s;
+  }
+  .carousel__slide.is-entering :global(:is(.showcase__copy > .btn, .showcase__actions)) {
+    animation-delay: 0.5s;
+  }
+  @keyframes project-in {
+    from {
+      opacity: 0;
+      transform: translateX(calc(var(--dir, 1) * 36px));
+    }
+  }
+  @keyframes project-visual-in {
+    from {
+      opacity: 0;
+      transform: translateX(calc(var(--dir, 1) * 56px)) scale(0.96);
+    }
+  }
+  @keyframes project-fade {
+    from {
+      opacity: 0;
+    }
+  }
+
+  /* Las flechas montan sobre los bordes de la tarjeta activa. */
+  .carousel__arrow {
+    position: absolute;
+    top: 50%;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    padding: 0;
     border: 0;
-    border-radius: 999px;
-    background: transparent;
-    color: rgb(255 255 255 / 0.68);
-    font: inherit;
-    font-size: 0.8rem;
-    font-weight: 600;
+    border-radius: 50%;
+    background: #fff;
+    color: var(--c-ink);
+    box-shadow: var(--shadow-lg);
     cursor: pointer;
+    transform: translate(-50%, -50%);
     transition:
       background-color 0.2s ease,
       color 0.2s ease;
   }
-  .mock-tabs button:hover {
-    color: #fff;
+  .carousel__arrow:hover {
+    background: var(--c-lime);
+    color: var(--c-ink-900);
   }
-  .mock-tabs button[aria-pressed='true'] {
-    background: color-mix(in srgb, var(--ag-accent) 24%, transparent);
-    color: #fff;
+  .carousel__arrow--prev {
+    left: calc(50% - var(--slide-w) / 2);
   }
-  .mock-tabs button:focus-visible {
-    outline: 2px solid #fff;
-    outline-offset: 2px;
+  .carousel__arrow--prev :global(svg) {
+    transform: scaleX(-1);
+  }
+  .carousel__arrow--next {
+    left: calc(50% + var(--slide-w) / 2);
   }
 
-  /* Las dos vistas ocupan la misma celda: el alto no salta al cambiar. */
-  .mock-stack {
-    display: grid;
-  }
-  .mock {
-    grid-area: 1 / 1;
-    position: relative;
-    overflow: hidden;
-    border-radius: 20px;
-    border: 1px solid rgb(255 255 255 / 0.1);
-    background: color-mix(in srgb, var(--ag-accent) 9%, var(--ag-ink));
-    color: var(--ag-text);
-    box-shadow: 0 30px 60px -24px rgb(0 0 0 / 0.6);
-    transition:
-      opacity 0.35s ease,
-      transform 0.35s ease,
-      visibility 0.35s;
-  }
-  .mock:not(.is-active) {
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(8px);
-  }
-  .agenda__top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 18px 20px;
-    border-bottom: 1px solid var(--ag-line);
-  }
-  .agenda__top div {
-    display: flex;
-    flex-direction: column;
-    line-height: 1.35;
-  }
-  .agenda__top small {
-    font-size: 0.75rem;
-    color: var(--ag-muted);
-  }
-  .agenda__live {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    flex-shrink: 0;
-    padding: 5px 11px;
-    border-radius: 999px;
-    background: color-mix(in srgb, var(--ag-accent) 18%, transparent);
-    color: color-mix(in srgb, var(--ag-accent) 65%, #fff);
-    font-size: 0.66rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-  }
-  .agenda__live::before {
-    content: '';
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: var(--ag-accent);
-    animation: agenda-live 2s ease-out infinite;
-  }
-  @keyframes agenda-live {
-    0% {
-      box-shadow: 0 0 0 0 color-mix(in srgb, var(--ag-accent) 70%, transparent);
-    }
-    70%,
-    100% {
-      box-shadow: 0 0 0 7px transparent;
+  /* Sin espacio de sobra a los lados, la tarjeta activa conserva el ancho y las vecinas solo asoman el borde. */
+  @media (max-width: 1180px) {
+    .carousel {
+      --gap: 16px;
+      --peek: 14px;
     }
   }
-
-  .agenda__slots {
-    list-style: none;
-    margin: 0;
-    padding: 0 20px 0 0;
-  }
-  .agenda__slots li {
-    display: grid;
-    grid-template-columns: 56px 1fr;
-  }
-  .agenda__slots li + li {
-    border-top: 1px dashed var(--ag-line);
-  }
-  .agenda__hour {
-    padding: 12px 10px 0 0;
-    border-right: 1px solid var(--ag-line);
-    text-align: right;
-    font-size: 0.66rem;
-    color: var(--ag-muted);
-  }
-  .agenda__event {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    margin: 8px 0 8px 10px;
-    padding: 10px 46px 10px 14px;
-    border-left: 3px solid var(--ag-accent);
-    border-radius: 10px;
-    background: color-mix(in srgb, var(--ag-accent) 17%, var(--ag-ink));
-    line-height: 1.35;
-  }
-  .agenda__event.is-new {
-    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ag-accent) 45%, transparent);
-  }
-  .agenda__event strong {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 0.86rem;
-  }
-  .agenda__event small {
-    font-size: 0.72rem;
-    color: var(--ag-muted);
-  }
-  .agenda__event em {
-    margin-top: 8px;
-    font-style: normal;
-    font-size: 0.6rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: color-mix(in srgb, var(--ag-accent) 60%, #fff);
-  }
-  .agenda :global(.agenda__wa) {
-    color: #25d366;
-  }
-  .agenda__pay {
-    position: absolute;
-    top: 9px;
-    right: 10px;
-    display: grid;
-    place-items: center;
-    width: 26px;
-    height: 26px;
-    border-radius: 50%;
-    border: 1px solid var(--ag-line);
-    background: rgb(0 0 0 / 0.25);
-    color: var(--ag-muted);
-  }
-
-  .agenda__chat {
-    display: grid;
-    gap: 8px;
-    padding: 14px 20px 28px;
-    border-top: 1px solid var(--ag-line);
-    background: rgb(0 0 0 / 0.2);
-  }
-  .agenda__chat-head {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 7px;
-    white-space: nowrap;
-    margin-bottom: 2px;
-    font-size: 0.64rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: #3ddc84;
-  }
-  .agenda__chat-head span {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: 2px 7px;
-    border-radius: 6px;
-    background: rgb(255 255 255 / 0.08);
-    color: var(--ag-text);
-  }
-  .msg {
-    max-width: 86%;
-    padding: 9px 12px;
-    border-radius: 12px;
-    font-size: 0.76rem;
-    line-height: 1.45;
-  }
-  .msg--in {
-    justify-self: start;
-    border-top-left-radius: 4px;
-    background: rgb(255 255 255 / 0.08);
-  }
-  .msg--out {
-    justify-self: end;
-    border-top-right-radius: 4px;
-    background: #005c4b;
-  }
-
-  /* Página pública de reservas */
-  .booking {
-    display: flex;
-    flex-direction: column;
-  }
-  .booking__bar {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 14px;
-    border-bottom: 1px solid var(--ag-line);
-    background: rgb(0 0 0 / 0.25);
-  }
-  .booking__dots {
-    display: flex;
-    gap: 5px;
-  }
-  .booking__dots i {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: rgb(255 255 255 / 0.18);
-  }
-  .booking__url {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    min-width: 0;
-    padding: 4px 12px;
-    border-radius: 999px;
-    background: rgb(255 255 255 / 0.06);
-    font-size: 0.7rem;
-    color: var(--ag-muted);
-    white-space: nowrap;
-  }
-  .booking__cover {
-    height: 64px;
-    background:
-      repeating-linear-gradient(135deg, rgb(255 255 255 / 0.05) 0 2px, transparent 2px 14px),
-      linear-gradient(120deg, color-mix(in srgb, var(--ag-accent) 70%, var(--ag-ink)), color-mix(in srgb, var(--ag-accent) 20%, var(--ag-ink)));
-  }
-  .booking__biz {
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    padding: 0 20px;
-  }
-  .booking__biz div {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    min-width: 0;
-    padding-top: 8px;
-    line-height: 1.3;
-  }
-  .booking__biz small {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 0.68rem;
-    color: var(--ag-muted);
-  }
-  .booking__biz strong {
-    font-size: 0.98rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .booking__logo {
-    display: grid;
-    place-items: center;
-    flex-shrink: 0;
-    width: 54px;
-    height: 54px;
-    margin-top: -24px;
-    border-radius: 14px;
-    border: 3px solid color-mix(in srgb, var(--ag-accent) 9%, var(--ag-ink));
-    background: linear-gradient(140deg, var(--ag-accent), color-mix(in srgb, var(--ag-accent) 45%, #000));
-    font-size: 1.05rem;
-    font-weight: 800;
-    letter-spacing: -0.02em;
-  }
-  .booking__wa {
-    display: grid;
-    place-items: center;
-    flex-shrink: 0;
-    width: 32px;
-    height: 32px;
-    margin-top: 10px;
-    border-radius: 50%;
-    background: rgb(37 211 102 / 0.14);
-    color: #25d366;
-  }
-
-  .booking__steps {
-    list-style: none;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin: 16px 20px 0;
-    padding: 0 0 14px;
-    border-bottom: 1px solid var(--ag-line);
-    font-size: 0.66rem;
-    color: var(--ag-muted);
-  }
-  .booking__steps li {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    white-space: nowrap;
-  }
-  .booking__steps li + li::before {
-    content: '';
-    width: 12px;
-    height: 1px;
-    margin-right: 2px;
-    background: rgb(255 255 255 / 0.2);
-  }
-  .booking__steps b {
-    display: grid;
-    place-items: center;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    border: 1px solid rgb(255 255 255 / 0.2);
-    font-size: 0.62rem;
-  }
-  .booking__steps .done b {
-    border-color: var(--ag-accent);
-    background: var(--ag-accent);
-    color: var(--ag-ink);
-  }
-  .booking__steps .current {
-    color: var(--ag-text);
-    font-weight: 700;
-  }
-  .booking__steps .current b {
-    border-color: var(--ag-accent);
-    color: color-mix(in srgb, var(--ag-accent) 60%, #fff);
-  }
-
-  .booking__body {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    padding: 14px 20px 30px;
-  }
-  .booking__pick {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 10px 14px;
-    border-radius: 12px;
-    border: 1px solid color-mix(in srgb, var(--ag-accent) 40%, transparent);
-    background: color-mix(in srgb, var(--ag-accent) 14%, var(--ag-ink));
-  }
-  .booking__pick div {
-    display: flex;
-    flex-direction: column;
-    line-height: 1.35;
-  }
-  .booking__pick strong {
-    font-size: 0.86rem;
-  }
-  .booking__pick small {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 0.7rem;
-    color: var(--ag-muted);
-  }
-  .booking__pick > b {
-    font-size: 0.82rem;
-    color: color-mix(in srgb, var(--ag-accent) 55%, #fff);
-    white-space: nowrap;
-  }
-  .booking__title {
-    margin-top: 14px;
-    font-size: 0.86rem;
-    font-weight: 700;
-  }
-  .booking__days {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 6px;
-    margin-top: 10px;
-  }
-  .booking__days span {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 6px 0;
-    border-radius: 10px;
-    border: 1px solid var(--ag-line);
-    font-size: 0.64rem;
-    line-height: 1.3;
-    color: var(--ag-muted);
-  }
-  .booking__days b {
-    font-size: 0.88rem;
-    color: var(--ag-text);
-  }
-  .booking__days .active {
-    border-color: var(--ag-accent);
-    background: var(--ag-accent);
-    color: color-mix(in srgb, var(--ag-ink) 75%, transparent);
-  }
-  .booking__days .active b {
-    color: var(--ag-ink);
-  }
-  .booking__times {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 6px;
-    margin: 10px 0 14px;
-  }
-  .booking__times span {
-    padding: 7px 4px;
-    border-radius: 8px;
-    border: 1px solid var(--ag-line);
-    background: rgb(255 255 255 / 0.03);
-    text-align: center;
-    font-size: 0.7rem;
-    font-weight: 600;
-    white-space: nowrap;
-  }
-  .booking__times .taken {
-    color: rgb(238 244 243 / 0.3);
-    text-decoration: line-through;
-    background: transparent;
-  }
-  .booking__times .active {
-    border-color: var(--ag-accent);
-    background: color-mix(in srgb, var(--ag-accent) 26%, var(--ag-ink));
-    color: #fff;
-  }
-  .booking__cta {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    margin-top: auto;
-    padding: 11px;
-    border-radius: 10px;
-    background: var(--ag-accent);
-    color: var(--ag-ink);
-    font-size: 0.82rem;
-    font-weight: 700;
-  }
-
-  .brand-picker {
-    position: absolute;
-    left: -16px;
-    bottom: -24px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 9px 14px;
-    border-radius: 14px;
-    border: 1px solid rgb(255 255 255 / 0.08);
-    background: var(--c-ink-900);
-    box-shadow: var(--shadow-lg);
-    font-size: 0.78rem;
-    font-weight: 600;
-  }
-  .brand-picker span {
-    margin-right: 4px;
-  }
-  .brand-picker button {
-    width: 20px;
-    height: 20px;
-    padding: 0;
-    border: 0;
-    border-radius: 50%;
-    background: var(--swatch);
-    box-shadow: 0 0 0 2px var(--c-ink-900);
-    cursor: pointer;
-    transition:
-      transform 0.2s ease,
-      box-shadow 0.2s ease;
-  }
-  .brand-picker button:hover {
-    transform: scale(1.12);
-  }
-  .brand-picker button[aria-pressed='true'] {
-    box-shadow:
-      0 0 0 2px var(--c-ink-900),
-      0 0 0 4px var(--swatch);
-  }
-  .brand-picker button:focus-visible {
-    outline: 2px solid #fff;
-    outline-offset: 4px;
-  }
-
-  @media (max-width: 960px) {
-    .showcase {
-      grid-template-columns: 1fr;
+  /* En celular se cambia deslizando o con el selector. */
+  @media (max-width: 640px) {
+    .picker {
+      margin-top: 32px;
+      margin-inline: -20px;
+      padding-inline: 20px;
     }
-    .showcase__visual {
-      max-width: 460px;
-      width: 100%;
-      margin-bottom: 20px;
+    .carousel {
+      --gap: 12px;
+      --peek: 16px;
+    }
+    .carousel__stage {
+      mask-image: none;
+    }
+    .carousel__arrow {
+      display: none;
     }
   }
   @media (max-width: 480px) {
-    .agenda__chat {
-      padding-bottom: 18px;
-    }
-    .brand-picker {
-      position: static;
-      width: fit-content;
-      margin-top: 14px;
-    }
-    .agenda__top,
-    .agenda__chat {
-      padding-inline: 16px;
-    }
-    .agenda__slots {
+    .picker__item {
       padding-right: 14px;
     }
-    .agenda__slots li {
-      grid-template-columns: 50px 1fr;
-    }
-    .agenda__hour {
-      padding-right: 8px;
-      font-size: 0.62rem;
-    }
-    .agenda__chat-head {
-      letter-spacing: 0.04em;
-    }
-    .agenda__event {
-      margin-left: 8px;
-      padding-right: 40px;
-    }
-    .agenda__event small {
-      font-size: 0.68rem;
-    }
-    .mock-tabs {
-      width: 100%;
-    }
-    .mock-tabs button {
-      flex: 1;
-      padding-inline: 8px;
-      font-size: 0.74rem;
-      white-space: nowrap;
-    }
-    .mock-tabs :global(svg) {
+    .picker__item small {
       display: none;
-    }
-    /* En móvil cada vista toma su propio alto para no dejar huecos. */
-    .mock:not(.is-active) {
-      display: none;
-    }
-    .booking__biz strong {
-      white-space: normal;
-    }
-    .booking__biz,
-    .booking__body {
-      padding-inline: 16px;
-    }
-    .booking__body {
-      padding-bottom: 18px;
-    }
-    .booking__steps {
-      margin-inline: 16px;
-    }
-    .booking__steps li:not(.current) span {
-      display: none;
-    }
-    .booking__times span {
-      font-size: 0.66rem;
-    }
-    .showcase .btn {
-      width: 100%;
-      font-size: 0.88rem;
-      padding-inline: 16px;
     }
   }
+  @media (max-width: 360px) {
+    /* Sin ícono para que los botones del selector quepan enteros. */
+    .picker__item {
+      padding: 10px 16px;
+    }
+    .picker__icon {
+      display: none;
+    }
+    .carousel {
+      --gap: 8px;
+      --peek: 8px;
+    }
+  }
+  /* Con «reducir movimiento» nada se desplaza: las tarjetas cambian con un fundido suave. */
   @media (prefers-reduced-motion: reduce) {
-    .showcase__visual,
-    .mock {
+    .picker__item,
+    .picker__icon,
+    .picker__item small,
+    .carousel__arrow {
       transition: none;
     }
-    .agenda__live::before {
-      animation: none;
+    .carousel__slide {
+      transition: opacity 0.4s ease;
+    }
+    .carousel__slide.is-entering
+      :global(:is(.showcase__tag, .showcase__brand, .showcase__lead, .showcase__list li, .showcase__copy > .btn, .showcase__actions, .showcase__visual)) {
+      animation-name: project-fade;
     }
   }
 </style>

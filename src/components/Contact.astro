@@ -4,6 +4,8 @@ import Stripes from './Stripes.astro';
 import { site } from '../data/site';
 
 const waText = encodeURIComponent('Hola BUILDEV, quiero información sobre un proyecto de software.');
+// En pantallas angostas el correo parte después de la arroba, no en cualquier letra.
+const [emailUser, emailDomain] = site.email.split('@');
 ---
 
 <section class="section contact" id="contacto">
@@ -20,7 +22,7 @@ const waText = encodeURIComponent('Hola BUILDEV, quiero información sobre un pr
         <li>
           <a href={`mailto:${site.email}`}>
             <span class="ch-icon"><Icon name="mail" size={20} /></span>
-            <span><small>Correo</small>{site.email}</span>
+            <span><small>Correo</small>{emailUser}@<wbr />{emailDomain}</span>
           </a>
         </li>
         <li>
@@ -231,6 +233,18 @@ const waText = encodeURIComponent('Hola BUILDEV, quiero información sobre un pr
     }
     .form__submit {
       justify-self: stretch;
+    }
+  }
+  @media (max-width: 380px) {
+    .contact__channels a,
+    .ch-row {
+      gap: 12px;
+      padding: 12px 14px;
+      font-size: 0.94rem;
+    }
+    .ch-icon {
+      width: 40px;
+      height: 40px;
     }
   }
 </style>
