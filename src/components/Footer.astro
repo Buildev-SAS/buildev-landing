@@ -32,7 +32,7 @@ const year = new Date().getFullYear();
   </div>
 
   <div class="container footer__bottom">
-    <span>© {year} BUILDEV. Todos los derechos reservados.</span>
+    <span>© {year} BUILDEV. Todos los derechos reservados. · <a href="/privacidad/">Privacidad</a></span>
     <span>Software Solutions &amp; Innovation</span>
   </div>
 </footer>
@@ -86,6 +86,14 @@ const year = new Date().getFullYear();
     gap: 8px;
     font-size: 0.84rem;
     color: var(--c-muted);
+  }
+  .footer__bottom a {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    white-space: nowrap;
+  }
+  .footer__bottom a:hover {
+    color: var(--c-ink);
   }
 
   @media (max-width: 760px) {
