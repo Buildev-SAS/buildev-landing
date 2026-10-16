@@ -1,6 +1,6 @@
 ---
 import Logo from './Logo.astro';
-import { nav, site } from '../data/site';
+import { nav, navHref, resources, site } from '../data/site';
 
 const year = new Date().getFullYear();
 ---
@@ -15,7 +15,8 @@ const year = new Date().getFullYear();
     <nav aria-label="Pie de página">
       <h4>Navegación</h4>
       <ul>
-        {nav.map((item) => <li><a href={item.href}>{item.label}</a></li>)}
+        {nav.map((item) => <li><a href={navHref(item.href, Astro.url.pathname)}>{item.label}</a></li>)}
+        {resources.map((item) => <li><a href={item.href}>{item.label}</a></li>)}
       </ul>
     </nav>
 

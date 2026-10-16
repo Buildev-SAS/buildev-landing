@@ -16,3 +16,12 @@ export const nav = [
   { href: '#proyectos', label: 'Proyectos' },
   { href: '#contacto', label: 'Contacto' },
 ];
+
+// Fuera de la página principal, las anclas del menú deben llevar a ella (ej: /#servicios).
+export const navHref = (href: string, pathname: string) => (pathname === '/' ? href : `/${href}`);
+
+// Contenido informativo (guías y preguntas frecuentes). Solo se enlaza desde el footer para no tocar la landing.
+export const resources = [
+  { href: '/guias/', label: 'Guías' },
+  { href: '/preguntas-frecuentes/', label: 'Preguntas frecuentes' },
+];

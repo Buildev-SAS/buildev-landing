@@ -1,0 +1,170 @@
+---
+// Plantilla de las páginas informativas (guías y preguntas frecuentes): misma marca que la landing,
+// pero con una cabecera corta y un cuerpo pensado para leer.
+import Layout from './Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Stripes from '../components/Stripes.astro';
+import Icon from '../components/Icon.astro';
+import { site } from '../data/site';
+
+interface Crumb {
+  label: string;
+  href: string;
+}
+
+interface Props {
+  title: string;
+  description: string;
+  heading: string;
+  lead?: string;
+  eyebrow?: string;
+  /** Migas de pan sin contar "Inicio" ni la página actual. */
+  crumbs?: Crumb[];
+  ogType?: 'website' | 'article';
+  schema?: Record<string, unknown>[];
+}
+
+const { title, description, heading, lead, eyebrow, crumbs = [], ogType, schema = [] } = Astro.props;
+
+const trail = [{ label: 'Inicio', href: '/' }, ...crumbs, { label: heading, href: Astro.url.pathname }];
+const breadcrumbs = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: trail.map((c, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    name: c.label,
+    item: new URL(c.href, Astro.site).href,
+  })),
+};
+
+const waText = encodeURIComponent('Hola BUILDEV, leí su sitio web y quiero hablar sobre un proyecto.');
+---
+
+<Layout title={title} description={description} ogType={ogType} schema={[breadcrumbs, ...schema]}>
+  <Header />
+  <main>
+    <section class="page-hero">
+      <Stripes class="page-hero__stripes" />
+      <div class="container page-hero__inner">
+        <nav class="crumbs" aria-label="Ruta de navegación">
+          <ol>
+            {
+              trail.slice(0, -1).map((c) => (
+                <li>
+                  <a href={c.href}>{c.label}</a>
+                </li>
+              ))
+            }
+          </ol>
+        </nav>
+        {eyebrow && <span class="eyebrow">{eyebrow}</span>}
+        <h1>{heading}</h1>
+        {lead && <p class="page-hero__lead">{lead}</p>}
+        <slot name="meta" />
+      </div>
+    </section>
+
+    <div class="container page-body">
+      <slot />
+
+      <aside class="page-cta">
+        <div>
+          <h2>¿Tienes un proyecto en mente?</h2>
+          <p>Cuéntanos qué necesitas. Te respondemos con una propuesta clara, sin compromiso.</p>
+        </div>
+        <div class="page-cta__actions">
+          <a href="/#contacto" class="btn btn--primary">Hablemos <Icon name="arrow" size={18} /></a>
+          <a href={`https://wa.me/${site.whatsapp}?text=${waText}`} target="_blank" rel="noopener" class="btn btn--ghost">
+            <Icon name="whatsapp" size={18} /> WhatsApp
+          </a>
+        </div>
+      </aside>
+    </div>
+  </main>
+  <Footer />
+</Layout>
+
+<style>
+  .page-hero {
+    position: relative;
+    overflow: hidden;
+    padding: calc(var(--header-h) + 48px) 0 56px;
+    background: linear-gradient(160deg, var(--c-ink-900), var(--c-ink));
+    color: #fff;
+  }
+  .page-hero :global(.page-hero__stripes) {
+    position: absolute;
+    right: -140px;
+    bottom: -80px;
+    width: 560px;
+    height: auto;
+    opacity: 0.14;
+    pointer-events: none;
+  }
+  .page-hero__inner {
+    position: relative;
+    max-width: 860px;
+  }
+  .page-hero .eyebrow {
+    color: var(--c-cyan);
+  }
+  h1 {
+    margin-top: 14px;
+    font-size: clamp(1.9rem, 4.6vw, 3rem);
+  }
+  .page-hero__lead {
+    margin-top: 18px;
+    font-size: 1.1rem;
+    color: rgb(255 255 255 / 0.78);
+    max-width: 62ch;
+  }
+  .crumbs ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 0 0 18px;
+    padding: 0;
+    list-style: none;
+    font-size: 0.85rem;
+    color: rgb(255 255 255 / 0.6);
+  }
+  .crumbs li:not(:last-child)::after {
+    content: '/';
+    margin-left: 6px;
+  }
+  .crumbs a:hover {
+    color: #fff;
+  }
+
+  .page-body {
+    max-width: 860px;
+    padding-block: 56px 88px;
+  }
+
+  .page-cta {
+    margin-top: 64px;
+    padding: 32px;
+    border-radius: var(--radius);
+    background: linear-gradient(160deg, var(--c-ink-900), var(--c-ink));
+    color: #fff;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+  }
+  .page-cta h2 {
+    font-size: 1.4rem;
+  }
+  .page-cta p {
+    margin-top: 8px;
+    color: rgb(255 255 255 / 0.75);
+  }
+  .page-cta__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+</style>

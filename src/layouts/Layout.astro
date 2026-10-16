@@ -6,25 +6,43 @@ interface Props {
   title?: string;
   description?: string;
   noindex?: boolean;
+  /** 'article' en las guías; 'website' en el resto. */
+  ogType?: 'website' | 'article';
+  /** Datos estructurados propios de la página (Article, FAQPage, BreadcrumbList...). */
+  schema?: Record<string, unknown>[];
 }
 
 const {
   title = `${site.name} | Desarrollo de software a la medida`,
   description = 'BUILDEV es una empresa de desarrollo de software en Colombia. Diseñamos soluciones tecnológicas escalables que optimizan procesos y potencian el crecimiento de tu empresa.',
 } = Astro.props;
-const { noindex = false } = Astro.props;
+const { noindex = false, ogType = 'website', schema = [] } = Astro.props;
 
 const canonical = new URL(Astro.url.pathname, Astro.site);
 
-const jsonLd = {
+// La organización va en todas las páginas; las guías la referencian por su @id como autor y editor.
+const organization = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
+  '@id': `${site.url}/#organization`,
   name: site.name,
   url: site.url,
+  logo: `${site.url}/logo-buildev-completo.svg`,
   email: site.email,
   slogan: site.tagline,
-  address: { '@type': 'PostalAddress', addressLocality: 'Medellín', addressCountry: 'CO' },
+  description:
+    'Empresa de desarrollo de software a la medida en Colombia: aplicaciones web, apps móviles, automatización de procesos, integraciones y cloud.',
+  address: { '@type': 'PostalAddress', addressLocality: 'Cali', addressRegion: 'Valle del Cauca', addressCountry: 'CO' },
+  areaServed: 'CO',
+  contactPoint: {
+    '@type': 'ContactPoint',
+    contactType: 'sales',
+    email: site.email,
+    telephone: `+${site.whatsapp}`,
+    availableLanguage: 'es',
+  },
 };
+const jsonLd = [organization, ...schema];
 ---
 
 <!doctype html>
@@ -39,7 +57,7 @@ const jsonLd = {
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="theme-color" content="#2E3A44" />
 
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={ogType} />
     <meta property="og:locale" content="es_CO" />
     <meta property="og:site_name" content={site.name} />
     <meta property="og:title" content={title} />

@@ -1,12 +1,14 @@
 ---
 import Logo from './Logo.astro';
 import Icon from './Icon.astro';
-import { nav } from '../data/site';
+import { nav, navHref } from '../data/site';
+
+const href = (anchor: string) => navHref(anchor, Astro.url.pathname);
 ---
 
 <header class="header" data-header>
   <div class="container header__inner">
-    <a href="#inicio" class="header__brand" aria-label="BUILDEV, ir al inicio">
+    <a href={href('#inicio')} class="header__brand" aria-label="BUILDEV, ir al inicio">
       <Logo variant="dark" showTagline={false} />
     </a>
 
@@ -15,14 +17,14 @@ import { nav } from '../data/site';
         {
           nav.map((item) => (
             <li>
-              <a href={item.href} data-nav-link>
+              <a href={href(item.href)} data-nav-link>
                 {item.label}
               </a>
             </li>
           ))
         }
       </ul>
-      <a href="#contacto" class="btn btn--primary header__cta" data-nav-link>Hablemos</a>
+      <a href={href('#contacto')} class="btn btn--primary header__cta" data-nav-link>Hablemos</a>
     </nav>
 
     <button class="header__toggle" type="button" aria-controls="main-nav" aria-expanded="false" data-menu-toggle>

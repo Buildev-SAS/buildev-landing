@@ -1,0 +1,64 @@
+---
+// Lista de preguntas y respuestas desplegables. El texto queda en el HTML aunque esté cerrado,
+// así que Google y las IA lo leen completo.
+interface Props {
+  items: { q: string; a: string }[];
+  open?: boolean;
+}
+
+const { items, open = false } = Astro.props;
+---
+
+<div class="faq">
+  {
+    items.map((item, i) => (
+      <details open={open && i === 0}>
+        <summary>{item.q}</summary>
+        <p>{item.a}</p>
+      </details>
+    ))
+  }
+</div>
+
+<style>
+  .faq {
+    display: grid;
+    gap: 12px;
+  }
+  details {
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius-sm);
+    background: #fff;
+    transition: box-shadow 0.2s ease;
+  }
+  details[open] {
+    box-shadow: var(--shadow);
+  }
+  summary {
+    position: relative;
+    padding: 18px 52px 18px 20px;
+    font-weight: 700;
+    cursor: pointer;
+    list-style: none;
+  }
+  summary::-webkit-details-marker {
+    display: none;
+  }
+  summary::after {
+    content: '+';
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--c-blue);
+  }
+  details[open] summary::after {
+    content: '−';
+  }
+  p {
+    padding: 0 20px 20px;
+    color: var(--c-muted);
+  }
+</style>

@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://buildev.co/sitemap.xml
+Sitemap: https://buildev.co/sitemap-index.xml

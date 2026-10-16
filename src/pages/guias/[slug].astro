@@ -1,0 +1,125 @@
+---
+import { render } from 'astro:content';
+import ContentLayout from '../../layouts/ContentLayout.astro';
+import FaqList from '../../components/FaqList.astro';
+import { getGuias, formatDate } from '../../data/guias';
+import { site } from '../../data/site';
+import '../../styles/prose.css';
+
+export async function getStaticPaths() {
+  const guias = await getGuias();
+  return guias.map((guia) => ({ params: { slug: guia.id }, props: { guia, guias } }));
+}
+
+const { guia, guias } = Astro.props;
+const { title, description, pubDate, updatedDate, faqs } = guia.data;
+const { Content } = await render(guia);
+
+const url = new URL(Astro.url.pathname, Astro.site).href;
+const org = { '@id': `${site.url}/#organization` };
+
+const article = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: title,
+  description,
+  datePublished: pubDate.toISOString(),
+  dateModified: (updatedDate ?? pubDate).toISOString(),
+  inLanguage: 'es-CO',
+  mainEntityOfPage: url,
+  author: org,
+  publisher: org,
+};
+const faqSchema = faqs.length && {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+};
+
+const others = guias.filter((g) => g.id !== guia.id).slice(0, 3);
+---
+
+<ContentLayout
+  title={`${title} | BUILDEV`}
+  description={description}
+  eyebrow="Guía"
+  heading={title}
+  lead={description}
+  crumbs={[{ label: 'Guías', href: '/guias/' }]}
+  ogType="article"
+  schema={faqSchema ? [article, faqSchema] : [article]}
+>
+  <p class="meta" slot="meta">
+    Por el equipo de BUILDEV · <time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time>
+    {
+      updatedDate && (
+        <>
+          {' '}
+          · Actualizada el <time datetime={updatedDate.toISOString()}>{formatDate(updatedDate)}</time>
+        </>
+      )
+    }
+  </p>
+
+  <article class="prose">
+    <Content />
+  </article>
+
+  {
+    faqs.length > 0 && (
+      <section class="block">
+        <h2>Preguntas frecuentes</h2>
+        <FaqList items={faqs} />
+      </section>
+    )
+  }
+
+  {
+    others.length > 0 && (
+      <nav class="block" aria-label="Otras guías">
+        <h2>Sigue leyendo</h2>
+        <ul class="others">
+          {others.map((g) => (
+            <li>
+              <a href={`/guias/${g.id}/`}>{g.data.title}</a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    )
+  }
+</ContentLayout>
+
+<style>
+  .meta {
+    margin-top: 22px;
+    font-size: 0.88rem;
+    color: rgb(255 255 255 / 0.6);
+  }
+  .block {
+    margin-top: 56px;
+  }
+  .block h2 {
+    margin-bottom: 18px;
+    font-size: 1.4rem;
+  }
+  .others {
+    display: grid;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .others a {
+    display: block;
+    padding: 16px 20px;
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius-sm);
+    font-weight: 700;
+    transition: border-color 0.2s ease;
+  }
+  .others a:hover {
+    border-color: var(--c-blue);
+    color: var(--c-blue);
+  }
+</style>
