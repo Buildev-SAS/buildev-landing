@@ -1,37 +1,51 @@
 ---
 import Logo from './Logo.astro';
 import Icon from './Icon.astro';
-import { nav, navHref } from '../data/site';
+import LangSwitcher from './LangSwitcher.astro';
+import { getLang, nav, navHref, useT } from '../i18n';
 
-const href = (anchor: string) => navHref(anchor, Astro.url.pathname);
+const lang = getLang(Astro.url);
+const t = useT(Astro.url);
+const href = (anchor: string) => navHref(anchor, Astro.url);
 ---
 
 <header class="header" data-header>
   <div class="container header__inner">
-    <a href={href('#inicio')} class="header__brand" aria-label="BUILDEV, ir al inicio">
+    <a href={href('#inicio')} class="header__brand" aria-label={t.homeAria}>
       <Logo variant="dark" showTagline={false} />
     </a>
 
-    <nav class="header__nav" id="main-nav" aria-label="Principal">
+    <nav class="header__nav" id="main-nav" aria-label={t.navAria}>
       <ul>
         {
           nav.map((item) => (
             <li>
               <a href={href(item.href)} data-nav-link>
-                {item.label}
+                {item.label[lang]}
               </a>
             </li>
           ))
         }
       </ul>
-      <a href={href('#contacto')} class="btn btn--primary header__cta" data-nav-link>Hablemos</a>
+      <a href={href('#contacto')} class="btn btn--primary header__cta" data-nav-link>{t.talk}</a>
     </nav>
 
-    <button class="header__toggle" type="button" aria-controls="main-nav" aria-expanded="false" data-menu-toggle>
-      <span class="sr-only">Abrir menú</span>
-      <Icon name="menu" class="icon-open" />
-      <Icon name="close" class="icon-close" />
-    </button>
+    <div class="header__tools">
+      <LangSwitcher />
+      <button
+        class="header__toggle"
+        type="button"
+        aria-controls="main-nav"
+        aria-expanded="false"
+        data-menu-toggle
+        data-open-label={t.openMenu}
+        data-close-label={t.closeMenu}
+      >
+        <span class="sr-only">{t.openMenu}</span>
+        <Icon name="menu" class="icon-open" />
+        <Icon name="close" class="icon-close" />
+      </button>
+    </div>
   </div>
 </header>
 
@@ -103,6 +117,11 @@ const href = (anchor: string) => navHref(anchor, Astro.url.pathname);
   .header__cta {
     min-height: 42px;
     padding: 8px 22px;
+  }
+  .header__tools {
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
   .header__toggle {
     display: none;
@@ -178,7 +197,7 @@ const href = (anchor: string) => navHref(anchor, Astro.url.pathname);
     const setOpen = (open: boolean) => {
       header.classList.toggle('is-open', open);
       toggle.setAttribute('aria-expanded', String(open));
-      toggle.querySelector('.sr-only')!.textContent = open ? 'Cerrar menú' : 'Abrir menú';
+      toggle.querySelector('.sr-only')!.textContent = (open ? toggle.dataset.closeLabel : toggle.dataset.openLabel)!;
     };
 
     toggle.addEventListener('click', () => setOpen(!header.classList.contains('is-open')));

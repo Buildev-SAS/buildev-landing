@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import { site } from '../data/site';
+import { getAlternates, getLang, type Lang } from '../i18n';
 
 interface Props {
   title?: string;
@@ -12,13 +13,37 @@ interface Props {
   schema?: Record<string, unknown>[];
 }
 
+const lang = getLang(Astro.url);
+const defaults: Record<Lang, { title: string; description: string; org: string }> = {
+  es: {
+    title: `${site.name} | Desarrollo de software a la medida`,
+    description:
+      'BUILDEV es una empresa de desarrollo de software en Colombia. Diseñamos soluciones tecnológicas escalables que optimizan procesos y potencian el crecimiento de tu empresa.',
+    org: 'Empresa de desarrollo de software a la medida en Colombia: aplicaciones web, apps móviles, automatización de procesos, integraciones y cloud.',
+  },
+  en: {
+    title: `${site.name} | Custom software development`,
+    description:
+      'BUILDEV is a software development company based in Colombia. We design scalable technology solutions that streamline processes and drive business growth.',
+    org: 'Custom software development company in Colombia: web applications, mobile apps, process automation, integrations and cloud.',
+  },
+};
+
 const {
-  title = `${site.name} | Desarrollo de software a la medida`,
-  description = 'BUILDEV es una empresa de desarrollo de software en Colombia. Diseñamos soluciones tecnológicas escalables que optimizan procesos y potencian el crecimiento de tu empresa.',
+  title = defaults[lang].title,
+  description = defaults[lang].description,
+  noindex = false,
+  ogType = 'website',
+  schema = [],
 } = Astro.props;
-const { noindex = false, ogType = 'website', schema = [] } = Astro.props;
 
 const canonical = new URL(Astro.url.pathname, Astro.site);
+
+// hreflang: cada página indica su versión en el otro idioma. x-default (visitantes que no hablan
+// ninguno de los dos) va a la versión en inglés, que es la que el selector automático les muestra.
+const alternates = noindex ? {} : await getAlternates(Astro.url.pathname);
+const hreflangs = Object.entries(alternates).map(([l, path]) => ({ lang: l, href: new URL(path, Astro.site).href }));
+const xDefault = alternates.en && new URL(alternates.en, Astro.site).href;
 
 // La organización va en todas las páginas; las guías la referencian por su @id como autor y editor.
 const organization = {
@@ -30,8 +55,7 @@ const organization = {
   logo: `${site.url}/logo-buildev-completo.svg`,
   email: site.email,
   slogan: site.tagline,
-  description:
-    'Empresa de desarrollo de software a la medida en Colombia: aplicaciones web, apps móviles, automatización de procesos, integraciones y cloud.',
+  description: defaults[lang].org,
   address: { '@type': 'PostalAddress', addressLocality: 'Cali', addressRegion: 'Valle del Cauca', addressCountry: 'CO' },
   areaServed: 'CO',
   contactPoint: {
@@ -39,14 +63,14 @@ const organization = {
     contactType: 'sales',
     email: site.email,
     telephone: `+${site.whatsapp}`,
-    availableLanguage: 'es',
+    availableLanguage: ['es', 'en'],
   },
 };
 const jsonLd = [organization, ...schema];
 ---
 
 <!doctype html>
-<html lang="es">
+<html lang={lang}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -54,12 +78,14 @@ const jsonLd = [organization, ...schema];
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
     {noindex && <meta name="robots" content="noindex" />}
+    {hreflangs.map((h) => <link rel="alternate" hreflang={h.lang} href={h.href} />)}
+    {xDefault && <link rel="alternate" hreflang="x-default" href={xDefault} />}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="theme-color" content="#2E3A44" />
     <meta name="google-adsense-account" content="ca-pub-3011566786010699" />
 
     <meta property="og:type" content={ogType} />
-    <meta property="og:locale" content="es_CO" />
+    <meta property="og:locale" content={lang === 'en' ? 'en_US' : 'es_CO'} />
     <meta property="og:site_name" content={site.name} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
@@ -67,6 +93,26 @@ const jsonLd = [organization, ...schema];
     <meta name="twitter:card" content="summary" />
 
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+
+    {
+      /*
+        Idioma automático: la primera vez, si el dispositivo está en español se muestra la versión en
+        español y si no, la versión en inglés. Si la persona eligió un idioma con el selector, se respeta.
+        No se aplica a robots (Googlebot, Bing, ChatGPT, Gemini...): así cada versión se indexa con su URL.
+      */
+      hreflangs.length > 1 && (
+        <script is:inline define:vars={{ current: lang, alternates }}>
+          try {
+            if (!/bot|crawl|spider|slurp|lighthouse|headless|preview|fetch|google|bing|gpt|claude|perplexity|facebookexternalhit/i.test(navigator.userAgent)) {
+              var saved = localStorage.getItem('lang');
+              var device = (navigator.languages && navigator.languages[0]) || navigator.language || 'es';
+              var wanted = saved || (/^es(-|$)/i.test(device) ? 'es' : 'en');
+              if (wanted !== current && alternates[wanted]) location.replace(alternates[wanted] + location.hash);
+            }
+          } catch (e) {}
+        </script>
+      )
+    }
   </head>
   <body>
     <slot />

@@ -1,0 +1,168 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import Stripes from '../../components/Stripes.astro';
+import { site } from '../../data/site';
+
+// Cambia esta fecha cada vez que se modifique el texto de la política.
+const updated = 'October 16, 2026';
+---
+
+<Layout
+  title={`Privacy policy | ${site.name}`}
+  description="How BUILDEV handles the personal data it receives through buildev.co: contact form, WhatsApp, cookies and products."
+>
+  <Header />
+  <main>
+    <section class="legal-hero">
+      <Stripes class="legal-hero__stripes" />
+      <div class="container">
+        <span class="eyebrow">Legal</span>
+        <h1>Privacy policy</h1>
+        <p class="legal-hero__date">Last updated: {updated}</p>
+      </div>
+    </section>
+
+    <article class="container legal">
+      <p>
+        This policy explains what personal data we receive through <strong>buildev.co</strong>, what we use it for
+        and how you can exercise your rights.
+      </p>
+
+      <h2>Data controller</h2>
+      <p>
+        BUILDEV S A S, a Colombian company, is responsible for processing the data. For any privacy matter, write to
+        us at <a href={`mailto:${site.email}`}>{site.email}</a>.
+      </p>
+
+      <h2>Contact form</h2>
+      <p>
+        If you write to us through the form, we receive your name, company, email, phone number, the service you are
+        interested in and your message. We use this data only to respond to your request; we do not sell it or use it
+        to send you advertising.
+      </p>
+      <p>
+        Before you submit the form, we ask you to authorize this use by checking the corresponding box. We store that
+        authorization together with your message.
+      </p>
+      <p>
+        The form runs on Netlify, our hosting provider, which stores the messages on our behalf.
+      </p>
+
+      <h2>WhatsApp</h2>
+      <p>
+        The WhatsApp button only opens a conversation in WhatsApp. Anything you share there is governed by WhatsApp's
+        (Meta's) privacy policy.
+      </p>
+
+      <h2>Cookies and analytics</h2>
+      <p>
+        This site does not use cookies, analytics tools or ads, and it does not load third-party trackers.
+      </p>
+      <p>
+        If you pick a language with the language selector, we save that choice in your browser's local storage so the
+        site opens in that language next time. It is never sent to any server, and you can delete it by clearing this
+        site's data in your browser.
+      </p>
+
+      <h2>Our products</h2>
+      <p>
+        Rentablo and Agendorio have their own privacy policies, which apply when you use those applications:
+      </p>
+      <ul>
+        <li>
+          Rentablo: <a href="https://rentablo.buildev.co/privacidad" target="_blank" rel="noopener"
+            >rentablo.buildev.co/privacidad</a
+          >
+        </li>
+        <li>
+          Agendorio: <a href="https://agendorio.buildev.co/privacidad" target="_blank" rel="noopener"
+            >agendorio.buildev.co/privacidad</a
+          >
+        </li>
+      </ul>
+      <p>
+        Rentablo is free and shows Google ads (AdMob on Android and AdSense on its web version). Those ads are governed
+        by Rentablo's policy and by Google's policy on
+        <a href="https://policies.google.com/technologies/ads" target="_blank" rel="noopener"
+          >how Google uses information in advertising</a
+        >.
+      </p>
+
+      <h2>Your rights</h2>
+      <p>
+        Under Ley 1581 de 2012 (Law 1581 of 2012, Colombia's data protection law, known as habeas data), you can
+        access, update, correct or ask us to delete your data, and revoke your authorization. To do so, write to
+        <a href={`mailto:${site.email}`}>{site.email}</a> stating your request.
+      </p>
+
+      <h2>Changes</h2>
+      <p>If we change this policy, we will publish the new version here along with its update date.</p>
+    </article>
+  </main>
+  <Footer />
+</Layout>
+
+<style>
+  /* El header es transparente arriba: esta franja oscura le da contraste, como el hero de la principal. */
+  .legal-hero {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(160deg, var(--c-ink-900) 0%, var(--c-ink) 100%);
+    color: #fff;
+    padding-top: calc(var(--header-h) + clamp(40px, 6vw, 72px));
+    padding-bottom: clamp(40px, 6vw, 64px);
+  }
+  .legal-hero :global(.legal-hero__stripes) {
+    position: absolute;
+    right: -120px;
+    bottom: -60px;
+    width: min(560px, 80vw);
+    height: auto;
+    opacity: 0.18;
+    pointer-events: none;
+  }
+  .legal-hero .container {
+    position: relative;
+  }
+  .legal-hero h1 {
+    margin-top: 14px;
+    font-size: clamp(2rem, 5vw, 3rem);
+  }
+  .legal-hero__date {
+    margin-top: 12px;
+    color: rgb(255 255 255 / 0.7);
+    font-size: 0.92rem;
+  }
+
+  .legal {
+    max-width: calc(68ch + 40px);
+    padding-block: clamp(48px, 7vw, 80px);
+    font-size: 1.02rem;
+  }
+  .legal h2 {
+    margin-top: 40px;
+    font-size: 1.3rem;
+  }
+  .legal p,
+  .legal ul {
+    margin-top: 12px;
+    color: var(--c-ink);
+  }
+  .legal ul {
+    padding-left: 1.2em;
+  }
+  .legal li + li {
+    margin-top: 6px;
+  }
+  .legal a {
+    color: var(--c-blue);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    overflow-wrap: anywhere;
+  }
+  .legal a:hover {
+    color: var(--c-ink);
+  }
+</style>

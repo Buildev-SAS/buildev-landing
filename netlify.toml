@@ -16,3 +16,9 @@
     X-Frame-Options = "DENY"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
+
+# Las rutas en inglés que no existen muestran el 404 en inglés.
+[[redirects]]
+  from = "/en/*"
+  to = "/en/404/"
+  status = 404

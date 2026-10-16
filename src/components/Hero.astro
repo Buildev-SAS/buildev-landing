@@ -1,6 +1,57 @@
 ---
 import Icon from './Icon.astro';
 import Stripes from './Stripes.astro';
+import { getLang } from '../i18n';
+
+const lang = getLang(Astro.url);
+// El bloque de código es decorativo, pero se lee: también se traduce.
+const copy = {
+  es: {
+    badge: 'Desarrollo de software · Colombia',
+    titleA: 'Soluciones de software que',
+    titleB: 'impulsan tu negocio',
+    lead: 'Desarrollo, automatización e innovación a tu medida. Convertimos tus procesos en productos digitales escalables, seguros y listos para crecer contigo.',
+    start: 'Comenzar ahora',
+    seeServices: 'Ver servicios',
+    points: ['Software a la medida', 'Entrega puntual', 'Soporte continuo'],
+    code: {
+      business: 'negocio',
+      transform: 'transformar',
+      processes: 'procesos',
+      automated: 'automatizados',
+      scale: 'escala',
+      unlimited: 'sin límites',
+      security: 'seguridad',
+      comment: '// ✓ Listo para crecer',
+      grow: 'crecer',
+    },
+    cardA: { title: '+ Eficiencia', text: 'Procesos optimizados' },
+    cardB: { title: 'Seguro', text: 'Buenas prácticas' },
+  },
+  en: {
+    badge: 'Software development · Colombia',
+    titleA: 'Software solutions that',
+    titleB: 'drive your business',
+    lead: 'Custom development, automation and innovation. We turn your processes into digital products that are scalable, secure and ready to grow with you.',
+    start: 'Get started',
+    seeServices: 'Explore services',
+    points: ['Custom software', 'On-time delivery', 'Ongoing support'],
+    code: {
+      business: 'business',
+      transform: 'transform',
+      processes: 'processes',
+      automated: 'automated',
+      scale: 'scale',
+      unlimited: 'unlimited',
+      security: 'security',
+      comment: '// ✓ Ready to grow',
+      grow: 'grow',
+    },
+    cardA: { title: '+ Efficiency', text: 'Optimized processes' },
+    cardB: { title: 'Secure', text: 'Best practices' },
+  },
+}[lang];
+const c = copy.code;
 ---
 
 <section class="hero" id="inicio">
@@ -10,25 +61,22 @@ import Stripes from './Stripes.astro';
   <div class="container hero__inner">
     <div class="hero__copy">
       <span class="hero__badge">
-        <span class="dot"></span> Desarrollo de software · Colombia
+        <span class="dot"></span> {copy.badge}
       </span>
       <h1>
-        Soluciones de software que <span class="text-grad">impulsan tu negocio</span>
+        {copy.titleA} <span class="text-grad">{copy.titleB}</span>
       </h1>
       <p class="hero__lead">
-        Desarrollo, automatización e innovación a tu medida. Convertimos tus procesos en productos digitales
-        escalables, seguros y listos para crecer contigo.
+        {copy.lead}
       </p>
       <div class="hero__actions">
         <a href="#contacto" class="btn btn--primary">
-          Comenzar ahora <Icon name="arrow" size={18} />
+          {copy.start} <Icon name="arrow" size={18} />
         </a>
-        <a href="#servicios" class="btn btn--ghost">Ver servicios</a>
+        <a href="#servicios" class="btn btn--ghost">{copy.seeServices}</a>
       </div>
       <ul class="hero__points">
-        <li><Icon name="check" size={18} /> Software a la medida</li>
-        <li><Icon name="check" size={18} /> Entrega puntual</li>
-        <li><Icon name="check" size={18} /> Soporte continuo</li>
+        {copy.points.map((p) => <li><Icon name="check" size={18} /> {p}</li>)}
       </ul>
     </div>
 
@@ -38,22 +86,22 @@ import Stripes from './Stripes.astro';
           <span></span><span></span><span></span>
           <em>buildev.co</em>
         </div>
-        <pre class="window__code"><code><span class="k">const</span> <span class="v">negocio</span> = <span class="k">await</span> <span class="f">buildev</span>.<span class="f">transformar</span>({'{'}
-  <span class="p">procesos</span>: <span class="s">'automatizados'</span>,
-  <span class="p">escala</span>: <span class="s">'sin límites'</span>,
-  <span class="p">seguridad</span>: <span class="b">true</span>,
+        <pre class="window__code"><code><span class="k">const</span> <span class="v">{c.business}</span> = <span class="k">await</span> <span class="f">buildev</span>.<span class="f">{c.transform}</span>({'{'}
+  <span class="p">{c.processes}</span>: <span class="s">'{c.automated}'</span>,
+  <span class="p">{c.scale}</span>: <span class="s">'{c.unlimited}'</span>,
+  <span class="p">{c.security}</span>: <span class="b">true</span>,
 {'}'});
 
-<span class="c">// ✓ Listo para crecer</span>
-<span class="v">negocio</span>.<span class="f">crecer</span>();</code></pre>
+<span class="c">{c.comment}</span>
+<span class="v">{c.business}</span>.<span class="f">{c.grow}</span>();</code></pre>
       </div>
       <div class="float-card float-card--a">
         <Icon name="growth" size={22} />
-        <div><strong>+ Eficiencia</strong><small>Procesos optimizados</small></div>
+        <div><strong>{copy.cardA.title}</strong><small>{copy.cardA.text}</small></div>
       </div>
       <div class="float-card float-card--b">
         <Icon name="shield" size={22} />
-        <div><strong>Seguro</strong><small>Buenas prácticas</small></div>
+        <div><strong>{copy.cardB.title}</strong><small>{copy.cardB.text}</small></div>
       </div>
     </div>
   </div>

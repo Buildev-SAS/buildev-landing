@@ -3,7 +3,7 @@ import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 
 // Páginas que no deben aparecer en el sitemap (también llevan noindex).
-const excluded = ['/gracias/', '/404/'];
+const excluded = ['/gracias/', '/404/', '/en/thank-you/', '/en/404/'];
 
 export default defineConfig({
   site: 'https://buildev.co',

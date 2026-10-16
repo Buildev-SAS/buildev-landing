@@ -1,12 +1,16 @@
 import type { APIRoute } from 'astro';
-import { getGuias } from '../data/guias';
+import { getGuias, guiaHref } from '../data/guias';
 import { faqGroups } from '../data/faq';
 import { site } from '../data/site';
+import { paths } from '../i18n';
 
 // /llms.txt: resumen del sitio en Markdown para asistentes de IA (ChatGPT, Gemini, Claude, Perplexity).
 // Formato propuesto en https://llmstxt.org
 export const GET: APIRoute = async () => {
-  const guias = await getGuias();
+  const guias = await getGuias('es');
+  const guides = await getGuias('en');
+  const list = (entries: typeof guias, lang: 'es' | 'en') =>
+    entries.map((g) => `- [${g.data.title}](${site.url}${guiaHref(lang, g.id)}): ${g.data.description}`).join('\n');
 
   const body = `# ${site.name}
 
@@ -32,14 +36,22 @@ export const GET: APIRoute = async () => {
 
 ## Guías
 
-${guias.map((g) => `- [${g.data.title}](${site.url}/guias/${g.id}/): ${g.data.description}`).join('\n')}
+${list(guias, 'es')}
 
 ## Preguntas frecuentes
 
-${faqGroups
+${faqGroups.es
   .flatMap((g) => g.items)
   .map((f) => `### ${f.q}\n\n${f.a}`)
   .join('\n\n')}
+
+## English
+
+BUILDEV is a custom software development company based in ${site.city}. The site is also available in English.
+
+- [Home](${site.url}/en/)
+- [FAQ](${site.url}${paths.faq.en})
+${list(guides, 'en')}
 `;
 
   return new Response(body, { headers: { 'Content-Type': 'text/plain; charset=utf-8' } });

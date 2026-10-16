@@ -1,5 +1,6 @@
 ---
 import Icon from '../Icon.astro';
+import { getLang } from '../../i18n';
 
 // Rentablo: app móvil que reparte cada venta entre insumos, sueldo y utilidad.
 // Cuando la app esté en Google Play, cambia `published` a true para mostrar el sello con el enlace.
@@ -8,43 +9,98 @@ const rentablo = {
   play: { url: 'https://play.google.com/store/apps/details?id=co.buildev.rentablo', published: true },
 };
 
-const rentabloFeatures = [
-  'Registro de ventas en segundos, con clientes y servicios',
-  'Reparto automático entre insumos, sueldo y utilidad',
-  'Ganancia por día, semana, mes o año',
-  'Lo más vendido y los mejores clientes',
-  'Agenda de citas sincronizada con Google Calendar',
-  'Reportes en PDF para guardar o compartir',
-];
+const lang = getLang(Astro.url);
+
+const copy = {
+  es: {
+    tag: 'App móvil · Android',
+    lead: 'App para independientes y negocios de servicios: manicuristas, estilistas, barberías, spas y tiendas. Registras cada venta y Rentablo la reparte sola entre insumos, tu sueldo y la utilidad del negocio.',
+    visit: 'Visitar rentablo.buildev.co',
+    playAlt: 'Descargar en Google Play',
+    soon: 'Muy pronto en Google Play',
+    saleOf: 'Una venta de',
+    profilesAria: 'Perfiles de reparto',
+    screensAria: 'Pantallas de la app',
+  },
+  en: {
+    tag: 'Mobile app · Android',
+    lead: 'An app for freelancers and service businesses: nail techs, stylists, barbershops, spas and shops. Log each sale and Rentablo automatically splits it between supplies, your salary and business profit.',
+    visit: 'Visit rentablo.buildev.co',
+    playAlt: 'Get it on Google Play',
+    soon: 'Coming soon to Google Play',
+    saleOf: 'A sale of',
+    profilesAria: 'Split profiles',
+    screensAria: 'App screens',
+  },
+}[lang];
+
+const rentabloFeatures = {
+  es: [
+    'Registro de ventas en segundos, con clientes y servicios',
+    'Reparto automático entre insumos, sueldo y utilidad',
+    'Ganancia por día, semana, mes o año',
+    'Lo más vendido y los mejores clientes',
+    'Agenda de citas sincronizada con Google Calendar',
+    'Reportes en PDF para guardar o compartir',
+  ],
+  en: [
+    'Log sales in seconds, with clients and services',
+    'Automatic split between supplies, salary and profit',
+    'Profit by day, week, month or year',
+    'Best-selling services and top clients',
+    'Appointment calendar synced with Google Calendar',
+    'PDF reports to save or share',
+  ],
+}[lang];
 
 // Pantallas recortadas de las capturas de la ficha de Google Play (public/rentablo).
+// Las capturas están en español; en inglés solo cambian las etiquetas y el texto alternativo.
 const screens = [
-  { view: 'inicio', label: 'Inicio', alt: 'Inicio de Rentablo: ganancia neta y reparto en insumos, sueldo y utilidad' },
-  { view: 'venta', label: 'Venta', alt: 'Registrar una venta en Rentablo y ver cómo se reparte' },
-  { view: 'estadisticas', label: 'Métricas', alt: 'Estadísticas de Rentablo: ganancia del día y a dónde fue el dinero' },
-  { view: 'agenda', label: 'Agenda', alt: 'Agenda de citas de Rentablo' },
-];
+  {
+    view: 'inicio',
+    label: { es: 'Inicio', en: 'Home' },
+    alt: {
+      es: 'Inicio de Rentablo: ganancia neta y reparto en insumos, sueldo y utilidad',
+      en: 'Rentablo home screen: net profit split into supplies, salary and profit',
+    },
+  },
+  {
+    view: 'venta',
+    label: { es: 'Venta', en: 'Sale' },
+    alt: { es: 'Registrar una venta en Rentablo y ver cómo se reparte', en: 'Logging a sale in Rentablo and seeing how it is split' },
+  },
+  {
+    view: 'estadisticas',
+    label: { es: 'Métricas', en: 'Stats' },
+    alt: {
+      es: 'Estadísticas de Rentablo: ganancia del día y a dónde fue el dinero',
+      en: "Rentablo stats: today's profit and where the money went",
+    },
+  },
+  { view: 'agenda', label: { es: 'Agenda', en: 'Calendar' }, alt: { es: 'Agenda de citas de Rentablo', en: 'Rentablo appointment calendar' } },
+].map((s) => ({ view: s.view, label: s.label[lang], alt: s.alt[lang] }));
 
 // Perfiles de reparto de la app (insumos · sueldo · utilidad) aplicados a una venta de ejemplo.
 const sale = 65000;
-const splitParts = ['Insumos', 'Sueldo', 'Utilidad'];
+const splitParts = { es: ['Insumos', 'Sueldo', 'Utilidad'], en: ['Supplies', 'Salary', 'Profit'] }[lang];
 const splitProfiles = [
-  { name: 'Equilibrado', split: [20, 50, 30] },
-  { name: 'Crecer', split: [20, 40, 40] },
-  { name: 'Vivo de esto', split: [15, 65, 20] },
-];
-const pesos = (n: number) => '$' + Math.round(n).toLocaleString('es-CO');
+  { name: { es: 'Equilibrado', en: 'Balanced' }, split: [20, 50, 30] },
+  { name: { es: 'Crecer', en: 'Grow' }, split: [20, 40, 40] },
+  { name: { es: 'Vivo de esto', en: 'Full-time' }, split: [15, 65, 20] },
+].map((p) => ({ name: p.name[lang], split: p.split }));
+// Siempre pesos colombianos; en inglés solo cambia el separador de miles ($65,000).
+const locale = lang === 'en' ? 'en-US' : 'es-CO';
+const pesos = (n: number) => '$' + Math.round(n).toLocaleString(locale);
 ---
 
 <article class="showcase showcase--rentablo">
   <div class="showcase__copy">
-    <span class="showcase__tag"><Icon name="phone" size={16} /> App móvil · Android</span>
+    <span class="showcase__tag"><Icon name="phone" size={16} /> {copy.tag}</span>
     <h3 class="showcase__brand">
       <img src="/rentablo-white.svg" alt="Rentablo" width="297" height="87" />
     </h3>
     <p class="showcase__lead">
-      App para independientes y negocios de servicios: manicuristas, estilistas, barberías, spas y tiendas. Registras
-      cada venta y Rentablo la reparte sola entre insumos, tu sueldo y la utilidad del negocio.
+      {copy.lead}
     </p>
     <ul class="showcase__list">
       {
@@ -57,16 +113,16 @@ const pesos = (n: number) => '$' + Math.round(n).toLocaleString('es-CO');
     </ul>
     <div class="showcase__actions">
       <a href={rentablo.url} target="_blank" rel="noopener" class="btn btn--primary">
-        Visitar rentablo.buildev.co <Icon name="external" size={17} />
+        {copy.visit} <Icon name="external" size={17} />
       </a>
       {
         rentablo.play.published ? (
           <a href={rentablo.play.url} target="_blank" rel="noopener" class="showcase__play">
-            <img src="/rentablo/google-play.png" alt="Descargar en Google Play" width="646" height="250" />
+            <img src="/rentablo/google-play.png" alt={copy.playAlt} width="646" height="250" />
           </a>
         ) : (
           <span class="showcase__soon">
-            <Icon name="phone" size={16} /> Muy pronto en Google Play
+            <Icon name="phone" size={16} /> {copy.soon}
           </span>
         )
       }
@@ -74,8 +130,8 @@ const pesos = (n: number) => '$' + Math.round(n).toLocaleString('es-CO');
   </div>
 
   <div class="showcase__visual" data-rentablo>
-    <div class="split" data-split data-sale={sale}>
-      <p class="split__head">Una venta de <b>{pesos(sale)}</b></p>
+    <div class="split" data-split data-sale={sale} data-locale={lang === 'en' ? locale : undefined}>
+      <p class="split__head">{copy.saleOf} <b>{pesos(sale)}</b></p>
       <div class="split__bar" aria-hidden="true">
         {splitProfiles[0].split.map((pct) => <i style={`width: ${pct}%`} />)}
       </div>
@@ -91,7 +147,7 @@ const pesos = (n: number) => '$' + Math.round(n).toLocaleString('es-CO');
           ))
         }
       </dl>
-      <div class="split__profiles" role="group" aria-label="Perfiles de reparto" data-split-profiles>
+      <div class="split__profiles" role="group" aria-label={copy.profilesAria} data-split-profiles>
         {
           splitProfiles.map((p, i) => (
             <button type="button" data-split={p.split.join(',')} aria-pressed={i === 0 ? 'true' : 'false'}>
@@ -103,7 +159,7 @@ const pesos = (n: number) => '$' + Math.round(n).toLocaleString('es-CO');
     </div>
 
     <div class="device">
-      <div class="mock-tabs" role="group" aria-label="Pantallas de la app" data-rentablo-tabs>
+      <div class="mock-tabs" role="group" aria-label={copy.screensAria} data-rentablo-tabs>
         {
           screens.map((s, i) => (
             <button type="button" data-view={s.view} aria-pressed={i === 0 ? 'true' : 'false'}>
@@ -136,7 +192,8 @@ const pesos = (n: number) => '$' + Math.round(n).toLocaleString('es-CO');
 </article>
 
 <script>
-  const pesos = (n: number) => '$' + Math.round(n).toLocaleString('es-CO');
+  // El formato de los pesos sigue el idioma de la página (data-locale solo existe en inglés).
+  const pesos = (n: number, locale = 'es-CO') => '$' + Math.round(n).toLocaleString(locale);
 
   // El carrusel puede repetir la tarjeta: cada copia maneja sus propios controles.
   document.querySelectorAll<HTMLElement>('[data-rentablo]').forEach((rentablo) => {
@@ -154,6 +211,7 @@ const pesos = (n: number) => '$' + Math.round(n).toLocaleString('es-CO');
     // Reparte la venta de ejemplo con el perfil elegido, como lo hace la app.
     const split = rentablo.querySelector<HTMLElement>('[data-split]');
     const sale = Number(split?.dataset.sale);
+    const locale = split?.dataset.locale;
     const bars = split?.querySelectorAll<HTMLElement>('.split__bar i') ?? [];
     const pcts = split?.querySelectorAll('[data-pct]') ?? [];
     const amounts = split?.querySelectorAll('[data-amount]') ?? [];
@@ -166,7 +224,7 @@ const pesos = (n: number) => '$' + Math.round(n).toLocaleString('es-CO');
           const pct = Number(value);
           bars[i].style.width = `${pct}%`;
           pcts[i].textContent = `${pct}%`;
-          amounts[i].textContent = pesos((sale * pct) / 100);
+          amounts[i].textContent = pesos((sale * pct) / 100, locale);
         });
       });
     });

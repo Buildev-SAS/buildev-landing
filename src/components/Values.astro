@@ -1,23 +1,27 @@
 ---
 import Icon, { type IconName } from './Icon.astro';
+import { getLang, type Lang } from '../i18n';
 
-const values: { icon: IconName; label: string }[] = [
-  { icon: 'rocket', label: 'Innovación' },
-  { icon: 'shield', label: 'Confianza' },
-  { icon: 'users', label: 'Trabajo en equipo' },
-  { icon: 'code', label: 'Soluciones reales' },
-  { icon: 'growth', label: 'Crecimiento' },
+const lang = getLang(Astro.url);
+const ariaLabel = { es: 'Nuestros valores', en: 'Our values' }[lang];
+
+const values: { icon: IconName; label: Record<Lang, string> }[] = [
+  { icon: 'rocket', label: { es: 'Innovación', en: 'Innovation' } },
+  { icon: 'shield', label: { es: 'Confianza', en: 'Trust' } },
+  { icon: 'users', label: { es: 'Trabajo en equipo', en: 'Teamwork' } },
+  { icon: 'code', label: { es: 'Soluciones reales', en: 'Real solutions' } },
+  { icon: 'growth', label: { es: 'Crecimiento', en: 'Growth' } },
 ];
 ---
 
-<section class="values" aria-label="Nuestros valores">
+<section class="values" aria-label={ariaLabel}>
   <div class="container">
     <ul class="values__list">
       {
         values.map((v, i) => (
           <li class="reveal" style={`transition-delay:${i * 70}ms`}>
             <Icon name={v.icon} size={32} />
-            <span>{v.label}</span>
+            <span>{v.label[lang]}</span>
           </li>
         ))
       }

@@ -1,0 +1,67 @@
+---
+// Página de preguntas frecuentes (/preguntas-frecuentes/ y /en/faq/).
+import ContentLayout from '../layouts/ContentLayout.astro';
+import FaqList from './FaqList.astro';
+import { faqGroups } from '../data/faq';
+import { getLang } from '../i18n';
+
+const lang = getLang(Astro.url);
+const groups = faqGroups[lang];
+
+const copy = {
+  es: {
+    title: 'Preguntas frecuentes sobre desarrollo de software | BUILDEV',
+    description:
+      'Resolvemos las dudas más comunes sobre desarrollo de software a la medida en Colombia: servicios, tiempos, costos, soporte y cómo empezar un proyecto con BUILDEV.',
+    heading: 'Preguntas frecuentes',
+    lead: 'Lo que más nos preguntan las empresas antes de empezar un proyecto de software con nosotros.',
+  },
+  en: {
+    title: 'Custom software development FAQ | BUILDEV',
+    description:
+      'Answers to the most common questions about custom software development with BUILDEV: services, timelines, costs, support and how to start a project.',
+    heading: 'Frequently asked questions',
+    lead: 'What businesses ask us most before starting a software project with us.',
+  },
+}[lang];
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: groups
+    .flatMap((g) => g.items)
+    .map((item) => ({
+      '@type': 'Question',
+      name: item.q,
+      acceptedAnswer: { '@type': 'Answer', text: item.a },
+    })),
+};
+---
+
+<ContentLayout
+  title={copy.title}
+  description={copy.description}
+  eyebrow={copy.heading}
+  heading={copy.heading}
+  lead={copy.lead}
+  schema={[faqSchema]}
+>
+  {
+    groups.map((group) => (
+      <section class="faq-group">
+        <h2>{group.title}</h2>
+        <FaqList items={group.items} />
+      </section>
+    ))
+  }
+</ContentLayout>
+
+<style>
+  .faq-group + .faq-group {
+    margin-top: 48px;
+  }
+  h2 {
+    margin-bottom: 18px;
+    font-size: 1.35rem;
+  }
+</style>

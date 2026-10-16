@@ -1,6 +1,15 @@
 ---
 import Logo from './Logo.astro';
-import { nav, navHref, resources, site } from '../data/site';
+import { site } from '../data/site';
+import { getLang, nav, navHref, paths, useT } from '../i18n';
+
+const lang = getLang(Astro.url);
+const t = useT(Astro.url);
+// Contenido informativo: solo se enlaza desde el footer para no tocar la landing.
+const resources = [
+  { href: paths.guides[lang], label: t.guides },
+  { href: paths.faq[lang], label: t.faq },
+];
 
 const year = new Date().getFullYear();
 ---
@@ -9,30 +18,30 @@ const year = new Date().getFullYear();
   <div class="container footer__grid">
     <div>
       <Logo class="footer__logo" />
-      <p class="footer__claim">Ideas que construyen el futuro.</p>
+      <p class="footer__claim">{t.footerClaim}</p>
     </div>
 
-    <nav aria-label="Pie de página">
-      <h4>Navegación</h4>
+    <nav aria-label={t.footerAria}>
+      <h4>{t.footerNav}</h4>
       <ul>
-        {nav.map((item) => <li><a href={navHref(item.href, Astro.url.pathname)}>{item.label}</a></li>)}
+        {nav.map((item) => <li><a href={navHref(item.href, Astro.url)}>{item.label[lang]}</a></li>)}
         {resources.map((item) => <li><a href={item.href}>{item.label}</a></li>)}
       </ul>
     </nav>
 
     <div>
-      <h4>Contacto</h4>
+      <h4>{t.footerContact}</h4>
       <ul>
         <li><a href={`mailto:${site.email}`}>{site.email}</a></li>
         <li><a href="https://agendorio.buildev.co" target="_blank" rel="noopener">agendorio.buildev.co</a></li>
         <li><a href="https://rentablo.buildev.co" target="_blank" rel="noopener">rentablo.buildev.co</a></li>
-        <li>{site.city}</li>
+        <li>{t.city}</li>
       </ul>
     </div>
   </div>
 
   <div class="container footer__bottom">
-    <span>© {year} BUILDEV. Todos los derechos reservados. · <a href="/privacidad/">Privacidad</a></span>
+    <span>© {year} BUILDEV. {t.rights} · <a href={paths.privacy[lang]}>{t.privacy}</a></span>
     <span>Software Solutions &amp; Innovation</span>
   </div>
 </footer>

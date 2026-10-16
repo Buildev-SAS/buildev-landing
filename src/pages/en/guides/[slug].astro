@@ -1,0 +1,10 @@
+---
+import GuideArticle from '../../../components/GuideArticle.astro';
+import { getGuias } from '../../../data/guias';
+
+export async function getStaticPaths() {
+  return (await getGuias('en')).map((guia) => ({ params: { slug: guia.id }, props: { guia } }));
+}
+---
+
+<GuideArticle guia={Astro.props.guia} />

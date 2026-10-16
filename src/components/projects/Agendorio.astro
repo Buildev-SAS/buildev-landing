@@ -1,77 +1,171 @@
 ---
 import Icon from '../Icon.astro';
+import { getLang } from '../../i18n';
 
-const features = [
-  'Reservas en línea 24/7 con enlace personalizado',
-  'Asistente de WhatsApp con IA que agenda por chat',
-  'Agenda por profesional y control de horarios',
-  'Confirmaciones y recordatorios automáticos por WhatsApp',
-  'Sincronización con Google Calendar',
-  'Personalización con logo, colores y tipografía',
-];
+const lang = getLang(Astro.url);
 
-const appointments = [
-  { hour: '1 p. m.', name: 'Ana Rodríguez', range: '1:00 – 2:00 p. m.', service: 'Limpieza facial', status: 'Confirmada' },
-  { hour: '2 p. m.', name: 'Carlos Pérez', range: '2:00 – 3:00 p. m.', service: 'Consulta de nutrición', status: 'Confirmada' },
-  {
-    hour: '3 p. m.',
-    name: 'Diego Silva',
-    range: '3:30 – 4:30 p. m.',
-    service: 'Masaje relajante',
-    status: 'Nueva · por WhatsApp',
-    whatsapp: true,
+const copy = {
+  es: {
+    tag: 'Plataforma SaaS',
+    lead: 'Plataforma de agendamiento en línea para profesionales y negocios de servicios: barberías, salones de belleza, consultorios, gimnasios y estudios. Tus clientes reservan solos y tú te enfocas en atenderlos.',
+    visit: 'Visitar agendorio.buildev.co',
+    tabsAria: 'Cómo reservan tus clientes',
+    tabWhatsapp: 'Agenda + WhatsApp',
+    tabLink: 'Enlace de reservas',
+    agendaTitle: 'Agenda · Hoy',
+    agendaDate: 'Miércoles 14 · 3 citas',
+    live: 'En vivo',
+    assistant: 'Asistente de WhatsApp',
+    ai: 'Con IA',
+    msgIn: 'Hola, ¿me agendas un masaje relajante con Laura para hoy a las 3 y media de la tarde? A nombre de Diego Silva.',
+    msgOut: '¡Hecho, Diego! Masaje relajante con Laura, hoy a las 3:30\u00a0p.\u00a0m. Te envío un recordatorio una hora antes.',
+    with: 'con',
+    pickTime: 'Elige un horario',
+    next: 'Continuar con tus datos',
+    colorsAria: 'Prueba otros colores de marca',
+    colors: 'Tus colores',
   },
-];
+  en: {
+    tag: 'SaaS platform',
+    lead: 'Online booking platform for professionals and service businesses: barbershops, beauty salons, clinics, gyms and studios. Your clients book on their own while you focus on serving them.',
+    visit: 'Visit agendorio.buildev.co',
+    tabsAria: 'How your clients book',
+    tabWhatsapp: 'Calendar + WhatsApp',
+    tabLink: 'Booking link',
+    agendaTitle: 'Calendar · Today',
+    agendaDate: 'Wednesday 14 · 3 appointments',
+    live: 'Live',
+    assistant: 'WhatsApp assistant',
+    ai: 'AI-powered',
+    msgIn: 'Hi, can you book me a relaxing massage with Laura for today at 3:30 in the afternoon? The name is Diego Silva.',
+    msgOut: "Done, Diego! Relaxing massage with Laura, today at 3:30\u00a0PM. I'll send you a reminder an hour before.",
+    with: 'with',
+    pickTime: 'Pick a time',
+    next: 'Continue with your details',
+    colorsAria: 'Try other brand colors',
+    colors: 'Your colors',
+  },
+}[lang];
+
+const features = {
+  es: [
+    'Reservas en línea 24/7 con enlace personalizado',
+    'Asistente de WhatsApp con IA que agenda por chat',
+    'Agenda por profesional y control de horarios',
+    'Confirmaciones y recordatorios automáticos por WhatsApp',
+    'Sincronización con Google Calendar',
+    'Personalización con logo, colores y tipografía',
+  ],
+  en: [
+    '24/7 online booking with a personalized link',
+    'AI-powered WhatsApp assistant that books over chat',
+    'Per-professional calendars and schedule management',
+    'Automatic WhatsApp confirmations and reminders',
+    'Google Calendar sync',
+    'Custom branding with your logo, colors and fonts',
+  ],
+}[lang];
+
+const appointments = {
+  es: [
+    { hour: '1 p. m.', name: 'Ana Rodríguez', range: '1:00 – 2:00 p. m.', service: 'Limpieza facial', status: 'Confirmada' },
+    { hour: '2 p. m.', name: 'Carlos Pérez', range: '2:00 – 3:00 p. m.', service: 'Consulta de nutrición', status: 'Confirmada' },
+    {
+      hour: '3 p. m.',
+      name: 'Diego Silva',
+      range: '3:30 – 4:30 p. m.',
+      service: 'Masaje relajante',
+      status: 'Nueva · por WhatsApp',
+      whatsapp: true,
+    },
+  ],
+  en: [
+    { hour: '1 PM', name: 'Ana Rodríguez', range: '1:00 – 2:00 PM', service: 'Facial cleansing', status: 'Confirmed' },
+    { hour: '2 PM', name: 'Carlos Pérez', range: '2:00 – 3:00 PM', service: 'Nutrition consultation', status: 'Confirmed' },
+    {
+      hour: '3 PM',
+      name: 'Diego Silva',
+      range: '3:30 – 4:30 PM',
+      service: 'Relaxing massage',
+      status: 'New · via WhatsApp',
+      whatsapp: true,
+    },
+  ],
+}[lang];
 
 // Página pública de reservas de un negocio de ejemplo, con su enlace propio.
 const booking = {
   url: 'agendorio.buildev.co/estudio-vital',
   initials: 'EV',
   name: 'Estudio Vital',
-  category: 'Belleza y bienestar',
-  steps: ['Servicio', 'Profesional', 'Horario', 'Tus datos'],
   step: 2,
-  service: 'Masaje relajante',
   duration: '60 min',
   pro: 'Laura',
-  price: '$ 90.000',
-  days: [
-    { label: 'Mié', num: 14 },
-    { label: 'Jue', num: 15 },
-    { label: 'Vie', num: 16 },
-    { label: 'Sáb', num: 17 },
-    { label: 'Dom', num: 18 },
-  ],
-  // 3:30 ya la tomó Diego por WhatsApp.
-  times: [
-    { label: '10:00 a. m.' },
-    { label: '11:30 a. m.' },
-    { label: '12:30 p. m.' },
-    { label: '3:30 p. m.', taken: true },
-    { label: '4:30 p. m.' },
-    { label: '5:00 p. m.', selected: true },
-  ],
+  ...{
+    es: {
+      category: 'Belleza y bienestar',
+      steps: ['Servicio', 'Profesional', 'Horario', 'Tus datos'],
+      service: 'Masaje relajante',
+      price: '$ 90.000',
+      days: [
+        { label: 'Mié', num: 14 },
+        { label: 'Jue', num: 15 },
+        { label: 'Vie', num: 16 },
+        { label: 'Sáb', num: 17 },
+        { label: 'Dom', num: 18 },
+      ],
+      // 3:30 ya la tomó Diego por WhatsApp.
+      times: [
+        { label: '10:00 a. m.' },
+        { label: '11:30 a. m.' },
+        { label: '12:30 p. m.' },
+        { label: '3:30 p. m.', taken: true },
+        { label: '4:30 p. m.' },
+        { label: '5:00 p. m.', selected: true },
+      ],
+    },
+    en: {
+      category: 'Beauty & wellness',
+      steps: ['Service', 'Professional', 'Time', 'Your details'],
+      service: 'Relaxing massage',
+      price: '$90,000 COP',
+      days: [
+        { label: 'Wed', num: 14 },
+        { label: 'Thu', num: 15 },
+        { label: 'Fri', num: 16 },
+        { label: 'Sat', num: 17 },
+        { label: 'Sun', num: 18 },
+      ],
+      times: [
+        { label: '10:00 AM' },
+        { label: '11:30 AM' },
+        { label: '12:30 PM' },
+        { label: '3:30 PM', taken: true },
+        { label: '4:30 PM' },
+        { label: '5:00 PM', selected: true },
+      ],
+    },
+  }[lang],
 };
 
 // Cada negocio pinta su agenda con su color; el primero es el verde del logo de Agendorio.
 const brandColors = [
-  { name: 'Verde Agendorio', value: '#00b28b' },
-  { name: 'Azul', value: '#3b82f6' },
-  { name: 'Violeta', value: '#8b5cf6' },
-  { name: 'Coral', value: '#f2675a' },
-  { name: 'Ámbar', value: '#f0a020' },
-];
+  { name: { es: 'Verde Agendorio', en: 'Agendorio green' }, value: '#00b28b' },
+  { name: { es: 'Azul', en: 'Blue' }, value: '#3b82f6' },
+  { name: { es: 'Violeta', en: 'Violet' }, value: '#8b5cf6' },
+  { name: { es: 'Coral', en: 'Coral' }, value: '#f2675a' },
+  { name: { es: 'Ámbar', en: 'Amber' }, value: '#f0a020' },
+].map((c) => ({ name: c.name[lang], value: c.value }));
 ---
 
 <article class="showcase">
   <div class="showcase__copy">
-    <span class="showcase__tag"><Icon name="calendar" size={16} /> Plataforma SaaS</span>
+    <span class="showcase__tag"><Icon name="calendar" size={16} /> {copy.tag}</span>
     <h3 class="showcase__brand">
       <img src="/agendorio-white.svg" alt="Agendorio" width="491" height="136" />
     </h3>
     <p class="showcase__lead">
-      Plataforma de agendamiento en línea para profesionales y negocios de servicios: barberías, salones de belleza,
-      consultorios, gimnasios y estudios. Tus clientes reservan solos y tú te enfocas en atenderlos.
+      {copy.lead}
     </p>
     <ul class="showcase__list">
       {
@@ -83,17 +177,17 @@ const brandColors = [
       }
     </ul>
     <a href="https://agendorio.buildev.co" target="_blank" rel="noopener" class="btn btn--primary">
-      Visitar agendorio.buildev.co <Icon name="external" size={17} />
+      {copy.visit} <Icon name="external" size={17} />
     </a>
   </div>
 
   <div class="showcase__visual" data-brand-scope>
-    <div class="mock-tabs" role="group" aria-label="Cómo reservan tus clientes" data-mock-tabs>
+    <div class="mock-tabs" role="group" aria-label={copy.tabsAria} data-mock-tabs>
       <button type="button" data-view="whatsapp" aria-pressed="true">
-        <Icon name="whatsapp" size={15} /> Agenda + WhatsApp
+        <Icon name="whatsapp" size={15} /> {copy.tabWhatsapp}
       </button>
       <button type="button" data-view="link" aria-pressed="false">
-        <Icon name="link" size={15} /> Enlace de reservas
+        <Icon name="link" size={15} /> {copy.tabLink}
       </button>
     </div>
 
@@ -101,10 +195,10 @@ const brandColors = [
       <div class="mock agenda is-active" data-view="whatsapp" aria-hidden="true">
         <div class="agenda__top">
           <div>
-            <strong>Agenda · Hoy</strong>
-            <small>Miércoles 14 · 3 citas</small>
+            <strong>{copy.agendaTitle}</strong>
+            <small>{copy.agendaDate}</small>
           </div>
-          <span class="agenda__live">En vivo</span>
+          <span class="agenda__live">{copy.live}</span>
         </div>
 
         <ol class="agenda__slots">
@@ -132,14 +226,14 @@ const brandColors = [
 
         <div class="agenda__chat">
           <p class="agenda__chat-head">
-            <Icon name="whatsapp" size={14} /> Asistente de WhatsApp
-            <span><Icon name="sparkles" size={11} /> Con IA</span>
+            <Icon name="whatsapp" size={14} /> {copy.assistant}
+            <span><Icon name="sparkles" size={11} /> {copy.ai}</span>
           </p>
           <p class="msg msg--in">
-            Hola, ¿me agendas un masaje relajante con Laura para hoy a las 3 y media de la tarde? A nombre de Diego Silva.
+            {copy.msgIn}
           </p>
           <p class="msg msg--out">
-            ¡Hecho, Diego! Masaje relajante con Laura, hoy a las 3:30&nbsp;p.&nbsp;m. Te envío un recordatorio una hora antes.
+            {copy.msgOut}
           </p>
         </div>
       </div>
@@ -175,12 +269,12 @@ const brandColors = [
             <div>
               <strong>{booking.service}</strong>
               <small>
-                <Icon name="clock" size={12} /> {booking.duration} · con {booking.pro}
+                <Icon name="clock" size={12} /> {booking.duration} · {copy.with} {booking.pro}
               </small>
             </div>
             <b>{booking.price}</b>
           </div>
-          <p class="booking__title">Elige un horario</p>
+          <p class="booking__title">{copy.pickTime}</p>
           <div class="booking__days">
             {
               booking.days.map((d, i) => (
@@ -195,14 +289,14 @@ const brandColors = [
             {booking.times.map((t) => <span class:list={{ taken: t.taken, active: t.selected }}>{t.label}</span>)}
           </div>
           <span class="booking__cta">
-            Continuar con tus datos <Icon name="arrow" size={15} />
+            {copy.next} <Icon name="arrow" size={15} />
           </span>
         </div>
       </div>
     </div>
 
-    <div class="brand-picker" role="group" aria-label="Prueba otros colores de marca" data-brand-picker>
-      <span>Tus colores</span>
+    <div class="brand-picker" role="group" aria-label={copy.colorsAria} data-brand-picker>
+      <span>{copy.colors}</span>
       {
         brandColors.map((c, i) => (
           <button

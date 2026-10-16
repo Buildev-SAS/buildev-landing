@@ -1,27 +1,59 @@
 ---
 import Icon, { type IconName } from './Icon.astro';
 import Logo from './Logo.astro';
+import { getLang, type Lang } from '../i18n';
 
-const reasons: { icon: IconName; title: string; text: string }[] = [
+const lang = getLang(Astro.url);
+const copy = {
+  es: {
+    eyebrow: 'Quiénes somos',
+    title: 'Construimos el software que tu empresa necesita para crecer',
+    // Va después de <strong>BUILDEV</strong>.
+    text: 'es una empresa de desarrollo de software comprometida con la innovación, la eficiencia y la transformación digital. Diseñamos soluciones tecnológicas escalables que optimizan procesos y potencian el crecimiento empresarial.',
+    tags: ['Minimalista', 'Profesional', 'Moderno', 'Tecnológico', 'Confiable'],
+    why: '¿Por qué elegirnos?',
+  },
+  en: {
+    eyebrow: 'Who we are',
+    title: 'We build the software your company needs to grow',
+    text: 'is a software development company committed to innovation, efficiency and digital transformation. We design scalable technology solutions that streamline processes and accelerate business growth.',
+    tags: ['Minimalist', 'Professional', 'Modern', 'Tech-driven', 'Reliable'],
+    why: 'Why choose us?',
+  },
+}[lang];
+
+const reasons: { icon: IconName; title: Record<Lang, string>; text: Record<Lang, string> }[] = [
   {
     icon: 'target',
-    title: 'Enfoque en resultados y calidad',
-    text: 'Cada entrega se mide por el impacto que genera en tu negocio.',
+    title: { es: 'Enfoque en resultados y calidad', en: 'Focused on results and quality' },
+    text: {
+      es: 'Cada entrega se mide por el impacto que genera en tu negocio.',
+      en: 'Every delivery is measured by the impact it has on your business.',
+    },
   },
   {
     icon: 'chat',
-    title: 'Comunicación constante y transparente',
-    text: 'Sabes en qué estamos, qué sigue y cuándo lo tendrás.',
+    title: { es: 'Comunicación constante y transparente', en: 'Constant, transparent communication' },
+    text: {
+      es: 'Sabes en qué estamos, qué sigue y cuándo lo tendrás.',
+      en: "You always know what we're working on, what's next and when you'll have it.",
+    },
   },
   {
     icon: 'shield',
-    title: 'Soluciones escalables y seguras',
-    text: 'Arquitecturas preparadas para crecer y proteger tu información.',
+    title: { es: 'Soluciones escalables y seguras', en: 'Scalable, secure solutions' },
+    text: {
+      es: 'Arquitecturas preparadas para crecer y proteger tu información.',
+      en: 'Architectures built to scale and to protect your information.',
+    },
   },
   {
     icon: 'clock',
-    title: 'Entrega puntual y soporte continuo',
-    text: 'Cumplimos los tiempos y seguimos a tu lado después del lanzamiento.',
+    title: { es: 'Entrega puntual y soporte continuo', en: 'On-time delivery and ongoing support' },
+    text: {
+      es: 'Cumplimos los tiempos y seguimos a tu lado después del lanzamiento.',
+      en: 'We meet deadlines and stay by your side after launch.',
+    },
   },
 ];
 ---
@@ -29,28 +61,22 @@ const reasons: { icon: IconName; title: string; text: string }[] = [
 <section class="section about" id="nosotros">
   <div class="container about__grid">
     <div class="about__intro reveal">
-      <span class="eyebrow">Quiénes somos</span>
-      <h2 class="section-title">Construimos el software que tu empresa necesita para crecer</h2>
+      <span class="eyebrow">{copy.eyebrow}</span>
+      <h2 class="section-title">{copy.title}</h2>
       <p class="about__text">
-        <strong>BUILDEV</strong> es una empresa de desarrollo de software comprometida con la innovación, la eficiencia
-        y la transformación digital. Diseñamos soluciones tecnológicas escalables que optimizan procesos y potencian el
-        crecimiento empresarial.
+        <strong>BUILDEV</strong> {copy.text}
       </p>
 
       <div class="about__card">
         <Logo class="about__logo" />
         <ul class="about__tags">
-          <li>Minimalista</li>
-          <li>Profesional</li>
-          <li>Moderno</li>
-          <li>Tecnológico</li>
-          <li>Confiable</li>
+          {copy.tags.map((t) => <li>{t}</li>)}
         </ul>
       </div>
     </div>
 
     <div class="about__why">
-      <h3 class="why__title reveal">¿Por qué elegirnos?</h3>
+      <h3 class="why__title reveal">{copy.why}</h3>
       <ul class="why__list">
         {
           reasons.map((r, i) => (
@@ -59,8 +85,8 @@ const reasons: { icon: IconName; title: string; text: string }[] = [
                 <Icon name={r.icon} size={24} />
               </span>
               <div>
-                <h4>{r.title}</h4>
-                <p>{r.text}</p>
+                <h4>{r.title[lang]}</h4>
+                <p>{r.text[lang]}</p>
               </div>
             </li>
           ))

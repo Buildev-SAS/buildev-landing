@@ -4,12 +4,45 @@ import Stripes from './Stripes.astro';
 import Agendorio from './projects/Agendorio.astro';
 import Rentablo from './projects/Rentablo.astro';
 import '../styles/showcase.css';
+import { getLang } from '../i18n';
+
+const lang = getLang(Astro.url);
+const copy = {
+  es: {
+    eyebrow: 'En producción',
+    title: 'Construcciones que ya están funcionando',
+    lead: 'Nuestros productos operan en producción y ayudan a negocios reales todos los días.',
+    pickerAria: 'Elige un proyecto',
+    carousel: 'carrusel',
+    carouselAria: 'Proyectos',
+    slide: 'proyecto',
+    of: 'de',
+    prev: 'Proyecto anterior',
+    next: 'Proyecto siguiente',
+    saas: 'Plataforma SaaS',
+    mobile: 'App móvil',
+  },
+  en: {
+    eyebrow: 'In production',
+    title: 'Products already up and running',
+    lead: 'Our products run in production and help real businesses every day.',
+    pickerAria: 'Choose a project',
+    carousel: 'carousel',
+    carouselAria: 'Projects',
+    slide: 'project',
+    of: 'of',
+    prev: 'Previous project',
+    next: 'Next project',
+    saas: 'SaaS platform',
+    mobile: 'Mobile app',
+  },
+}[lang];
 
 // Proyectos del carrusel, en orden. Para sumar uno, crea su tarjeta en ./projects y agrégalo aquí;
 // `color` es el fondo de su botón en el selector (el mismo de su tarjeta).
 const projects: { id: string; name: string; type: string; icon: IconName; color: string; Card: typeof Agendorio }[] = [
-  { id: 'agendorio', name: 'Agendorio', type: 'Plataforma SaaS', icon: 'calendar', color: '#1c252d', Card: Agendorio },
-  { id: 'rentablo', name: 'Rentablo', type: 'App móvil', icon: 'phone', color: '#0f4d45', Card: Rentablo },
+  { id: 'agendorio', name: 'Agendorio', type: copy.saas, icon: 'calendar', color: '#1c252d', Card: Agendorio },
+  { id: 'rentablo', name: 'Rentablo', type: copy.mobile, icon: 'phone', color: '#0f4d45', Card: Rentablo },
 ];
 
 // El carrusel da la vuelta y muestra un proyecto a cada lado del activo;
@@ -24,14 +57,14 @@ const relOf = (i: number) => (i > slides.length / 2 ? i - slides.length : i);
   <Stripes class="projects__stripes" muted />
   <div class="container">
     <header class="projects__head reveal">
-      <span class="eyebrow">En producción</span>
-      <h2 class="section-title">Construcciones que ya están funcionando</h2>
+      <span class="eyebrow">{copy.eyebrow}</span>
+      <h2 class="section-title">{copy.title}</h2>
       <p class="section-lead">
-        Nuestros productos operan en producción y ayudan a negocios reales todos los días.
+        {copy.lead}
       </p>
     </header>
 
-    <div class="picker reveal" role="group" aria-label="Elige un proyecto" data-picker>
+    <div class="picker reveal" role="group" aria-label={copy.pickerAria} data-picker>
       {
         projects.map((p, i) => (
           <button
@@ -54,7 +87,7 @@ const relOf = (i: number) => (i > slides.length / 2 ? i - slides.length : i);
     </div>
   </div>
 
-  <div class="carousel reveal" role="region" aria-roledescription="carrusel" aria-label="Proyectos">
+  <div class="carousel reveal" role="region" aria-roledescription={copy.carousel} aria-label={copy.carouselAria}>
     <div class="carousel__stage" data-stage>
       {
         slides.map(({ id, name, Card }, i) => {
@@ -67,8 +100,8 @@ const relOf = (i: number) => (i > slides.length / 2 ? i - slides.length : i);
               style={`--rel: ${rel}`}
               data-project={project}
               role="group"
-              aria-roledescription="proyecto"
-              aria-label={`${project + 1} de ${projects.length}: ${name}`}
+              aria-roledescription={copy.slide}
+              aria-label={`${project + 1} ${copy.of} ${projects.length}: ${name}`}
               inert={rel !== 0}
             >
               <Card />
@@ -77,10 +110,10 @@ const relOf = (i: number) => (i > slides.length / 2 ? i - slides.length : i);
         })
       }
     </div>
-    <button type="button" class="carousel__arrow carousel__arrow--prev" aria-label="Proyecto anterior" data-prev>
+    <button type="button" class="carousel__arrow carousel__arrow--prev" aria-label={copy.prev} data-prev>
       <Icon name="arrow" size={20} />
     </button>
-    <button type="button" class="carousel__arrow carousel__arrow--next" aria-label="Proyecto siguiente" data-next>
+    <button type="button" class="carousel__arrow carousel__arrow--next" aria-label={copy.next} data-next>
       <Icon name="arrow" size={20} />
     </button>
   </div>

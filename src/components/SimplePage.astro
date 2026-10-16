@@ -2,6 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import Logo from './Logo.astro';
 import Stripes from './Stripes.astro';
+import { getLang, homePath, useT } from '../i18n';
 
 interface Props {
   title: string;
@@ -10,16 +11,18 @@ interface Props {
 }
 
 const { title, heading, text } = Astro.props;
+const home = homePath(getLang(Astro.url));
+const t = useT(Astro.url);
 ---
 
 <Layout title={title} noindex>
   <main class="simple">
     <Stripes class="simple__stripes" />
     <div class="simple__box">
-      <a href="/" aria-label="Volver al inicio"><Logo variant="dark" /></a>
+      <a href={home} aria-label={t.backHome}><Logo variant="dark" /></a>
       <h1>{heading}</h1>
       <p>{text}</p>
-      <a href="/" class="btn btn--primary">Volver al inicio</a>
+      <a href={home} class="btn btn--primary">{t.backHome}</a>
     </div>
   </main>
 </Layout>

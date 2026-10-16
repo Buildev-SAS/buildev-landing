@@ -2,8 +2,65 @@
 import Icon from './Icon.astro';
 import Stripes from './Stripes.astro';
 import { site } from '../data/site';
+import { getLang, paths } from '../i18n';
 
-const waText = encodeURIComponent('Hola BUILDEV, quiero información sobre un proyecto de software.');
+const lang = getLang(Astro.url);
+// Opciones del servicio: en inglés se muestran traducidas, pero Netlify recibe siempre el valor en español.
+const services = ['Software a la medida', 'Aplicación web', 'App móvil', 'Automatización de procesos', 'Integraciones y APIs', 'Otro'];
+// Solo se traducen los textos visibles: los `name` del formulario son los mismos en ambos idiomas
+// para que Netlify guarde todos los envíos en el mismo formulario "contacto".
+const copy = {
+  es: {
+    eyebrow: 'Contacto',
+    title: '¿Tienes una idea? Construyámosla juntos',
+    lead: 'Cuéntanos sobre tu proyecto y te respondemos con una propuesta clara, sin compromiso.',
+    email: 'Correo',
+    whatsapp: 'Escríbenos directamente',
+    location: 'Ubicación',
+    honeypot: 'No llenes este campo:',
+    name: 'Nombre *',
+    namePh: 'Tu nombre',
+    company: 'Empresa',
+    companyPh: 'Nombre de tu empresa',
+    mail: 'Correo *',
+    mailPh: 'tucorreo@empresa.com',
+    phone: 'Teléfono',
+    need: '¿Qué necesitas?',
+    options: services,
+    message: 'Mensaje *',
+    messagePh: 'Cuéntanos brevemente sobre tu proyecto',
+    consent: 'Autorizo a BUILDEV a usar mis datos para responder mi solicitud, según la',
+    policy: 'política de privacidad',
+    submit: 'Enviar mensaje',
+    waText: 'Hola BUILDEV, quiero información sobre un proyecto de software.',
+  },
+  en: {
+    eyebrow: 'Contact',
+    title: "Have an idea? Let's build it together",
+    lead: "Tell us about your project and we'll reply with a clear proposal, no strings attached.",
+    email: 'Email',
+    whatsapp: 'Message us directly',
+    location: 'Location',
+    honeypot: 'Do not fill out this field:',
+    name: 'Name *',
+    namePh: 'Your name',
+    company: 'Company',
+    companyPh: 'Your company name',
+    mail: 'Email *',
+    mailPh: 'you@company.com',
+    phone: 'Phone',
+    need: 'What do you need?',
+    options: ['Custom software', 'Web application', 'Mobile app', 'Process automation', 'Integrations and APIs', 'Other'],
+    message: 'Message *',
+    messagePh: 'Tell us briefly about your project',
+    consent: 'I authorize BUILDEV to use my data to respond to my request, as described in the',
+    policy: 'privacy policy',
+    submit: 'Send message',
+    waText: "Hi BUILDEV, I'd like information about a software project.",
+  },
+}[lang];
+
+const waText = encodeURIComponent(copy.waText);
 // En pantallas angostas el correo parte después de la arroba, no en cualquier letra.
 const [emailUser, emailDomain] = site.email.split('@');
 ---
@@ -12,29 +69,29 @@ const [emailUser, emailDomain] = site.email.split('@');
   <Stripes class="contact__stripes" />
   <div class="container contact__grid">
     <div class="contact__info reveal">
-      <span class="eyebrow">Contacto</span>
-      <h2 class="section-title">¿Tienes una idea? Construyámosla juntos</h2>
+      <span class="eyebrow">{copy.eyebrow}</span>
+      <h2 class="section-title">{copy.title}</h2>
       <p class="contact__lead">
-        Cuéntanos sobre tu proyecto y te respondemos con una propuesta clara, sin compromiso.
+        {copy.lead}
       </p>
 
       <ul class="contact__channels">
         <li>
           <a href={`mailto:${site.email}`}>
             <span class="ch-icon"><Icon name="mail" size={20} /></span>
-            <span><small>Correo</small>{emailUser}@<wbr />{emailDomain}</span>
+            <span><small>{copy.email}</small>{emailUser}@<wbr />{emailDomain}</span>
           </a>
         </li>
         <li>
           <a href={`https://wa.me/${site.whatsapp}?text=${waText}`} target="_blank" rel="noopener">
             <span class="ch-icon"><Icon name="chat" size={20} /></span>
-            <span><small>WhatsApp</small>Escríbenos directamente</span>
+            <span><small>WhatsApp</small>{copy.whatsapp}</span>
           </a>
         </li>
         <li>
           <span class="ch-row">
             <span class="ch-icon"><Icon name="pin" size={20} /></span>
-            <span><small>Ubicación</small>{site.city}</span>
+            <span><small>{copy.location}</small>{site.city}</span>
           </span>
         </li>
       </ul>
@@ -44,60 +101,55 @@ const [emailUser, emailDomain] = site.email.split('@');
       class="form reveal"
       name="contacto"
       method="POST"
-      action="/gracias/"
+      action={paths.thanks[lang]}
       data-netlify="true"
       netlify-honeypot="empresa-web"
     >
       <input type="hidden" name="form-name" value="contacto" />
       <p class="sr-only">
-        <label>No llenes este campo: <input name="empresa-web" tabindex="-1" autocomplete="off" /></label>
+        <label>{copy.honeypot} <input name="empresa-web" tabindex="-1" autocomplete="off" /></label>
       </p>
 
       <div class="form__row">
         <label>
-          <span>Nombre *</span>
-          <input type="text" name="nombre" required autocomplete="name" placeholder="Tu nombre" />
+          <span>{copy.name}</span>
+          <input type="text" name="nombre" required autocomplete="name" placeholder={copy.namePh} />
         </label>
         <label>
-          <span>Empresa</span>
-          <input type="text" name="empresa" autocomplete="organization" placeholder="Nombre de tu empresa" />
+          <span>{copy.company}</span>
+          <input type="text" name="empresa" autocomplete="organization" placeholder={copy.companyPh} />
         </label>
       </div>
       <div class="form__row">
         <label>
-          <span>Correo *</span>
-          <input type="email" name="correo" required autocomplete="email" placeholder="tucorreo@empresa.com" />
+          <span>{copy.mail}</span>
+          <input type="email" name="correo" required autocomplete="email" placeholder={copy.mailPh} />
         </label>
         <label>
-          <span>Teléfono</span>
+          <span>{copy.phone}</span>
           <input type="tel" name="telefono" autocomplete="tel" placeholder="+57 300 000 0000" />
         </label>
       </div>
       <label>
-        <span>¿Qué necesitas?</span>
+        <span>{copy.need}</span>
         <select name="servicio">
-          <option>Software a la medida</option>
-          <option>Aplicación web</option>
-          <option>App móvil</option>
-          <option>Automatización de procesos</option>
-          <option>Integraciones y APIs</option>
-          <option>Otro</option>
+          {copy.options.map((o, i) => <option value={services[i]}>{o}</option>)}
         </select>
       </label>
       <label>
-        <span>Mensaje *</span>
-        <textarea name="mensaje" rows="4" required placeholder="Cuéntanos brevemente sobre tu proyecto"></textarea>
+        <span>{copy.message}</span>
+        <textarea name="mensaje" rows="4" required placeholder={copy.messagePh}></textarea>
       </label>
       <!-- Autorización de tratamiento de datos (Ley 1581 de 2012). Netlify guarda el valor con el mensaje. -->
       <label class="form__consent">
         <input type="checkbox" name="autorizacion" value="Sí" required />
         <span>
-          Autorizo a BUILDEV a usar mis datos para responder mi solicitud, según la
-          <a href="/privacidad/" target="_blank" rel="noopener">política de privacidad</a>. *
+          {copy.consent}
+          <a href={paths.privacy[lang]} target="_blank" rel="noopener">{copy.policy}</a>. *
         </span>
       </label>
       <button type="submit" class="btn btn--primary form__submit">
-        Enviar mensaje <Icon name="arrow" size={18} />
+        {copy.submit} <Icon name="arrow" size={18} />
       </button>
     </form>
   </div>

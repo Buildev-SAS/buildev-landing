@@ -7,6 +7,7 @@ import Footer from '../components/Footer.astro';
 import Stripes from '../components/Stripes.astro';
 import Icon from '../components/Icon.astro';
 import { site } from '../data/site';
+import { getLang, homePath, useT } from '../i18n';
 
 interface Crumb {
   label: string;
@@ -27,7 +28,9 @@ interface Props {
 
 const { title, description, heading, lead, eyebrow, crumbs = [], ogType, schema = [] } = Astro.props;
 
-const trail = [{ label: 'Inicio', href: '/' }, ...crumbs, { label: heading, href: Astro.url.pathname }];
+const t = useT(Astro.url);
+const home = homePath(getLang(Astro.url));
+const trail = [{ label: t.home, href: home }, ...crumbs, { label: heading, href: Astro.url.pathname }];
 const breadcrumbs = {
   '@context': 'https://schema.org',
   '@type': 'BreadcrumbList',
@@ -39,7 +42,7 @@ const breadcrumbs = {
   })),
 };
 
-const waText = encodeURIComponent('Hola BUILDEV, leí su sitio web y quiero hablar sobre un proyecto.');
+const waText = encodeURIComponent(t.waText);
 ---
 
 <Layout title={title} description={description} ogType={ogType} schema={[breadcrumbs, ...schema]}>
@@ -48,7 +51,7 @@ const waText = encodeURIComponent('Hola BUILDEV, leí su sitio web y quiero habl
     <section class="page-hero">
       <Stripes class="page-hero__stripes" />
       <div class="container page-hero__inner">
-        <nav class="crumbs" aria-label="Ruta de navegación">
+        <nav class="crumbs" aria-label={t.crumbsAria}>
           <ol>
             {
               trail.slice(0, -1).map((c) => (
@@ -71,11 +74,11 @@ const waText = encodeURIComponent('Hola BUILDEV, leí su sitio web y quiero habl
 
       <aside class="page-cta">
         <div>
-          <h2>¿Tienes un proyecto en mente?</h2>
-          <p>Cuéntanos qué necesitas. Te respondemos con una propuesta clara, sin compromiso.</p>
+          <h2>{t.ctaTitle}</h2>
+          <p>{t.ctaText}</p>
         </div>
         <div class="page-cta__actions">
-          <a href="/#contacto" class="btn btn--primary">Hablemos <Icon name="arrow" size={18} /></a>
+          <a href={`${home}#contacto`} class="btn btn--primary">{t.talk} <Icon name="arrow" size={18} /></a>
           <a href={`https://wa.me/${site.whatsapp}?text=${waText}`} target="_blank" rel="noopener" class="btn btn--ghost">
             <Icon name="whatsapp" size={18} /> WhatsApp
           </a>

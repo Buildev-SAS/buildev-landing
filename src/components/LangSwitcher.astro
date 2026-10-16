@@ -1,0 +1,74 @@
+---
+// Selector ES / EN. Lleva a la misma página en el otro idioma y guarda la elección,
+// que desde ese momento manda sobre el idioma del dispositivo.
+import { getAlternates, getLang, homePath, langs, useT } from '../i18n';
+
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+const lang = getLang(Astro.url);
+const t = useT(Astro.url);
+const alternates = await getAlternates(Astro.url.pathname);
+const names = { es: 'Español', en: 'English' };
+---
+
+<div class:list={['lang', className]} role="group" aria-label={t.langAria}>
+  {
+    langs.map((l) => (
+      <a
+        href={alternates[l] ?? homePath(l)}
+        hreflang={l}
+        lang={l}
+        aria-label={names[l]}
+        aria-current={l === lang ? 'true' : undefined}
+        data-lang={l}
+      >
+        {l.toUpperCase()}
+      </a>
+    ))
+  }
+</div>
+
+<style>
+  .lang {
+    display: inline-flex;
+    padding: 3px;
+    border: 1px solid rgb(255 255 255 / 0.22);
+    border-radius: 999px;
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+  }
+  a {
+    padding: 4px 9px;
+    border-radius: 999px;
+    color: rgb(255 255 255 / 0.7);
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease;
+  }
+  a:hover {
+    color: #fff;
+  }
+  a[aria-current='true'] {
+    background: rgb(255 255 255 / 0.14);
+    color: #fff;
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLAnchorElement>('[data-lang]').forEach((link) =>
+    link.addEventListener('click', (e) => {
+      try {
+        localStorage.setItem('lang', link.dataset.lang!);
+      } catch {}
+      // En la portada se conserva la sección en la que estaba la persona.
+      if (location.hash) {
+        e.preventDefault();
+        location.href = link.href + location.hash;
+      }
+    }),
+  );
+</script>

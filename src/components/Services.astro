@@ -1,36 +1,69 @@
 ---
 import Icon, { type IconName } from './Icon.astro';
+import { getLang, type Lang } from '../i18n';
 
-const services: { icon: IconName; title: string; text: string }[] = [
+const lang = getLang(Astro.url);
+const copy = {
+  es: {
+    eyebrow: 'Servicios',
+    title: 'Tecnología que resuelve problemas reales',
+    lead: 'Acompañamos a tu empresa desde la idea hasta la puesta en producción, con soluciones pensadas para durar y escalar.',
+  },
+  en: {
+    eyebrow: 'Services',
+    title: 'Technology that solves real problems',
+    lead: 'We partner with your company from idea to production, with solutions built to last and scale.',
+  },
+}[lang];
+
+const services: { icon: IconName; title: Record<Lang, string>; text: Record<Lang, string> }[] = [
   {
     icon: 'code',
-    title: 'Software a la medida',
-    text: 'Construimos plataformas y sistemas diseñados para la forma en que trabaja tu empresa, no al revés.',
+    title: { es: 'Software a la medida', en: 'Custom software' },
+    text: {
+      es: 'Construimos plataformas y sistemas diseñados para la forma en que trabaja tu empresa, no al revés.',
+      en: 'We build platforms and systems designed around the way your company works, not the other way around.',
+    },
   },
   {
     icon: 'monitor',
-    title: 'Aplicaciones web',
-    text: 'Portales, paneles administrativos y productos SaaS rápidos, modernos y fáciles de usar.',
+    title: { es: 'Aplicaciones web', en: 'Web applications' },
+    text: {
+      es: 'Portales, paneles administrativos y productos SaaS rápidos, modernos y fáciles de usar.',
+      en: 'Fast, modern, easy-to-use portals, admin dashboards and SaaS products.',
+    },
   },
   {
     icon: 'phone',
-    title: 'Apps móviles',
-    text: 'Experiencias móviles que acercan tu servicio a tus clientes, disponibles donde ellos estén.',
+    title: { es: 'Apps móviles', en: 'Mobile apps' },
+    text: {
+      es: 'Experiencias móviles que acercan tu servicio a tus clientes, disponibles donde ellos estén.',
+      en: 'Mobile experiences that bring your service closer to your customers, wherever they are.',
+    },
   },
   {
     icon: 'zap',
-    title: 'Automatización de procesos',
-    text: 'Eliminamos tareas repetitivas y reducimos errores para que tu equipo se enfoque en lo importante.',
+    title: { es: 'Automatización de procesos', en: 'Process automation' },
+    text: {
+      es: 'Eliminamos tareas repetitivas y reducimos errores para que tu equipo se enfoque en lo importante.',
+      en: 'We eliminate repetitive tasks and reduce errors so your team can focus on what matters.',
+    },
   },
   {
     icon: 'link',
-    title: 'Integraciones y APIs',
-    text: 'Conectamos tus sistemas, pasarelas de pago, WhatsApp y servicios de terceros en un solo flujo.',
+    title: { es: 'Integraciones y APIs', en: 'Integrations and APIs' },
+    text: {
+      es: 'Conectamos tus sistemas, pasarelas de pago, WhatsApp y servicios de terceros en un solo flujo.',
+      en: 'We connect your systems, payment gateways, WhatsApp and third-party services into a single workflow.',
+    },
   },
   {
     icon: 'cloud',
-    title: 'Cloud y despliegue',
-    text: 'Infraestructura en la nube escalable, monitoreada y segura, lista para crecer con tu operación.',
+    title: { es: 'Cloud y despliegue', en: 'Cloud and deployment' },
+    text: {
+      es: 'Infraestructura en la nube escalable, monitoreada y segura, lista para crecer con tu operación.',
+      en: 'Scalable, monitored and secure cloud infrastructure, ready to grow with your operations.',
+    },
   },
 ];
 ---
@@ -38,11 +71,10 @@ const services: { icon: IconName; title: string; text: string }[] = [
 <section class="section services" id="servicios">
   <div class="container">
     <header class="services__head reveal">
-      <span class="eyebrow">Servicios</span>
-      <h2 class="section-title">Tecnología que resuelve problemas reales</h2>
+      <span class="eyebrow">{copy.eyebrow}</span>
+      <h2 class="section-title">{copy.title}</h2>
       <p class="section-lead">
-        Acompañamos a tu empresa desde la idea hasta la puesta en producción, con soluciones pensadas para
-        durar y escalar.
+        {copy.lead}
       </p>
     </header>
 
@@ -53,8 +85,8 @@ const services: { icon: IconName; title: string; text: string }[] = [
             <span class="card__icon">
               <Icon name={s.icon} size={26} />
             </span>
-            <h3>{s.title}</h3>
-            <p>{s.text}</p>
+            <h3>{s.title[lang]}</h3>
+            <p>{s.text[lang]}</p>
           </article>
         ))
       }
