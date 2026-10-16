@@ -1,6 +1,6 @@
 ---
 title: 'Cómo automatizar procesos en tu empresa: guía paso a paso'
-description: 'Cómo identificar qué procesos automatizar primero, qué herramientas usar y cómo medir el resultado para que la automatización ahorre tiempo y dinero de verdad.'
+description: 'Cómo elegir qué procesos automatizar primero, qué herramientas usar y cómo medir el resultado para que la automatización ahorre tiempo y dinero.'
 pubDate: 2026-10-16
 faqs:
   - q: '¿Qué procesos se pueden automatizar en una empresa?'
