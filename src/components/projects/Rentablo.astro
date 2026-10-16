@@ -7,27 +7,33 @@ import { getLang } from '../../i18n';
 const rentablo = {
   url: 'https://rentablo.buildev.co',
   play: { url: 'https://play.google.com/store/apps/details?id=co.buildev.rentablo', published: true },
+  // Versión web: para iPhone y PC, que no tienen la app de Android.
+  web: 'https://rentablo.buildev.co/app/',
 };
 
 const lang = getLang(Astro.url);
 
 const copy = {
   es: {
-    tag: 'App móvil · Android',
+    tag: 'App Android · Web',
     lead: 'App para independientes y negocios de servicios: manicuristas, estilistas, barberías, spas y tiendas. Registras cada venta y Rentablo la reparte sola entre insumos, tu sueldo y la utilidad del negocio.',
     visit: 'Visitar rentablo.buildev.co',
     playAlt: 'Descargar en Google Play',
     soon: 'Muy pronto en Google Play',
+    webDevices: 'iPhone o PC',
+    webOpen: 'Usar en el navegador',
     saleOf: 'Una venta de',
     profilesAria: 'Perfiles de reparto',
     screensAria: 'Pantallas de la app',
   },
   en: {
-    tag: 'Mobile app · Android',
+    tag: 'Android app · Web',
     lead: 'An app for freelancers and service businesses: nail techs, stylists, barbershops, spas and shops. Log each sale and Rentablo automatically splits it between supplies, your salary and business profit.',
     visit: 'Visit rentablo.buildev.co',
     playAlt: 'Get it on Google Play',
     soon: 'Coming soon to Google Play',
+    webDevices: 'iPhone or PC',
+    webOpen: 'Use it in your browser',
     saleOf: 'A sale of',
     profilesAria: 'Split profiles',
     screensAria: 'App screens',
@@ -115,17 +121,23 @@ const pesos = (n: number) => '$' + Math.round(n).toLocaleString(locale);
       <a href={rentablo.url} target="_blank" rel="noopener" class="btn btn--primary">
         {copy.visit} <Icon name="external" size={17} />
       </a>
-      {
-        rentablo.play.published ? (
-          <a href={rentablo.play.url} target="_blank" rel="noopener" class="showcase__play">
-            <img src="/rentablo/google-play.png" alt={copy.playAlt} width="646" height="250" />
-          </a>
-        ) : (
-          <span class="showcase__soon">
-            <Icon name="phone" size={16} /> {copy.soon}
-          </span>
-        )
-      }
+      <div class="showcase__stores">
+        {
+          rentablo.play.published ? (
+            <a href={rentablo.play.url} target="_blank" rel="noopener" class="showcase__play">
+              <img src="/rentablo/google-play.png" alt={copy.playAlt} width="646" height="250" />
+            </a>
+          ) : (
+            <span class="showcase__soon">
+              <Icon name="phone" size={16} /> {copy.soon}
+            </span>
+          )
+        }
+        <a href={rentablo.web} target="_blank" rel="noopener" class="showcase__web">
+          <Icon name="monitor" size={24} />
+          <span><small>{copy.webDevices}</small>{copy.webOpen}</span>
+        </a>
+      </div>
     </div>
   </div>
 
@@ -276,6 +288,38 @@ const pesos = (n: number) => '$' + Math.round(n).toLocaleString(locale);
   .showcase__play img {
     height: 52px;
     width: auto;
+  }
+  .showcase__stores {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+  }
+  /* Sello de la versión web: mismo alto y estilo que el de Google Play. */
+  .showcase__web {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    height: 52px;
+    padding: 0 16px 0 12px;
+    border-radius: 10px;
+    border: 1px solid #a6a6a6;
+    background: #000;
+    color: #fff;
+    line-height: 1.15;
+    font-size: 1rem;
+    font-weight: 600;
+    white-space: nowrap;
+    transition: transform 0.2s ease;
+  }
+  .showcase__web:hover {
+    transform: translateY(-2px);
+  }
+  .showcase__web small {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: rgb(255 255 255 / 0.8);
   }
 
   .showcase--rentablo .showcase__visual {
@@ -478,11 +522,16 @@ const pesos = (n: number) => '$' + Math.round(n).toLocaleString(locale);
     .showcase__play {
       margin-inline: auto;
     }
+    .showcase__stores {
+      width: 100%;
+      justify-content: center;
+    }
   }
   @media (prefers-reduced-motion: reduce) {
     .phone__shot,
     .split__bar i,
-    .showcase__play {
+    .showcase__play,
+    .showcase__web {
       transition: none;
     }
   }
