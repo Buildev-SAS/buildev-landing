@@ -12,7 +12,7 @@ interface Props {
 const { title, heading, text } = Astro.props;
 ---
 
-<Layout title={title}>
+<Layout title={title} noindex>
   <main class="simple">
     <Stripes class="simple__stripes" />
     <div class="simple__box">
