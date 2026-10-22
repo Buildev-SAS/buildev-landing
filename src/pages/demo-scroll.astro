@@ -1,0 +1,952 @@
+---
+// Demo de animación al hacer scroll («scrollytelling»): la historia del software a la medida
+// contada solo con piezas de la landing (logo, franjas, ventana de código y capturas de Rentablo).
+// Técnica: GSAP + ScrollTrigger amarran una línea de tiempo al scroll y Lenis lo suaviza.
+import fs from 'node:fs';
+import Layout from '../layouts/Layout.astro';
+import Icon from '../components/Icon.astro';
+
+// El logo va en línea para animar cada pieza por separado: #path4, #path3 y #path1-4 son
+// las tres piezas del ícono; #text2 («BUIL») y #text3 («DEV») son las letras.
+const logoSvg = fs
+  .readFileSync('public/logo-buildev.svg', 'utf8')
+  .replace(/<\?xml[^>]*\?>|<!--[\s\S]*?-->/g, '')
+  .replace(/width="[^"]*mm"\s*height="[^"]*mm"/, 'class="logo__svg" aria-hidden="true"');
+
+// Mismas franjas del manual de marca que usa Stripes.astro.
+const stripes = [
+  { x: 40, y: 250, len: 150, w: 22, c: '#A6D936' },
+  { x: 90, y: 300, len: 120, w: 14, c: '#00B8D9' },
+  { x: 120, y: 230, len: 220, w: 26, c: '#0091C7' },
+  { x: 150, y: 330, len: 180, w: 16, c: '#A6D936' },
+  { x: 230, y: 260, len: 250, w: 28, c: '#00B8D9' },
+  { x: 250, y: 360, len: 150, w: 18, c: '#E9EEF2' },
+  { x: 330, y: 250, len: 260, w: 30, c: '#0091C7' },
+  { x: 360, y: 350, len: 200, w: 20, c: '#A6D936' },
+  { x: 440, y: 270, len: 190, w: 24, c: '#00B8D9' },
+  { x: 470, y: 370, len: 130, w: 14, c: '#E9EEF2' },
+  { x: 520, y: 300, len: 170, w: 22, c: '#A6D936' },
+];
+
+const captions = [
+  { n: '01', title: 'Tu negocio es único', text: 'Tus procesos tienen sus propias reglas. Un software genérico nunca encaja del todo.' },
+  { n: '02', title: 'Lo armamos a tu medida', text: 'Diseñamos cada pieza para que encaje con la forma en que ya trabajas.' },
+  { n: '03', title: 'Lo programamos', text: 'Escribimos el código pensando en tus reglas, no en una plantilla.' },
+  { n: '04', title: 'Se vuelve producto', text: 'El código se convierte en una app real que tu equipo usa todos los días. Como Rentablo.' },
+  { n: '05', title: 'Y trabaja por ti', text: 'Rentablo reparte cada venta entre insumos, sueldo y utilidad. Cada negocio elige su reparto.' },
+];
+
+const screens = ['inicio', 'venta', 'estadisticas', 'agenda'];
+const sale = 65000;
+const parts = ['Insumos', 'Sueldo', 'Utilidad'];
+const profiles = [
+  { name: 'Equilibrado', split: [20, 50, 30] },
+  { name: 'Crecer', split: [20, 40, 40] },
+  { name: 'Vivo de esto', split: [15, 65, 20] },
+];
+const pesos = (n: number) => '$' + Math.round(n).toLocaleString('es-CO');
+---
+
+<Layout title="Demo · Software a la medida | BUILDEV" noindex>
+  <header class="demo-bar">
+    <a href="/" class="demo-bar__logo" aria-label="Volver a BUILDEV">
+      <img src="/logo-buildev.svg" alt="BUILDEV" width="120" height="33" />
+    </a>
+    <span class="demo-bar__tag">Demo · animación con scroll</span>
+    <div class="demo-bar__progress" data-progress aria-hidden="true"></div>
+  </header>
+
+  <main>
+    <section class="stage" data-stage>
+      <h1 class="sr-only">Cómo construimos software a la medida</h1>
+      <div class="glow" data-glow aria-hidden="true"></div>
+
+      <svg class="sweep" viewBox="0 0 640 400" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+        <g stroke-linecap="round" fill="none">
+          {
+            stripes.map((s) => (
+              <path
+                d={`M${s.x} ${s.y} L${s.x + s.len * 0.7} ${s.y - s.len * 0.7}`}
+                stroke={s.c}
+                stroke-width={s.w}
+                pathLength="1"
+              />
+            ))
+          }
+        </g>
+      </svg>
+
+      <div class="rig" data-rig aria-hidden="true">
+        <!-- Escena 1: las piezas sueltas se juntan y forman el logo -->
+        <div class="layer logo" data-logo>
+          <div class="logo__float">
+            <Fragment set:html={logoSvg} />
+            <p class="logo__tagline" data-tagline>Software Solutions &amp; Innovation</p>
+          </div>
+        </div>
+
+        <!-- Escenas 2 y 3: la ventana de código se escribe y luego se transforma en teléfono -->
+        <div class="layer shell" data-shell>
+          <div class="shell__bar" data-bar>
+            <span></span><span></span><span></span>
+            <em>buildev.co</em>
+          </div>
+          <pre class="shell__code"><code><span class="ln"><span class="k">const</span> <span class="v">software</span> = <span class="k">await</span> <span class="f">buildev</span>.<span class="f">construir</span>({'{'}</span><span class="ln">  <span class="p">para</span>: <span class="s">'tu negocio'</span>,</span><span class="ln">  <span class="p">procesos</span>: <span class="s">'a la medida'</span>,</span><span class="ln">  <span class="p">escala</span>: <span class="s">'sin límites'</span>,</span><span class="ln">  <span class="p">seguridad</span>: <span class="b">true</span>,</span><span class="ln">{'}'});</span><span class="ln"> </span><span class="ln"><span class="c">// ✓ Hecho a tu medida</span></span><span class="ln"><span class="v">software</span>.<span class="f">lanzar</span>();</span></code></pre>
+
+          <div class="shell__screen" data-screen>
+            {screens.map((s) => <img class="shell__shot" src={`/rentablo/${s}.webp`} alt="" width="600" height="1051" />)}
+            <span class="shell__notch" data-notch></span>
+          </div>
+        </div>
+
+        <div class="layer deco" data-deco>
+          <div class="float-card float-card--a">
+            <Icon name="growth" size={22} />
+            <div><strong>+ Eficiencia</strong><small>Procesos optimizados</small></div>
+          </div>
+          <div class="float-card float-card--b">
+            <Icon name="shield" size={22} />
+            <div><strong>Seguro</strong><small>Buenas prácticas</small></div>
+          </div>
+        </div>
+
+        <!-- Escena 4: la tarjeta de reparto de Rentablo se arma y cambia de perfil -->
+        <div class="split" data-split data-sale={sale}>
+          <p class="split__head">Una venta de <b>{pesos(sale)}</b></p>
+          <div class="split__bar">
+            {parts.map(() => <i />)}
+          </div>
+          <dl class="split__parts">
+            {
+              parts.map((part) => (
+                <div>
+                  <dt>
+                    {part} <span data-pct>0%</span>
+                  </dt>
+                  <dd data-amount>$0</dd>
+                </div>
+              ))
+            }
+          </dl>
+          <div class="split__profiles" data-profiles={JSON.stringify(profiles.map((p) => p.split))}>
+            <span class="split__pill" data-pill></span>
+            {profiles.map((p) => <span>{p.name}</span>)}
+          </div>
+        </div>
+      </div>
+
+      <div class="caps">
+        {
+          captions.map((c) => (
+            <div class="cap" data-cap>
+              <span class="cap__n">{c.n}</span>
+              <h2>{c.title}</h2>
+              <p>{c.text}</p>
+            </div>
+          ))
+        }
+      </div>
+
+      <!-- Final -->
+      <div class="finale" data-finale>
+        <h2 class="finale__title">
+          <span class="w">Software</span> <span class="w">hecho</span> <span class="w">a</span> <span class="w">la</span>
+          <span class="w text-grad">medida</span> <span class="w text-grad">de</span> <span class="w text-grad">tu</span>
+          <span class="w text-grad">negocio.</span>
+        </h2>
+        <p class="finale__lead" data-finale-fade>Cuéntanos cómo trabajas y lo convertimos en tu próximo producto.</p>
+        <div class="finale__actions" data-finale-fade>
+          <a href="/#contacto" class="btn btn--primary">Cuéntanos tu idea <Icon name="arrow" size={18} /></a>
+          <a href="/" class="btn btn--ghost">Volver a la landing</a>
+        </div>
+      </div>
+
+
+      <div class="hint" data-hint aria-hidden="true">
+        <span class="hint__mouse"></span>
+        Desliza para armarlo
+      </div>
+    </section>
+
+    <section class="how">
+      <div class="container">
+        <span class="eyebrow">Cómo está hecho</span>
+        <h2 class="section-title">Sin videos: todo es la propia página</h2>
+        <ul class="how__list">
+          <li>
+            <strong>Piezas de la landing.</strong> El logo en SVG, las franjas de marca, la ventana de código y las
+            capturas de Rentablo. Nada se grabó aparte.
+          </li>
+          <li>
+            <strong>GSAP + ScrollTrigger.</strong> Una sola línea de tiempo amarrada al scroll: bajar la avanza y subir
+            la devuelve, como adelantar o rebobinar un video.
+          </li>
+          <li>
+            <strong>Lenis.</strong> Suaviza el desplazamiento para que todo se sienta fluido con el mouse, el trackpad o
+            el dedo.
+          </li>
+        </ul>
+      </div>
+    </section>
+  </main>
+</Layout>
+
+<script>
+  import gsap from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  import Lenis from 'lenis';
+  import 'lenis/dist/lenis.css';
+
+  gsap.registerPlugin(ScrollTrigger);
+  ScrollTrigger.config({ ignoreMobileResize: true });
+
+  const $ = <T extends Element = HTMLElement>(sel: string) => document.querySelector<T>(sel)!;
+  const $$ = <T extends Element = HTMLElement>(sel: string) => [...document.querySelectorAll<T>(sel)];
+
+  const stage = $('[data-stage]');
+  const shell = $('[data-shell]');
+  const caps = $$('[data-cap]');
+  const lines = $$('.shell__code .ln');
+  const shots = $$('.shell__shot');
+  const stripes = $$<SVGPathElement>('.sweep path');
+  const cards = $$('.float-card');
+
+  // Las capas del escenario se centran sobre el punto del «rig».
+  gsap.set(['[data-logo]', shell, '[data-deco]'], { xPercent: -50, yPercent: -50 });
+  gsap.set($('[data-split]'), { yPercent: -50 });
+
+  // Estado inicial: piezas del logo sueltas, grandes y giradas; letras escondidas.
+  const pieces = [
+    { el: '#path4', x: 18, y: -36, rotation: -140, scale: 2.4 },
+    { el: '#path3', x: 80, y: -4, rotation: 110, scale: 2.8 },
+    { el: '#path1-4', x: 34, y: 40, rotation: 210, scale: 2.2 },
+  ];
+  pieces.forEach(({ el, ...from }) => gsap.set(el, { ...from, transformOrigin: '50% 50%' }));
+  gsap.set('#text2', { opacity: 0, x: -14 });
+  gsap.set('#text3', { opacity: 0, x: 14 });
+  gsap.set(caps.slice(1), { opacity: 0, y: 16 });
+  gsap.set(shots.slice(1), { yPercent: 100 });
+
+
+  // Tarjeta de reparto: un solo estado que pintan todos los pasos de la animación.
+  const split = $('[data-split]');
+  const sale = Number(split.dataset.sale);
+  const splitProfiles: number[][] = JSON.parse($('[data-profiles]').dataset.profiles!);
+  const bars = $$('.split__bar i');
+  const pcts = $$('[data-pct]');
+  const amounts = $$('[data-amount]');
+  const money = { p0: splitProfiles[0][0], p1: splitProfiles[0][1], p2: splitProfiles[0][2], k: 0 };
+  const pesos = (n: number) => '$' + Math.round(n).toLocaleString('es-CO');
+  const renderSplit = () => {
+    [money.p0, money.p1, money.p2].forEach((p, i) => {
+      bars[i].style.width = `${p * money.k}%`;
+      pcts[i].textContent = `${Math.round(p)}%`;
+      amounts[i].textContent = pesos(((sale * p) / 100) * money.k);
+    });
+  };
+  renderSplit();
+
+  // Cambia el pie de foto: el actual sale hacia arriba y el siguiente entra desde abajo.
+  const swapCap = (tl: gsap.core.Timeline, from: number, to: number, at: number) => {
+    tl.to(caps[from], { opacity: 0, y: -16, duration: 0.3 }, at);
+    if (caps[to]) tl.to(caps[to], { opacity: 1, y: 0, duration: 0.35 }, at + 0.25);
+  };
+
+  const tl = gsap.timeline({ defaults: { ease: 'none' }, paused: true });
+
+  // ── Escena 1 · 0 → 2.6: las piezas se juntan y forman el logo ──
+  tl.to('[data-hint]', { opacity: 0, y: 12, duration: 0.4 }, 0);
+  pieces.forEach(({ el }, i) => {
+    tl.to(el, { x: 0, y: 0, rotation: 0, scale: 1, duration: 2, ease: 'power3.inOut' }, i * 0.12);
+  });
+  swapCap(tl, 0, 1, 1.2);
+  tl.to('#text2', { opacity: 1, x: 0, duration: 0.6, ease: 'power2.out' }, 1.7);
+  tl.to('#text3', { opacity: 1, x: 0, duration: 0.6, ease: 'power2.out' }, 1.85);
+  tl.fromTo(
+    '[data-tagline]',
+    { opacity: 0, letterSpacing: '0.6em' },
+    { opacity: 1, letterSpacing: '0.12em', duration: 0.6, ease: 'power2.out' },
+    2.1,
+  );
+
+  // ── Transición · 2.9 → 4: el logo se va y las franjas barren la pantalla ──
+  tl.to('[data-logo]', { scale: 0.4, y: () => -innerHeight * 0.3, opacity: 0, duration: 0.6, ease: 'power2.in' }, 2.9);
+  tl.fromTo(stripes, { strokeDashoffset: 1.05 }, { strokeDashoffset: 0, duration: 0.6, stagger: 0.04, ease: 'power1.inOut' }, 2.8);
+  tl.to(stripes, { strokeDashoffset: -1.05, duration: 0.6, stagger: 0.04, ease: 'power1.inOut' }, 3.4);
+  // Ya borradas, se esconden: si no, la punta redondeada queda como un punto suelto.
+  tl.to(stripes, { opacity: 0, duration: 0.05, stagger: 0.04 }, 3.95);
+  swapCap(tl, 1, 2, 3.3);
+
+  // ── Escena 2 · 3.3 → 5.8: aparece la ventana y el código se escribe al ritmo del scroll ──
+  tl.fromTo(
+    shell,
+    { opacity: 0, scale: 0.7, y: 60, rotationX: 35, transformPerspective: 1100 },
+    { opacity: 1, scale: 1, y: 0, rotationX: 0, duration: 0.7, ease: 'power3.out' },
+    3.3,
+  );
+  let t = 3.9;
+  lines.forEach((line) => {
+    const chars = Math.max(1, line.textContent!.length);
+    const duration = Math.max(0.05, chars * 0.008);
+    tl.fromTo(
+      line,
+      { clipPath: 'inset(0% 100% 0% 0%)' },
+      { clipPath: 'inset(0% 0% 0% 0%)', duration, ease: `steps(${chars})` },
+      t,
+    );
+    t += duration + 0.04;
+  });
+  cards.forEach((card, i) => {
+    tl.fromTo(
+      card,
+      { opacity: 0, scale: 0.6, y: 24 },
+      { opacity: 1, scale: 1, y: 0, duration: 0.4, ease: 'back.out(2)' },
+      4.9 + i * 0.3,
+    );
+  });
+
+  // ── Escena 3 · 6 → 7.2: el código «compila»: sale volando y la ventana se vuelve teléfono ──
+  tl.to(
+    lines,
+    {
+      x: () => gsap.utils.random(-180, 180),
+      y: () => gsap.utils.random(-140, 140),
+      rotation: () => gsap.utils.random(-30, 30),
+      opacity: 0,
+      duration: 0.6,
+      stagger: 0.03,
+      ease: 'power2.in',
+    },
+    6,
+  );
+  tl.to('[data-bar]', { opacity: 0, duration: 0.3 }, 6);
+  tl.to(cards, { opacity: 0, scale: 0.5, x: (i) => (i ? 90 : -90), duration: 0.4, ease: 'power2.in' }, 6);
+  swapCap(tl, 2, 3, 6.1);
+  tl.fromTo(shell, { '--m': 0 }, { '--m': 1, backgroundColor: '#0a1f1c', duration: 0.8, ease: 'power3.inOut' }, 6.3);
+  tl.fromTo(
+    '[data-screen]',
+    { clipPath: 'inset(100% 0% 0% 0% round 34px)' },
+    { clipPath: 'inset(0% 0% 0% 0% round 34px)', duration: 0.5, ease: 'power2.out' },
+    6.9,
+  );
+  tl.fromTo(shots[0], { scale: 1.15 }, { scale: 1, duration: 0.6, ease: 'power2.out' }, 6.9);
+  tl.fromTo('[data-notch]', { opacity: 0, scaleX: 0.3 }, { opacity: 1, scaleX: 1, duration: 0.3 }, 7.2);
+
+  // ── Escena 4 · 7.2 → 9.6: el teléfono gira, cambia de pantalla y la venta se reparte ──
+  tl.to(shell, { rotationY: -20, rotationX: 6, duration: 0.8, ease: 'sine.inOut' }, 7.2);
+  tl.to(shell, { rotationY: 14, rotationX: -4, duration: 1.2, ease: 'sine.inOut' }, 8);
+  tl.to(shell, { rotationY: 0, rotationX: 0, duration: 0.6, ease: 'sine.inOut' }, 9.2);
+  shots.slice(1).forEach((shot, i) => {
+    tl.to(shot, { yPercent: 0, duration: 0.35, ease: 'power2.out' }, 7.9 + i * 0.55);
+  });
+  swapCap(tl, 3, 4, 7.6);
+  tl.fromTo(split, { opacity: 0, x: 60, scale: 0.9 }, { opacity: 1, x: 0, scale: 1, duration: 0.5, ease: 'power3.out' }, 7.6);
+  tl.to(money, { k: 1, duration: 0.7, ease: 'power2.out', onUpdate: renderSplit }, 7.9);
+  splitProfiles.slice(1).forEach(([p0, p1, p2], i) => {
+    const at = 8.7 + i * 0.5;
+    tl.to(money, { p0, p1, p2, duration: 0.35, ease: 'power2.inOut', onUpdate: renderSplit }, at);
+    tl.to('[data-pill]', { xPercent: (i + 1) * 100, duration: 0.35, ease: 'power2.inOut' }, at);
+  });
+
+  // ── Final · 9.7 → 11.4: todo pasa al fondo y aparece el mensaje ──
+  tl.to(caps[4], { opacity: 0, y: -16, duration: 0.3 }, 9.6);
+  tl.to('[data-rig]', { opacity: 0.08, scale: 0.86, duration: 0.6, ease: 'power2.inOut' }, 9.7);
+  tl.fromTo(
+    stripes,
+    { strokeDashoffset: 1.05, opacity: 1 },
+    { strokeDashoffset: 0, duration: 0.8, stagger: 0.04, ease: 'power1.inOut', immediateRender: false },
+    9.8,
+  );
+  tl.to('.sweep', { opacity: 0.18, duration: 0.8 }, 9.8);
+  tl.fromTo(
+    '.finale .w',
+    { opacity: 0, yPercent: 110, rotationX: -70 },
+    { opacity: 1, yPercent: 0, rotationX: 0, duration: 0.5, stagger: 0.06, ease: 'power3.out' },
+    9.9,
+  );
+  tl.fromTo('[data-finale-fade]', { autoAlpha: 0, y: 20 }, { autoAlpha: 1, y: 0, duration: 0.4, stagger: 0.1 }, 10.6);
+  tl.fromTo('[data-glow]', { xPercent: -60, yPercent: -40 }, { xPercent: 60, yPercent: 30, duration: 11 }, 0);
+  tl.to({}, { duration: 0.4 }, 11);
+
+  // La animación avanza solo cuando la persona hace scroll, así que funciona también con
+  // «reducir movimiento» (p. ej. Windows con los efectos de animación apagados); en ese caso
+  // solo se apaga lo que se mueve por su cuenta: el desplazamiento suave y la flotación del logo.
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  ScrollTrigger.create({
+    animation: tl,
+    trigger: stage,
+    start: 'top top',
+    end: '+=800%',
+    scrub: reduce ? true : 0.6,
+    pin: true,
+    anticipatePin: 1,
+    invalidateOnRefresh: true,
+    onUpdate: (self) => gsap.set('[data-progress]', { scaleX: self.progress }),
+  });
+  if (!reduce) {
+    gsap.to('.logo__float', { y: -10, duration: 2.4, ease: 'sine.inOut', yoyo: true, repeat: -1 });
+    const lenis = new Lenis({ autoRaf: false });
+    lenis.on('scroll', ScrollTrigger.update);
+    gsap.ticker.add((time) => lenis.raf(time * 1000));
+    gsap.ticker.lagSmoothing(0);
+  }
+</script>
+
+<style is:global>
+  /* Lenis maneja el desplazamiento suave; el smooth nativo de global.css lo estorbaría. */
+  html {
+    scroll-behavior: auto;
+  }
+</style>
+
+<style>
+  .demo-bar {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 16px 20px;
+    color: #fff;
+    pointer-events: none;
+  }
+  .demo-bar a,
+  .demo-bar__tag {
+    pointer-events: auto;
+  }
+  .demo-bar__logo img {
+    height: 30px;
+    width: auto;
+  }
+  .demo-bar__tag {
+    padding: 6px 14px;
+    border-radius: 999px;
+    border: 1px solid rgb(255 255 255 / 0.15);
+    background: rgb(255 255 255 / 0.06);
+    backdrop-filter: blur(8px);
+    font-size: 0.74rem;
+    font-weight: 600;
+    color: rgb(255 255 255 / 0.8);
+  }
+  .demo-bar__progress {
+    position: absolute;
+    inset: 0 0 auto;
+    height: 3px;
+    background: var(--grad-brand);
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+
+  /* Escenario: ocupa la pantalla y queda fijo mientras dura la animación. */
+  .stage {
+    --win-w: min(560px, calc(100vw - 32px));
+    --win-h: 320px;
+    --phone-h: min(560px, 60svh);
+    --phone-w: calc(var(--phone-h) * 0.56 + 10px);
+    position: relative;
+    height: 100vh;
+    height: 100svh;
+    overflow: hidden;
+    color: #fff;
+    background:
+      radial-gradient(1200px 600px at 85% 20%, #26414f 0%, transparent 60%),
+      linear-gradient(160deg, var(--c-ink-900) 0%, var(--c-ink) 100%);
+  }
+  .glow {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 760px;
+    height: 760px;
+    margin: -380px 0 0 -380px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgb(166 217 54 / 0.16), transparent 65%);
+    pointer-events: none;
+  }
+  .sweep {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.55;
+    pointer-events: none;
+  }
+  .sweep path {
+    stroke-dasharray: 1 2;
+    stroke-dashoffset: 1.05;
+  }
+
+  /* Punto alrededor del que se ubican todas las capas. */
+  .rig {
+    position: absolute;
+    left: 50%;
+    top: 45%;
+    pointer-events: none;
+  }
+  .layer {
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+
+  .logo {
+    width: min(520px, 84vw);
+  }
+  .logo :global(.logo__svg) {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+  .logo__tagline {
+    margin-top: 14px;
+    text-align: center;
+    font-size: clamp(0.7rem, 1.6vw, 0.95rem);
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgb(255 255 255 / 0.7);
+    opacity: 0;
+  }
+
+  /* La misma caja es ventana (--m: 0) y teléfono (--m: 1). */
+  .shell {
+    --m: 0;
+    width: calc(var(--win-w) + (var(--phone-w) - var(--win-w)) * var(--m));
+    height: calc(var(--win-h) + (var(--phone-h) - var(--win-h)) * var(--m));
+    border-radius: calc(16px + 30px * var(--m));
+    background: rgb(15 22 28 / 0.9);
+    border: 1px solid rgb(255 255 255 / 0.12);
+    box-shadow: 0 40px 80px -30px rgb(0 0 0 / 0.7);
+    opacity: 0;
+  }
+  .shell__bar {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 14px 16px;
+    border-bottom: 1px solid rgb(255 255 255 / 0.08);
+  }
+  .shell__bar span {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: rgb(255 255 255 / 0.18);
+  }
+  .shell__bar span:first-child {
+    background: var(--c-lime);
+  }
+  .shell__bar em {
+    margin-left: auto;
+    font-style: normal;
+    font-size: 0.75rem;
+    color: rgb(255 255 255 / 0.45);
+  }
+  .shell__code {
+    margin: 0;
+    padding: 20px 22px;
+    font-family: ui-monospace, 'Cascadia Code', 'Fira Code', Menlo, monospace;
+    font-size: clamp(0.72rem, 1.3vw, 0.9rem);
+    line-height: 1.75;
+    color: #d6e2ea;
+  }
+  /* Cada línea se «escribe» destapándose de izquierda a derecha. */
+  .ln {
+    display: block;
+    width: max-content;
+    max-width: 100%;
+    white-space: pre-wrap;
+    clip-path: inset(0% 100% 0% 0%);
+  }
+  .ln:last-child::after {
+    content: '';
+    display: inline-block;
+    width: 0.55em;
+    height: 1.1em;
+    margin-left: 2px;
+    vertical-align: -0.2em;
+    background: var(--c-lime);
+    animation: caret 1s steps(1) infinite;
+  }
+  @keyframes caret {
+    50% {
+      opacity: 0;
+    }
+  }
+  .k { color: #7fd3f0; }
+  .v { color: #fff; }
+  .f { color: var(--c-lime); }
+  .p { color: #9fb3c2; }
+  .s { color: #5fd0e6; }
+  .b { color: #f0b86e; }
+  .c { color: #6f8494; }
+
+  .shell__screen {
+    position: absolute;
+    inset: 9px;
+    overflow: hidden;
+    border-radius: 34px;
+    background: #fff;
+    clip-path: inset(100% 0% 0% 0% round 34px);
+  }
+  .shell__shot {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top;
+  }
+  .shell__notch {
+    position: absolute;
+    left: 50%;
+    top: 8px;
+    width: 30%;
+    height: 18px;
+    margin-left: -15%;
+    border-radius: 999px;
+    background: #0a1f1c;
+    opacity: 0;
+  }
+
+  .deco {
+    width: var(--win-w);
+    height: var(--win-h);
+  }
+  .float-card {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-radius: 14px;
+    background: #fff;
+    color: var(--c-ink);
+    box-shadow: var(--shadow-lg);
+    opacity: 0;
+  }
+  .float-card div {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.25;
+  }
+  .float-card strong {
+    font-size: 0.9rem;
+  }
+  .float-card small {
+    font-size: 0.75rem;
+    color: var(--c-muted);
+  }
+  .float-card--a {
+    left: -24px;
+    bottom: -28px;
+  }
+  .float-card--a :global(svg) {
+    color: #6cc04a;
+  }
+  .float-card--b {
+    right: -20px;
+    top: -24px;
+  }
+  .float-card--b :global(svg) {
+    color: var(--c-blue);
+  }
+
+  /* Tarjeta de reparto (paleta de Rentablo). */
+  .split {
+    --rb-mint: #8ee5c4;
+    position: absolute;
+    left: calc(var(--phone-w) / -2 - 40px);
+    top: calc(var(--phone-h) * 0.18);
+    width: 240px;
+    padding: 14px 16px;
+    border-radius: 16px;
+    border: 1px solid rgb(255 255 255 / 0.1);
+    background: rgb(12 43 39 / 0.94);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 24px 50px -20px rgb(0 0 0 / 0.65);
+    opacity: 0;
+  }
+  .split__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: 0.64rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--rb-mint);
+  }
+  .split__head b {
+    font-size: 0.92rem;
+    letter-spacing: 0;
+    color: #fff;
+  }
+  .split__bar {
+    display: flex;
+    gap: 3px;
+    height: 8px;
+    margin-top: 10px;
+  }
+  .split__bar i {
+    width: 0;
+    border-radius: 999px;
+    background: var(--dot);
+  }
+  .split__bar i:nth-child(1),
+  .split__parts div:nth-child(1) {
+    --dot: #e87ba4;
+  }
+  .split__bar i:nth-child(2),
+  .split__parts div:nth-child(2) {
+    --dot: #9085e9;
+  }
+  .split__bar i:nth-child(3),
+  .split__parts div:nth-child(3) {
+    --dot: #eb6834;
+  }
+  .split__parts {
+    display: grid;
+    gap: 6px;
+    margin: 12px 0;
+  }
+  .split__parts div {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .split__parts dt {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 0.74rem;
+    color: rgb(255 255 255 / 0.72);
+  }
+  .split__parts dt::before {
+    content: '';
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--dot);
+  }
+  .split__parts dt span {
+    color: rgb(255 255 255 / 0.45);
+  }
+  .split__parts dd {
+    margin: 0;
+    font-size: 0.84rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+  .split__profiles {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    padding: 3px;
+    border-radius: 999px;
+    background: rgb(255 255 255 / 0.06);
+  }
+  .split__profiles span:not(.split__pill) {
+    position: relative;
+    padding: 6px 2px;
+    text-align: center;
+    font-size: 0.64rem;
+    font-weight: 600;
+    white-space: nowrap;
+    color: rgb(255 255 255 / 0.8);
+  }
+  .split__pill {
+    position: absolute;
+    left: 3px;
+    top: 3px;
+    bottom: 3px;
+    width: calc((100% - 6px) / 3);
+    border-radius: 999px;
+    background: rgb(87 184 154 / 0.35);
+  }
+
+  /* Pies de foto: abajo en celular, a la izquierda en pantallas grandes. */
+  .caps {
+    position: absolute;
+    left: 16px;
+    right: 16px;
+    bottom: calc(24px + env(safe-area-inset-bottom));
+    display: grid;
+    text-align: center;
+    pointer-events: none;
+  }
+  .cap {
+    grid-area: 1 / 1;
+    align-self: end;
+    max-width: 38ch;
+    margin-inline: auto;
+  }
+  .cap:not(:first-child) {
+    opacity: 0;
+  }
+  .cap__n {
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    color: var(--c-lime);
+  }
+  .cap h2 {
+    margin-top: 6px;
+    font-size: clamp(1.3rem, 2.6vw, 2rem);
+  }
+  .cap p {
+    margin-top: 8px;
+    font-size: clamp(0.88rem, 1.3vw, 1rem);
+    color: rgb(255 255 255 / 0.72);
+  }
+
+  .finale {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    padding: 80px 16px 40px;
+    text-align: center;
+    pointer-events: none;
+  }
+  .finale__title {
+    max-width: 16ch;
+    font-size: clamp(2.2rem, 6.4vw, 4.8rem);
+    letter-spacing: -0.03em;
+    perspective: 800px;
+  }
+  .finale .w {
+    display: inline-block;
+    opacity: 0;
+  }
+  .finale__lead {
+    margin-top: 22px;
+    max-width: 46ch;
+    font-size: clamp(1rem, 1.6vw, 1.15rem);
+    color: rgb(255 255 255 / 0.75);
+    visibility: hidden;
+  }
+  .finale__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 14px;
+    margin-top: 30px;
+    pointer-events: auto;
+    visibility: hidden;
+  }
+
+  .hint {
+    position: absolute;
+    left: 50%;
+    top: calc(76px + env(safe-area-inset-top));
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transform: translateX(-50%);
+    font-size: 0.78rem;
+    font-weight: 600;
+    white-space: nowrap;
+    color: rgb(255 255 255 / 0.7);
+  }
+  .hint__mouse {
+    position: relative;
+    width: 18px;
+    height: 28px;
+    border: 2px solid rgb(255 255 255 / 0.6);
+    border-radius: 10px;
+  }
+  .hint__mouse::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 5px;
+    width: 3px;
+    height: 6px;
+    margin-left: -1.5px;
+    border-radius: 2px;
+    background: var(--c-lime);
+    animation: wheel 1.6s ease-in-out infinite;
+  }
+  @keyframes wheel {
+    60% {
+      transform: translateY(7px);
+      opacity: 0;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .rig {
+      left: 60%;
+      top: 50%;
+    }
+    .split {
+      left: calc(var(--phone-w) / 2 + 28px);
+      top: 0;
+    }
+    .caps {
+      left: max(4vw, 24px);
+      right: auto;
+      top: 50%;
+      bottom: auto;
+      width: 280px;
+      transform: translateY(-50%);
+      text-align: left;
+    }
+    .cap {
+      align-self: center;
+      margin: 0;
+    }
+    .hint {
+      top: auto;
+      bottom: 32px;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .stage {
+      --win-h: 270px;
+      --phone-h: min(520px, 54svh);
+    }
+    .shell__code {
+      padding: 16px;
+    }
+    .split {
+      width: 210px;
+      left: calc(var(--phone-w) / -2 - 16px);
+      top: calc(var(--phone-h) * 0.08);
+      padding: 12px;
+    }
+    .float-card {
+      padding: 10px 12px;
+    }
+    .float-card--a {
+      left: 6px;
+    }
+    .float-card--b {
+      right: 6px;
+    }
+  }
+
+
+  .how {
+    padding-block: clamp(72px, 10vw, 120px);
+    background: var(--c-bg-soft);
+  }
+  .how__list {
+    display: grid;
+    gap: 18px;
+    max-width: 70ch;
+    margin: 32px 0 0;
+    padding: 0;
+    list-style: none;
+    color: var(--c-muted);
+  }
+  .how__list strong {
+    color: var(--c-ink);
+  }
+</style>
