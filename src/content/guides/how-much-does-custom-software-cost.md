@@ -63,6 +63,6 @@ A reliable proposal should include:
 
 ## Custom software: an investment, not an expense
 
-The useful question is not just "how much does it cost?" but "how much will it save or earn me?". A system that eliminates hours of manual work, reduces errors or lets you serve more customers pays for itself over time.
+The useful question is not just "how much does it cost?" but "how much will it save or earn me?". A system that eliminates hours of manual work, reduces errors or lets you serve more customers pays for itself over time. If your goal is to eliminate repetitive work, see also [how to automate business processes](/en/guides/how-to-automate-business-processes/).
 
 If you want to know how much your project would cost, [get in touch](/en/#contacto): after a free initial conversation, we will send you a proposal with a defined scope, timeline and price.

@@ -62,6 +62,6 @@ Una propuesta confiable debería incluir:
 
 ## Software a la medida: inversión, no gasto
 
-La pregunta útil no es solo "¿cuánto cuesta?", sino "¿cuánto me ahorra o me genera?". Un sistema que elimina horas de trabajo manual, reduce errores o permite atender más clientes se paga solo con el tiempo.
+La pregunta útil no es solo "¿cuánto cuesta?", sino "¿cuánto me ahorra o me genera?". Un sistema que elimina horas de trabajo manual, reduce errores o permite atender más clientes se paga solo con el tiempo. Si lo que buscas es eliminar tareas repetitivas, mira también [cómo automatizar los procesos de tu negocio](/guias/como-automatizar-procesos-en-tu-empresa/).
 
 Si quieres saber cuánto costaría tu proyecto, [escríbenos](/#contacto): después de una conversación inicial sin costo te enviamos una propuesta con alcance, tiempos y valor definidos.

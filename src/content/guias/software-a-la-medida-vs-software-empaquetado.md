@@ -46,6 +46,6 @@ En la práctica, muchas empresas usan herramientas empaquetadas para lo estánda
 
 ## Una prueba sencilla para decidir
 
-Haz una lista de las tareas que tu equipo hace **por fuera** del software actual: reportes armados a mano, datos copiados de un sistema a otro, seguimiento en chats. Si esa lista es larga y ocupa muchas horas a la semana, el software genérico ya te está costando más de lo que parece.
+Haz una lista de las tareas que tu equipo hace **por fuera** del software actual: reportes armados a mano, datos copiados de un sistema a otro, seguimiento en chats. Si esa lista es larga y ocupa muchas horas a la semana, el software genérico ya te está costando más de lo que parece. Muchas de esas tareas se pueden resolver sin desarrollar nada: revisa primero [cómo automatizar los procesos de tu negocio](/guias/como-automatizar-procesos-en-tu-empresa/).
 
 ¿No tienes claro qué te conviene? [Cuéntanos tu caso](/#contacto) y te ayudamos a evaluarlo, aunque la respuesta sea que no necesitas desarrollar nada.

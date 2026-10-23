@@ -47,6 +47,6 @@ In practice, many companies use off-the-shelf tools for standard needs and build
 
 ## A simple test to decide
 
-Make a list of the tasks your team does **outside** your current software: reports built by hand, data copied from one system to another, follow-ups in chat. If that list is long and takes up many hours a week, generic software is already costing you more than it seems.
+Make a list of the tasks your team does **outside** your current software: reports built by hand, data copied from one system to another, follow-ups in chat. If that list is long and takes up many hours a week, generic software is already costing you more than it seems. Many of those tasks can be solved without building anything: start with our guide on [how to automate business processes](/en/guides/how-to-automate-business-processes/).
 
 Not sure what's right for you? [Tell us about your case](/en/#contacto) and we'll help you evaluate it, even if the answer is that you don't need to build anything.

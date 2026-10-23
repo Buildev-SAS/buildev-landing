@@ -1,6 +1,7 @@
 ---
 import Icon, { type IconName } from './Icon.astro';
 import { getLang, type Lang } from '../i18n';
+import { guiaHref } from '../data/guias';
 
 const lang = getLang(Astro.url);
 const copy = {
@@ -16,7 +17,13 @@ const copy = {
   },
 }[lang];
 
-const services: { icon: IconName; title: Record<Lang, string>; text: Record<Lang, string> }[] = [
+// `guide`: enlace opcional a la guía que amplía el servicio.
+const services: {
+  icon: IconName;
+  title: Record<Lang, string>;
+  text: Record<Lang, string>;
+  guide?: { href: Record<Lang, string>; label: Record<Lang, string> };
+}[] = [
   {
     icon: 'code',
     title: { es: 'Software a la medida', en: 'Custom software' },
@@ -47,6 +54,10 @@ const services: { icon: IconName; title: Record<Lang, string>; text: Record<Lang
     text: {
       es: 'Eliminamos tareas repetitivas y reducimos errores para que tu equipo se enfoque en lo importante.',
       en: 'We eliminate repetitive tasks and reduce errors so your team can focus on what matters.',
+    },
+    guide: {
+      href: { es: guiaHref('es', 'como-automatizar-procesos-en-tu-empresa'), en: guiaHref('en', 'how-to-automate-business-processes') },
+      label: { es: 'Cómo automatizar los procesos de tu negocio', en: 'How to automate business processes' },
     },
   },
   {
@@ -87,6 +98,11 @@ const services: { icon: IconName; title: Record<Lang, string>; text: Record<Lang
             </span>
             <h3>{s.title[lang]}</h3>
             <p>{s.text[lang]}</p>
+            {s.guide && (
+              <a class="card__link" href={s.guide.href[lang]}>
+                {s.guide.label[lang]} <Icon name="arrow" size={16} />
+              </a>
+            )}
           </article>
         ))
       }
@@ -155,6 +171,19 @@ const services: { icon: IconName; title: Record<Lang, string>; text: Record<Lang
     margin-top: 10px;
     color: var(--c-muted);
     font-size: 0.96rem;
+  }
+
+  .card__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 16px;
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: var(--c-blue);
+  }
+  .card__link:hover {
+    text-decoration: underline;
   }
 
   @media (max-width: 960px) {
