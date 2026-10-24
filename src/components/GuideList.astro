@@ -1,14 +1,31 @@
 ---
-// Listado de guías (/guias/ y /en/guides/).
+// Listado de guías (/guias/ y /en/guides/) o de artículos del blog (/blog/).
 import ContentLayout from '../layouts/ContentLayout.astro';
 import Icon from './Icon.astro';
 import { getGuias, guiaHref, formatDate } from '../data/guias';
+import { getPosts, postHref } from '../data/blog';
 import { getLang } from '../i18n';
 
-const lang = getLang(Astro.url);
-const guias = await getGuias(lang);
+interface Props {
+  blog?: boolean;
+}
 
-const copy = {
+const lang = getLang(Astro.url);
+const guias = Astro.props.blog
+  ? (await getPosts()).map((p) => ({ data: p.data, href: postHref(p.id) }))
+  : (await getGuias(lang)).map((g) => ({ data: g.data, href: guiaHref(lang, g.id) }));
+
+const blogCopy = {
+  title: 'Blog de tecnología: noticias del sector TI con opinión | BUILDEV',
+  description:
+    'Cada 8 días, la noticia más importante del sector TI explicada sin rodeos y con la opinión práctica del equipo de BUILDEV: qué pasó y qué hacer.',
+  eyebrow: 'Blog',
+  heading: 'Lo que pasa en tecnología, y lo que significa para tu negocio',
+  lead: 'Cada 8 días elegimos la noticia más importante del sector TI y te contamos qué pasó, qué opinamos y qué hacer.',
+  more: 'Leer artículo',
+};
+
+const copy = Astro.props.blog ? blogCopy : {
   es: {
     title: 'Guías sobre desarrollo de software para empresas | BUILDEV',
     description:
@@ -41,7 +58,7 @@ const copy = {
     {
       guias.map((g) => (
         <li>
-          <a href={guiaHref(lang, g.id)} class="guia">
+          <a href={g.href} class="guia">
             <time datetime={g.data.pubDate.toISOString()}>{formatDate(g.data.pubDate, lang)}</time>
             <h2>{g.data.title}</h2>
             <p>{g.data.description}</p>

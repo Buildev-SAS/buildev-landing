@@ -1,12 +1,15 @@
 ---
 import Logo from './Logo.astro';
 import { site } from '../data/site';
+import { blogPath } from '../data/blog';
 import { getLang, nav, navHref, paths, useT } from '../i18n';
 
 const lang = getLang(Astro.url);
 const t = useT(Astro.url);
 // Contenido informativo: solo se enlaza desde el footer para no tocar la landing.
+// El blog solo existe en español.
 const resources = [
+  ...(lang === 'es' ? [{ href: blogPath, label: 'Blog' }] : []),
   { href: paths.guides[lang], label: t.guides },
   { href: paths.faq[lang], label: t.faq },
 ];

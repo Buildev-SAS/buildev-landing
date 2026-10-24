@@ -31,4 +31,21 @@ const guides = defineCollection({
   }),
 });
 
-export const collections = { guias, guides };
+// Blog (/blog/<nombre-del-archivo>/): la noticia más importante del sector TI, con la opinión de BUILDEV.
+// Solo en español. `image` es la imagen para compartir en redes (1200x630, dentro de /public).
+const blog = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/blog' }),
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    pubDate: z.coerce.date(),
+    updatedDate: z.coerce.date().optional(),
+    image: z.string().optional(),
+    // Fuentes de la noticia; se listan al final del artículo.
+    sources: z.array(z.object({ title: z.string(), url: z.string().url() })).default([]),
+    faqs: z.array(z.object({ q: z.string(), a: z.string() })).default([]),
+    draft: z.boolean().default(false),
+  }),
+});
+
+export const collections = { guias, guides, blog };

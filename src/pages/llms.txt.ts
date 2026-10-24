@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import { getGuias, guiaHref } from '../data/guias';
+import { getPosts, postHref } from '../data/blog';
 import { faqGroups } from '../data/faq';
 import { site } from '../data/site';
 import { paths } from '../i18n';
@@ -9,6 +10,7 @@ import { paths } from '../i18n';
 export const GET: APIRoute = async () => {
   const guias = await getGuias('es');
   const guides = await getGuias('en');
+  const posts = await getPosts();
   const list = (entries: typeof guias, lang: 'es' | 'en') =>
     entries.map((g) => `- [${g.data.title}](${site.url}${guiaHref(lang, g.id)}): ${g.data.description}`).join('\n');
 
@@ -37,6 +39,12 @@ export const GET: APIRoute = async () => {
 ## Guías
 
 ${list(guias, 'es')}
+
+## Blog
+
+Cada 8 días, la noticia más importante del sector TI con la opinión de ${site.name}.
+
+${posts.map((p) => `- [${p.data.title}](${site.url}${postHref(p.id)}): ${p.data.description}`).join('\n')}
 
 ## Preguntas frecuentes
 

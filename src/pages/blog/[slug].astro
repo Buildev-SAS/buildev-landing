@@ -1,0 +1,10 @@
+---
+import GuideArticle from '../../components/GuideArticle.astro';
+import { getPosts } from '../../data/blog';
+
+export async function getStaticPaths() {
+  return (await getPosts()).map((post) => ({ params: { slug: post.id }, props: { post } }));
+}
+---
+
+<GuideArticle guia={Astro.props.post} />

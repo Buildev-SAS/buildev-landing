@@ -1,26 +1,33 @@
 ---
-// Página de una guía (/guias/<id>/ y /en/guides/<id>/).
+// Página de una guía (/guias/<id>/ y /en/guides/<id>/) o de un artículo del blog (/blog/<id>/).
 import { render } from 'astro:content';
 import ContentLayout from '../layouts/ContentLayout.astro';
 import FaqList from './FaqList.astro';
 import { getGuias, guiaHref, formatDate, type Guia } from '../data/guias';
+import { getPosts, postHref, blogPath, type Post } from '../data/blog';
 import { site } from '../data/site';
 import { getLang, paths, ui } from '../i18n';
 import '../styles/prose.css';
 
 interface Props {
-  guia: Guia;
+  guia: Guia | Post;
 }
 
 const { guia } = Astro.props;
 const lang = getLang(Astro.url);
+const isPost = guia.collection === 'blog';
 const { title, description, pubDate, updatedDate, faqs } = guia.data;
+const image = isPost ? guia.data.image : undefined;
+const sources = isPost ? guia.data.sources : [];
 const { Content } = await render(guia);
 
-const copy = {
-  es: { eyebrow: 'Guía', by: 'Por el equipo de BUILDEV', updated: 'Actualizada el', faq: 'Preguntas frecuentes', more: 'Sigue leyendo', moreAria: 'Otras guías' },
-  en: { eyebrow: 'Guide', by: 'By the BUILDEV team', updated: 'Updated', faq: 'Frequently asked questions', more: 'Keep reading', moreAria: 'Other guides' },
-}[lang];
+const copy = isPost
+  ? { eyebrow: 'Blog', by: 'Opinión del equipo de BUILDEV', updated: 'Actualizado el', faq: 'Preguntas frecuentes', more: 'Sigue leyendo', moreAria: 'Otros artículos', sources: 'Fuentes' }
+  : {
+      es: { eyebrow: 'Guía', by: 'Por el equipo de BUILDEV', updated: 'Actualizada el', faq: 'Preguntas frecuentes', more: 'Sigue leyendo', moreAria: 'Otras guías', sources: 'Fuentes' },
+      en: { eyebrow: 'Guide', by: 'By the BUILDEV team', updated: 'Updated', faq: 'Frequently asked questions', more: 'Keep reading', moreAria: 'Other guides', sources: 'Sources' },
+    }[lang];
+const crumb = isPost ? { label: 'Blog', href: blogPath } : { label: ui[lang].guides, href: paths.guides[lang] };
 
 const url = new URL(Astro.url.pathname, Astro.site).href;
 const org = { '@id': `${site.url}/#organization` };
@@ -36,6 +43,7 @@ const article = {
   mainEntityOfPage: url,
   author: org,
   publisher: org,
+  ...(image && { image: new URL(image, Astro.site).href }),
 };
 const faqSchema = faqs.length && {
   '@context': 'https://schema.org',
@@ -43,7 +51,13 @@ const faqSchema = faqs.length && {
   mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
 };
 
-const others = (await getGuias(lang)).filter((g) => g.id !== guia.id).slice(0, 3);
+const others = (
+  isPost
+    ? (await getPosts()).map((p) => ({ id: p.id, title: p.data.title, href: postHref(p.id) }))
+    : (await getGuias(lang)).map((g) => ({ id: g.id, title: g.data.title, href: guiaHref(lang, g.id) }))
+)
+  .filter((o) => o.id !== guia.id)
+  .slice(0, 3);
 ---
 
 <ContentLayout
@@ -52,9 +66,10 @@ const others = (await getGuias(lang)).filter((g) => g.id !== guia.id).slice(0, 3
   eyebrow={copy.eyebrow}
   heading={title}
   lead={description}
-  crumbs={[{ label: ui[lang].guides, href: paths.guides[lang] }]}
+  crumbs={[crumb]}
   ogType="article"
   schema={faqSchema ? [article, faqSchema] : [article]}
+  image={image}
 >
   <p class="meta" slot="meta">
     {copy.by} · <time datetime={pubDate.toISOString()}>{formatDate(pubDate, lang)}</time>
@@ -82,13 +97,30 @@ const others = (await getGuias(lang)).filter((g) => g.id !== guia.id).slice(0, 3
   }
 
   {
+    sources.length > 0 && (
+      <section class="block">
+        <h2>{copy.sources}</h2>
+        <ul class="sources">
+          {sources.map((s) => (
+            <li>
+              <a href={s.url} target="_blank" rel="noopener">
+                {s.title}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+
+  {
     others.length > 0 && (
       <nav class="block" aria-label={copy.moreAria}>
         <h2>{copy.more}</h2>
         <ul class="others">
-          {others.map((g) => (
+          {others.map((o) => (
             <li>
-              <a href={guiaHref(lang, g.id)}>{g.data.title}</a>
+              <a href={o.href}>{o.title}</a>
             </li>
           ))}
         </ul>
@@ -127,6 +159,22 @@ const others = (await getGuias(lang)).filter((g) => g.id !== guia.id).slice(0, 3
   }
   .others a:hover {
     border-color: var(--c-blue);
+    color: var(--c-blue);
+  }
+  .sources {
+    display: grid;
+    gap: 8px;
+    margin: 0;
+    padding-left: 20px;
+    font-size: 0.92rem;
+    color: var(--c-muted);
+    overflow-wrap: anywhere;
+  }
+  .sources a {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .sources a:hover {
     color: var(--c-blue);
   }
 </style>

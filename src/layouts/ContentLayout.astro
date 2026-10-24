@@ -24,9 +24,10 @@ interface Props {
   crumbs?: Crumb[];
   ogType?: 'website' | 'article';
   schema?: Record<string, unknown>[];
+  image?: string;
 }
 
-const { title, description, heading, lead, eyebrow, crumbs = [], ogType, schema = [] } = Astro.props;
+const { title, description, heading, lead, eyebrow, crumbs = [], ogType, schema = [], image } = Astro.props;
 
 const t = useT(Astro.url);
 const home = homePath(getLang(Astro.url));
@@ -45,7 +46,7 @@ const breadcrumbs = {
 const waText = encodeURIComponent(t.waText);
 ---
 
-<Layout title={title} description={description} ogType={ogType} schema={[breadcrumbs, ...schema]}>
+<Layout title={title} description={description} ogType={ogType} schema={[breadcrumbs, ...schema]} image={image}>
   <Header />
   <main>
     <section class="page-hero">
