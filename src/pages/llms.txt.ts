@@ -42,7 +42,7 @@ ${list(guias, 'es')}
 
 ## Blog
 
-Cada 8 días, la noticia más importante del sector TI con la opinión de ${site.name}.
+Cada semana, la noticia más importante del sector TI con la opinión de ${site.name}.
 
 ${posts.map((p) => `- [${p.data.title}](${site.url}${postHref(p.id)}): ${p.data.description}`).join('\n')}
 
