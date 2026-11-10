@@ -1,7 +1,7 @@
 ---
 import Icon from './Icon.astro';
 import Stripes from './Stripes.astro';
-import { site } from '../data/site';
+import { site, privacyVersion } from '../data/site';
 import { getLang, paths } from '../i18n';
 
 const lang = getLang(Astro.url);
@@ -140,7 +140,9 @@ const [emailUser, emailDomain] = site.email.split('@');
         <span>{copy.message}</span>
         <textarea name="mensaje" rows="4" required placeholder={copy.messagePh}></textarea>
       </label>
-      <!-- Autorización de tratamiento de datos (Ley 1581 de 2012). Netlify guarda el valor con el mensaje. -->
+      <!-- Autorización de tratamiento de datos (Ley 1581 de 2012). Netlify guarda el valor con el mensaje,
+           junto con la versión de la política que estaba vigente, como prueba de lo que se aceptó. -->
+      <input type="hidden" name="version-politica" value={privacyVersion} />
       <label class="form__consent">
         <input type="checkbox" name="autorizacion" value="Sí" required />
         <span>
