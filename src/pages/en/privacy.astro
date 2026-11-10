@@ -3,15 +3,21 @@ import Layout from '../../layouts/Layout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import Stripes from '../../components/Stripes.astro';
-import { site } from '../../data/site';
+import { site, privacyVersion } from '../../data/site';
 
-// Cambia esta fecha cada vez que se modifique el texto de la política.
-const updated = 'October 16, 2026';
+// La fecha se cambia en src/data/site.ts (privacyVersion), no aquí.
+const since = new Date(`${privacyVersion}T12:00:00Z`).toLocaleDateString('en-US', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+  timeZone: 'UTC',
+});
+const { legal } = site;
 ---
 
 <Layout
   title={`Privacy policy | ${site.name}`}
-  description="How BUILDEV handles the personal data it receives through buildev.co: contact form, WhatsApp, cookies and products."
+  description="How BUILDEV handles the personal data it receives through buildev.co: contact form, email, WhatsApp, cookies and products."
 >
   <Header />
   <main>
@@ -20,43 +26,132 @@ const updated = 'October 16, 2026';
       <div class="container">
         <span class="eyebrow">Legal</span>
         <h1>Privacy policy</h1>
-        <p class="legal-hero__date">Last updated: {updated}</p>
+        <p class="legal-hero__date">Effective since {since}</p>
       </div>
     </section>
 
     <article class="container legal">
       <p>
         This policy explains what personal data we receive through <strong>buildev.co</strong>, what we use it for
-        and how you can exercise your rights.
+        and how you can exercise your rights. It is governed by Ley 1581 de 2012 (Law 1581 of 2012, Colombia's data
+        protection law, known as habeas data) and Decreto 1377 de 2013 (compiled in Decreto 1074 de 2015).
       </p>
 
-      <h2>Data controller</h2>
+      <h2>1. Data controller</h2>
+      <ul>
+        <li><strong>Legal name:</strong> {legal.name}</li>
+        <li><strong>Tax ID (NIT):</strong> {legal.nit}</li>
+        <li><strong>Registered domicile:</strong> {legal.domicile}</li>
+        <li><strong>Address:</strong> {legal.address}</li>
+        <li><strong>Phone:</strong> {legal.phone}</li>
+        <li>
+          <strong>Email for personal data:</strong> <a href={`mailto:${site.email}`}>{site.email}</a>
+        </li>
+      </ul>
+      <p>The BUILDEV team handles requests, inquiries and complaints about personal data through that email.</p>
+
+      <h2>2. What data we receive and why</h2>
+      <ul>
+        <li>
+          <strong>Contact form:</strong> your name, company, email, phone number, the service you are interested in and
+          your message. We use it to respond to your request, including sending you any proposal you ask for.
+        </li>
+        <li>
+          <strong>Email:</strong> if you write to <a href={`mailto:${site.email}`}>{site.email}</a>, we receive your
+          email address and whatever you tell us. We use it to reply to you.
+        </li>
+        <li>
+          <strong>WhatsApp:</strong> if you message us on WhatsApp, we receive your number, your profile name and your
+          messages. We use them to reply to you. Meta, which operates WhatsApp, also processes that data under its own
+          privacy policy.
+        </li>
+        <li>
+          <strong>Technical data:</strong> Netlify, which hosts this site, logs data about each visit, such as your IP
+          address and browser, to serve and protect the site.
+        </li>
+      </ul>
+      <p>We do not sell your data or use it to send you advertising.</p>
       <p>
-        BUILDEV S A S, a Colombian company, is responsible for processing the data. For any privacy matter, write to
-        us at <a href={`mailto:${site.email}`}>{site.email}</a>.
+        We do not ask for sensitive data, such as health information, racial or ethnic origin, religious beliefs or
+        political views. Please do not include it in your message; if we receive it, we use it only to reply to you.
+      </p>
+      <p>
+        This site is aimed at businesses and adults. We do not knowingly collect data from minors; if we receive it, we
+        delete it.
       </p>
 
-      <h2>Contact form</h2>
-      <p>
-        If you write to us through the form, we receive your name, company, email, phone number, the service you are
-        interested in and your message. We use this data only to respond to your request; we do not sell it or use it
-        to send you advertising.
-      </p>
+      <h2>3. Your authorization</h2>
       <p>
         Before you submit the form, we ask you to authorize this use by checking the corresponding box. We store that
-        authorization together with your message.
-      </p>
-      <p>
-        The form runs on Netlify, our hosting provider, which stores the messages on our behalf.
+        authorization together with your message, along with the date and the version of this policy you accepted.
       </p>
 
-      <h2>WhatsApp</h2>
+      <h2>4. Your rights</h2>
+      <p>As the owner of your data, you can:</p>
+      <ul>
+        <li>Access, update and correct your data.</li>
+        <li>Request proof of the authorization you gave us.</li>
+        <li>Find out how we have used it.</li>
+        <li>Revoke your authorization or ask us to delete your data, unless a legal or contractual duty requires us to keep it.</li>
+        <li>Access it free of charge.</li>
+        <li>
+          File a complaint with the Superintendencia de Industria y Comercio (SIC, Colombia's data protection authority)
+          after first going through the process with us.
+        </li>
+      </ul>
+
+      <h2>5. How to exercise them</h2>
       <p>
-        The WhatsApp button only opens a conversation in WhatsApp. Anything you share there is governed by WhatsApp's
-        (Meta's) privacy policy.
+        Write to <a href={`mailto:${site.email}`}>{site.email}</a> with your name, your ID, a description of what you are
+        requesting, an address or other way to reply to you and, if you wish, any supporting documents.
+      </p>
+      <ul>
+        <li>
+          <strong>Inquiries:</strong> we reply within 10 business days. If we cannot meet that deadline, we will tell you
+          why and reply within 5 more business days.
+        </li>
+        <li>
+          <strong>Complaints</strong> (correction, update, deletion or non-compliance): we reply within 15 business days.
+          If we cannot meet that deadline, we will tell you why and reply within 8 more business days.
+        </li>
+        <li>
+          If a complaint is incomplete, we will ask for what is missing within 5 days. If 2 months go by without a
+          response, we will consider the complaint withdrawn.
+        </li>
+      </ul>
+
+      <h2>6. Where your data is</h2>
+      <p>We use these providers, which process data outside Colombia:</p>
+      <ul>
+        <li>
+          <strong>Netlify</strong> (United States): hosts this site and stores the form messages on our behalf.
+        </li>
+        <li>
+          <strong>Google Workspace</strong> (United States and other countries where Google has data centers): provides
+          the buildev.co email service, on our behalf.
+        </li>
+        <li>
+          <strong>Meta</strong> (United States and other countries): provides the WhatsApp service.
+        </li>
+      </ul>
+      <p>
+        We may also disclose data when a competent authority requires it under the law. Our platforms (Rentablo,
+        Agendorio and Loyenta) run on other servers and describe their hosting in their own privacy policies.
       </p>
 
-      <h2>Cookies and analytics</h2>
+      <h2>7. How long we keep it</h2>
+      <p>
+        While we handle your request and, if you hire us, for as long as the business relationship lasts. After that,
+        only as long as needed to meet legal obligations or resolve complaints.
+      </p>
+
+      <h2>8. Security</h2>
+      <p>
+        The whole site runs over an encrypted connection (HTTPS) with security headers, and the form filters automated
+        submissions. Only authorized BUILDEV staff can access the messages we receive.
+      </p>
+
+      <h2>9. Cookies</h2>
       <p>
         This site does not use cookies, analytics tools or ads, and it does not load third-party trackers.
       </p>
@@ -65,14 +160,10 @@ const updated = 'October 16, 2026';
         site opens in that language next time. It is never sent to any server, and you can delete it by clearing this
         site's data in your browser.
       </p>
-      <p>
-        Buildev products that show ads use Google cookies and identifiers, as explained in
-        <a href="#advertising">"Advertising in our products"</a>.
-      </p>
 
-      <h2>Our products</h2>
+      <h2>10. Our products</h2>
       <p>
-        Rentablo and Agendorio have their own privacy policies, which apply when you use those applications:
+        Rentablo, Agendorio and Loyenta have their own privacy policies, which apply when you use those platforms:
       </p>
       <ul>
         <li>
@@ -85,45 +176,52 @@ const updated = 'October 16, 2026';
             >agendorio.buildev.co/privacidad</a
           >
         </li>
+        <li>
+          Loyenta: <a href="https://loyenta.buildev.co/privacidad" target="_blank" rel="noopener"
+            >loyenta.buildev.co/privacidad</a
+          >
+        </li>
       </ul>
 
-      <h2 id="advertising">Advertising in our products</h2>
+      <h2 id="advertising">11. Advertising in our products</h2>
       <p>
-        Some Buildev products that run on buildev.co subdomains, such as Rentablo, are free and supported by Google
-        ads: Google AdSense on the web and Google AdMob in mobile apps. This site, buildev.co, does not show ads.
+        The Rentablo Android app is free and supported by Google AdMob ads. This site, buildev.co, does not show ads.
       </p>
       <p>
         To show those ads, limit how often you see the same one and measure how they perform, Google and its
-        advertising partners may use cookies, device or advertising identifiers, your IP address and data about how you
-        interact with the ads, as described in
+        advertising partners may use your phone's advertising ID, your IP address and data about how you interact with
+        the ads, as described in
         <a href="https://policies.google.com/technologies/ads" target="_blank" rel="noopener"
           >Google's advertising policy</a
         >.
       </p>
       <p>
-        The information you store in our apps (for example sales, customers or appointments) is never shared with
+        The information you store in the app (for example sales, customers or appointments) is never shared with
         advertisers.
       </p>
       <p>
         If you are in the European Economic Area, the United Kingdom, Switzerland or a US state that requires it, we ask
         for your consent or give you the option to opt out before showing ads, using Google's privacy message. You can
-        change your choice at any time from the "Ad privacy" option in each app or from the privacy link shown on the
-        page.
+        change your choice at any time from the "Ad privacy" option in the app.
       </p>
       <p>
-        You can also choose whether Google shows you personalized ads in
+        In any country, you can delete or reset your advertising ID, or opt out of personalized ads, in your phone's
+        settings under "Ads". You can also choose whether Google shows you personalized ads in
         <a href="https://myadcenter.google.com" target="_blank" rel="noopener">My Ad Center</a>.
       </p>
 
-      <h2>Your rights</h2>
+      <h2>12. Changes</h2>
       <p>
-        Under Ley 1581 de 2012 (Law 1581 of 2012, Colombia's data protection law, known as habeas data), you can
-        access, update, correct or ask us to delete your data, and revoke your authorization. To do so, write to
-        <a href={`mailto:${site.email}`}>{site.email}</a> stating your request.
+        If we change this policy, we will publish the new version here with its date. If the change is substantial, for
+        example a new data controller or a new purpose, we will announce it on this site before applying it and, if the
+        purpose changes, we will ask for your authorization again.
       </p>
 
-      <h2>Changes</h2>
-      <p>If we change this policy, we will publish the new version here along with its update date.</p>
+      <h2>13. Effective date</h2>
+      <p>
+        This policy is effective since {since}. Our databases will remain in force while BUILDEV carries on its business
+        and the purposes described here still apply.
+      </p>
     </article>
   </main>
   <Footer />

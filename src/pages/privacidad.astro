@@ -3,15 +3,21 @@ import Layout from '../layouts/Layout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import Stripes from '../components/Stripes.astro';
-import { site } from '../data/site';
+import { site, privacyVersion } from '../data/site';
 
-// Cambia esta fecha cada vez que se modifique el texto de la política.
-const updated = '16 de octubre de 2026';
+// La fecha se cambia en src/data/site.ts (privacyVersion), no aquí.
+const since = new Date(`${privacyVersion}T12:00:00Z`).toLocaleDateString('es-CO', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+  timeZone: 'UTC',
+});
+const { legal } = site;
 ---
 
 <Layout
   title={`Política de privacidad | ${site.name}`}
-  description="Cómo BUILDEV trata los datos personales que recibe a través de buildev.co: formulario de contacto, WhatsApp, cookies y productos."
+  description="Cómo BUILDEV trata los datos personales que recibe a través de buildev.co: formulario de contacto, correo, WhatsApp, cookies y productos."
 >
   <Header />
   <main>
@@ -20,43 +26,138 @@ const updated = '16 de octubre de 2026';
       <div class="container">
         <span class="eyebrow">Legal</span>
         <h1>Política de privacidad</h1>
-        <p class="legal-hero__date">Última actualización: {updated}</p>
+        <p class="legal-hero__date">Vigente desde el {since}</p>
       </div>
     </section>
 
     <article class="container legal">
       <p>
         Esta política explica qué datos personales recibimos a través de <strong>buildev.co</strong>, para qué los
-        usamos y cómo puedes ejercer tus derechos.
+        usamos y cómo puedes ejercer tus derechos. Se rige por la Ley 1581 de 2012 y el Decreto 1377 de 2013
+        (compilado en el Decreto 1074 de 2015).
       </p>
 
-      <h2>Responsable</h2>
+      <h2>1. Quién es el responsable</h2>
+      <ul>
+        <li><strong>Razón social:</strong> {legal.name}</li>
+        <li><strong>NIT:</strong> {legal.nit}</li>
+        <li><strong>Domicilio:</strong> {legal.domicile}</li>
+        <li><strong>Dirección:</strong> {legal.address}</li>
+        <li><strong>Teléfono:</strong> {legal.phone}</li>
+        <li>
+          <strong>Correo para datos personales:</strong> <a href={`mailto:${site.email}`}>{site.email}</a>
+        </li>
+      </ul>
       <p>
-        BUILDEV S A S, empresa colombiana, es responsable del tratamiento de los datos. Para cualquier asunto sobre
-        privacidad escríbenos a <a href={`mailto:${site.email}`}>{site.email}</a>.
+        El equipo de BUILDEV atiende las peticiones, consultas y reclamos sobre datos personales por ese correo.
       </p>
 
-      <h2>Formulario de contacto</h2>
+      <h2>2. Qué datos recibimos y para qué</h2>
+      <ul>
+        <li>
+          <strong>Formulario de contacto:</strong> tu nombre, empresa, correo, teléfono, el servicio que te interesa y
+          tu mensaje. Los usamos para responder tu solicitud, lo que incluye enviarte la propuesta que nos pidas.
+        </li>
+        <li>
+          <strong>Correo:</strong> si nos escribes a <a href={`mailto:${site.email}`}>{site.email}</a>, recibimos tu
+          dirección de correo y lo que nos cuentes. Lo usamos para responderte.
+        </li>
+        <li>
+          <strong>WhatsApp:</strong> si nos escribes por WhatsApp, recibimos tu número, tu nombre de perfil y tus
+          mensajes. Los usamos para responderte. Meta, que opera WhatsApp, además trata esos datos según su propia
+          política de privacidad.
+        </li>
+        <li>
+          <strong>Datos técnicos:</strong> Netlify, que aloja este sitio, registra datos de cada visita, como la
+          dirección IP y el navegador, para servir el sitio y protegerlo.
+        </li>
+      </ul>
+      <p>No vendemos tus datos ni los usamos para enviarte publicidad.</p>
       <p>
-        Si nos escribes por el formulario, recibimos tu nombre, empresa, correo, teléfono, el servicio que te interesa
-        y tu mensaje. Usamos estos datos solo para responder tu solicitud; no los vendemos ni los usamos para enviarte
-        publicidad.
+        No te pedimos datos sensibles, como los de salud, origen racial o étnico, creencias religiosas u orientación
+        política. Por favor no los incluyas en tu mensaje; si llegan, no los usamos para nada distinto de responderte.
       </p>
+      <p>
+        Este sitio está dirigido a empresas y a personas mayores de edad. No recolectamos a sabiendas datos de menores
+        de edad; si los recibimos, los eliminamos.
+      </p>
+
+      <h2>3. Tu autorización</h2>
       <p>
         Antes de enviar el formulario te pedimos que autorices este uso marcando la casilla correspondiente. Guardamos
-        esa autorización junto con tu mensaje.
-      </p>
-      <p>
-        El formulario funciona con Netlify, nuestro proveedor de hosting, que almacena los mensajes en nuestro nombre.
+        esa autorización junto con tu mensaje, con la fecha y la versión de esta política que aceptaste.
       </p>
 
-      <h2>WhatsApp</h2>
+      <h2>4. Tus derechos</h2>
+      <p>Como titular de tus datos puedes:</p>
+      <ul>
+        <li>Conocer, actualizar y rectificar tus datos.</li>
+        <li>Pedir prueba de la autorización que nos diste.</li>
+        <li>Saber qué uso les hemos dado.</li>
+        <li>
+          Revocar la autorización o pedir que eliminemos tus datos, cuando no exista un deber legal o contractual de
+          conservarlos.
+        </li>
+        <li>Acceder a ellos gratis.</li>
+        <li>
+          Presentar quejas ante la Superintendencia de Industria y Comercio (SIC), después de agotar el trámite ante
+          nosotros.
+        </li>
+      </ul>
+
+      <h2>5. Cómo ejercerlos</h2>
       <p>
-        El botón de WhatsApp solo abre una conversación en WhatsApp. Lo que compartas allí se rige por la política de
-        privacidad de WhatsApp (Meta).
+        Escribe a <a href={`mailto:${site.email}`}>{site.email}</a> con tu nombre, tu identificación, la descripción de
+        lo que pides, una dirección o medio para responderte y, si quieres, los documentos que lo respalden.
+      </p>
+      <ul>
+        <li>
+          <strong>Consultas:</strong> respondemos en máximo 10 días hábiles. Si no alcanzamos, te avisamos el motivo y
+          respondemos en máximo 5 días hábiles más.
+        </li>
+        <li>
+          <strong>Reclamos</strong> (corrección, actualización, supresión o incumplimiento): respondemos en máximo 15
+          días hábiles. Si no alcanzamos, te avisamos el motivo y respondemos en máximo 8 días hábiles más.
+        </li>
+        <li>
+          Si el reclamo está incompleto, te pediremos lo que falte dentro de los 5 días siguientes. Si pasan 2 meses sin
+          que lo envíes, entenderemos que desististe del reclamo.
+        </li>
+      </ul>
+
+      <h2>6. Dónde están tus datos</h2>
+      <p>Usamos estos proveedores, que tratan los datos fuera de Colombia:</p>
+      <ul>
+        <li>
+          <strong>Netlify</strong> (Estados Unidos): aloja este sitio y guarda los mensajes del formulario por nuestra
+          cuenta.
+        </li>
+        <li>
+          <strong>Google Workspace</strong> (Estados Unidos y otros países donde Google tiene centros de datos): presta
+          el correo de buildev.co, por nuestra cuenta.
+        </li>
+        <li>
+          <strong>Meta</strong> (Estados Unidos y otros países): presta el servicio de WhatsApp.
+        </li>
+      </ul>
+      <p>
+        También podemos entregar datos cuando una autoridad competente lo exija conforme a la ley. Nuestras plataformas
+        (Rentablo, Agendorio y Loyenta) funcionan en otros servidores e informan su alojamiento en su propia política.
       </p>
 
-      <h2>Cookies y analítica</h2>
+      <h2>7. Cuánto tiempo los conservamos</h2>
+      <p>
+        Mientras atendemos tu solicitud y, si nos contratas, mientras dure la relación comercial. Después, solo el
+        tiempo necesario para cumplir obligaciones legales o resolver reclamos.
+      </p>
+
+      <h2>8. Seguridad</h2>
+      <p>
+        Todo el sitio funciona con conexión cifrada (HTTPS) y cabeceras de seguridad, y el formulario filtra los envíos
+        automáticos. Solo personas autorizadas de BUILDEV tienen acceso a los mensajes que recibimos.
+      </p>
+
+      <h2>9. Cookies</h2>
       <p>
         Este sitio no usa cookies, herramientas de analítica ni anuncios, y no carga rastreadores de terceros.
       </p>
@@ -65,14 +166,10 @@ const updated = '16 de octubre de 2026';
         mostrarte el sitio en ese idioma la próxima vez. Ese dato no se envía a ningún servidor y puedes borrarlo
         limpiando los datos del sitio en tu navegador.
       </p>
-      <p>
-        Los productos de Buildev que muestran anuncios usan cookies e identificadores de Google, como se explica en
-        <a href="#publicidad">«Publicidad en nuestros productos»</a>.
-      </p>
 
-      <h2>Nuestros productos</h2>
+      <h2>10. Nuestros productos</h2>
       <p>
-        Rentablo y Agendorio tienen su propia política de privacidad, que aplica cuando usas esas aplicaciones:
+        Rentablo, Agendorio y Loyenta tienen su propia política de privacidad, que aplica cuando usas esas plataformas:
       </p>
       <ul>
         <li>
@@ -85,46 +182,54 @@ const updated = '16 de octubre de 2026';
             >agendorio.buildev.co/privacidad</a
           >
         </li>
+        <li>
+          Loyenta: <a href="https://loyenta.buildev.co/privacidad" target="_blank" rel="noopener"
+            >loyenta.buildev.co/privacidad</a
+          >
+        </li>
       </ul>
 
-      <h2 id="publicidad">Publicidad en nuestros productos</h2>
+      <h2 id="publicidad">11. Publicidad en nuestros productos</h2>
       <p>
-        Algunos productos de Buildev que funcionan en subdominios de buildev.co, como Rentablo, son gratuitos y se
-        sostienen con anuncios de Google: Google AdSense en la web y Google AdMob en las apps móviles. Este sitio,
+        La app de Rentablo para Android es gratuita y se sostiene con anuncios de Google AdMob. Este sitio,
         buildev.co, no muestra anuncios.
       </p>
       <p>
         Para mostrar esos anuncios, limitar cuántas veces ves el mismo y medir cómo funcionan, Google y sus socios
-        publicitarios pueden usar cookies, identificadores del dispositivo o de publicidad, tu dirección IP y datos sobre
-        cómo interactúas con los anuncios, según la
+        publicitarios pueden usar el identificador de publicidad de tu teléfono, tu dirección IP y datos sobre cómo
+        interactúas con los anuncios, según la
         <a href="https://policies.google.com/technologies/ads" target="_blank" rel="noopener"
           >política de publicidad de Google</a
         >.
       </p>
       <p>
-        La información que guardas dentro de nuestras apps (por ejemplo ventas, clientes o citas) nunca se comparte con
+        La información que guardas dentro de la app (por ejemplo ventas, clientes o citas) nunca se comparte con
         anunciantes.
       </p>
       <p>
         Si estás en el Espacio Económico Europeo, el Reino Unido, Suiza o en un estado de EE. UU. que lo exija, antes de
         mostrar anuncios te pedimos tu consentimiento o te damos la opción de rechazar, con el mensaje de privacidad de
-        Google. Puedes cambiar tu elección cuando quieras desde la opción «Privacidad de los anuncios» de cada app o desde
-        el enlace de privacidad que aparece en la página.
+        Google. Puedes cambiar tu elección cuando quieras desde la opción «Privacidad de los anuncios» de la app.
       </p>
       <p>
-        También puedes decidir si Google te muestra anuncios personalizados en
+        En cualquier país puedes borrar o restablecer el identificador de publicidad, o pedir que no se use para
+        anuncios personalizados, en los ajustes de tu teléfono, en la sección «Anuncios». También puedes decidir si
+        Google te muestra anuncios personalizados en
         <a href="https://myadcenter.google.com" target="_blank" rel="noopener">Mi Centro de Anuncios</a>.
       </p>
 
-      <h2>Tus derechos</h2>
+      <h2>12. Cambios</h2>
       <p>
-        De acuerdo con la Ley 1581 de 2012 (habeas data), puedes conocer, actualizar, corregir o pedir que eliminemos
-        tus datos, y revocar tu autorización. Para hacerlo, escribe a
-        <a href={`mailto:${site.email}`}>{site.email}</a> indicando tu solicitud.
+        Si cambiamos esta política, publicaremos aquí la nueva versión con su fecha. Si el cambio es sustancial, por
+        ejemplo un nuevo responsable o una nueva finalidad, lo avisaremos en este sitio antes de aplicarlo y, si cambia
+        la finalidad, te pediremos una nueva autorización.
       </p>
 
-      <h2>Cambios</h2>
-      <p>Si cambiamos esta política, publicaremos aquí la nueva versión con su fecha de actualización.</p>
+      <h2>13. Vigencia</h2>
+      <p>
+        Esta política rige desde el {since}. Las bases de datos estarán vigentes mientras BUILDEV desarrolle su
+        actividad y se mantengan las finalidades descritas aquí.
+      </p>
     </article>
   </main>
   <Footer />
