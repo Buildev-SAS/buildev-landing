@@ -1,109 +1,53 @@
 ---
-import Icon from './Icon.astro';
-import Stripes from './Stripes.astro';
 import { getLang } from '../i18n';
 
 const lang = getLang(Astro.url);
-// El bloque de código es decorativo, pero se lee: también se traduce.
 const copy = {
   es: {
-    badge: 'Desarrollo de software · Colombia',
-    titleA: 'Soluciones de software que',
-    titleB: 'impulsan tu negocio',
-    lead: 'Desarrollo, automatización e innovación a tu medida. Convertimos tus procesos en productos digitales escalables, seguros y listos para crecer contigo.',
+    title: 'Soluciones de software que impulsan tu negocio.',
+    lead: 'Convertimos tus procesos en productos digitales escalables, seguros y listos para crecer contigo.',
     start: 'Comenzar ahora',
     seeServices: 'Ver servicios',
-    points: ['Software a la medida', 'Entrega puntual', 'Soporte continuo'],
-    code: {
-      business: 'negocio',
-      transform: 'transformar',
-      processes: 'procesos',
-      automated: 'automatizados',
-      scale: 'escala',
-      unlimited: 'sin límites',
-      security: 'seguridad',
-      comment: '// ✓ Listo para crecer',
-      grow: 'crecer',
-    },
-    cardA: { title: '+ Eficiencia', text: 'Procesos optimizados' },
-    cardB: { title: 'Seguro', text: 'Buenas prácticas' },
+    scroll: 'Desliza para explorar',
+    pause: 'Pausar animación',
+    play: 'Reanudar animación',
   },
   en: {
-    badge: 'Software development · Colombia',
-    titleA: 'Software solutions that',
-    titleB: 'drive your business',
-    lead: 'Custom development, automation and innovation. We turn your processes into digital products that are scalable, secure and ready to grow with you.',
+    title: 'Software solutions that drive your business.',
+    lead: 'We turn your processes into digital products that are scalable, secure and ready to grow with you.',
     start: 'Get started',
-    seeServices: 'Explore services',
-    points: ['Custom software', 'On-time delivery', 'Ongoing support'],
-    code: {
-      business: 'business',
-      transform: 'transform',
-      processes: 'processes',
-      automated: 'automated',
-      scale: 'scale',
-      unlimited: 'unlimited',
-      security: 'security',
-      comment: '// ✓ Ready to grow',
-      grow: 'grow',
-    },
-    cardA: { title: '+ Efficiency', text: 'Optimized processes' },
-    cardB: { title: 'Secure', text: 'Best practices' },
+    seeServices: 'View services',
+    scroll: 'Scroll to explore',
+    pause: 'Pause animation',
+    play: 'Resume animation',
   },
 }[lang];
-const c = copy.code;
 ---
 
 <section class="hero" id="inicio">
-  <Stripes class="hero__stripes" />
-  <div class="hero__glow" aria-hidden="true"></div>
+  <canvas class="hero__canvas" data-hero-canvas aria-hidden="true"></canvas>
 
   <div class="container hero__inner">
-    <div class="hero__copy">
-      <span class="hero__badge">
-        <span class="dot"></span> {copy.badge}
-      </span>
-      <h1>
-        {copy.titleA} <span class="text-grad">{copy.titleB}</span>
-      </h1>
-      <p class="hero__lead">
-        {copy.lead}
-      </p>
-      <div class="hero__actions">
-        <a href="#contacto" class="btn btn--primary">
-          {copy.start} <Icon name="arrow" size={18} />
-        </a>
-        <a href="#servicios" class="btn btn--ghost">{copy.seeServices}</a>
-      </div>
-      <ul class="hero__points">
-        {copy.points.map((p) => <li><Icon name="check" size={18} /> {p}</li>)}
-      </ul>
+    <h1>{copy.title}</h1>
+    <p class="hero__lead">{copy.lead}</p>
+    <div class="hero__actions">
+      <a href="#contacto" class="btn btn--primary hero__btn">{copy.start}</a>
+      <a href="#servicios" class="hero__link">{copy.seeServices} <span aria-hidden="true">→</span></a>
     </div>
+  </div>
 
-    <div class="hero__visual" aria-hidden="true">
-      <div class="window">
-        <div class="window__bar">
-          <span></span><span></span><span></span>
-          <em>buildev.co</em>
-        </div>
-        <pre class="window__code"><code><span class="k">const</span> <span class="v">{c.business}</span> = <span class="k">await</span> <span class="f">buildev</span>.<span class="f">{c.transform}</span>({'{'}
-  <span class="p">{c.processes}</span>: <span class="s">'{c.automated}'</span>,
-  <span class="p">{c.scale}</span>: <span class="s">'{c.unlimited}'</span>,
-  <span class="p">{c.security}</span>: <span class="b">true</span>,
-{'}'});
-
-<span class="c">{c.comment}</span>
-<span class="v">{c.business}</span>.<span class="f">{c.grow}</span>();</code></pre>
-      </div>
-      <div class="float-card float-card--a">
-        <Icon name="growth" size={22} />
-        <div><strong>{copy.cardA.title}</strong><small>{copy.cardA.text}</small></div>
-      </div>
-      <div class="float-card float-card--b">
-        <Icon name="shield" size={22} />
-        <div><strong>{copy.cardB.title}</strong><small>{copy.cardB.text}</small></div>
-      </div>
-    </div>
+  <div class="container hero__bar">
+    <a href="#servicios" class="hero__scroll">{copy.scroll} <span aria-hidden="true">↓</span></a>
+    <button
+      type="button"
+      class="hero__pause"
+      data-hero-pause
+      aria-pressed="false"
+      data-pause-label={copy.pause}
+      data-play-label={copy.play}
+    >
+      {copy.pause}
+    </button>
   </div>
 </section>
 
@@ -111,218 +55,271 @@ const c = copy.code;
   .hero {
     position: relative;
     overflow: hidden;
-    background: radial-gradient(1200px 600px at 85% 20%, #26414f 0%, transparent 60%),
-      linear-gradient(160deg, var(--c-ink-900) 0%, var(--c-ink) 100%);
+    min-height: 100vh;
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(160deg, var(--c-ink-900) 0%, var(--c-ink) 100%);
     color: #fff;
-    padding-top: calc(var(--header-h) + clamp(48px, 8vw, 96px));
-    padding-bottom: clamp(72px, 10vw, 128px);
+    padding-top: var(--header-h);
   }
-  .hero :global(.hero__stripes) {
+  .hero__canvas {
     position: absolute;
-    right: -120px;
-    bottom: -60px;
-    width: min(760px, 90vw);
-    height: auto;
-    opacity: 0.22;
-    pointer-events: none;
-  }
-  .hero__glow {
-    position: absolute;
-    width: 520px;
-    height: 520px;
-    left: -200px;
-    top: -160px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgb(166 217 54 / 0.18), transparent 65%);
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.2;
     pointer-events: none;
   }
   .hero__inner {
     position: relative;
-    display: grid;
-    grid-template-columns: 1.1fr 1fr;
-    align-items: center;
-    gap: 56px;
-  }
-  .hero__badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    padding: 6px 14px;
-    border-radius: 999px;
-    border: 1px solid rgb(255 255 255 / 0.15);
-    background: rgb(255 255 255 / 0.05);
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: rgb(255 255 255 / 0.85);
-  }
-  .dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--c-lime);
-    box-shadow: 0 0 0 4px rgb(166 217 54 / 0.25);
-  }
-  .hero h1 {
-    margin-top: 22px;
-    font-size: clamp(2.3rem, 5.4vw, 3.9rem);
-    letter-spacing: -0.03em;
-  }
-  .hero__lead {
-    margin-top: 22px;
-    font-size: clamp(1.02rem, 1.6vw, 1.15rem);
-    color: rgb(255 255 255 / 0.75);
-    max-width: 54ch;
-  }
-  .hero__actions {
-    margin-top: 34px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 14px;
-  }
-  .hero__points {
-    margin: 34px 0 0;
-    padding: 0;
-    list-style: none;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px 26px;
-    font-size: 0.9rem;
-    color: rgb(255 255 255 / 0.75);
-  }
-  .hero__points li {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .hero__points :global(svg) {
-    color: var(--c-lime);
-  }
-
-  /* Visual */
-  .hero__visual {
-    position: relative;
-    padding: 30px 10px;
-  }
-  .window {
-    border-radius: var(--radius);
-    background: rgb(15 22 28 / 0.85);
-    border: 1px solid rgb(255 255 255 / 0.1);
-    box-shadow: 0 40px 80px -30px rgb(0 0 0 / 0.6);
-    overflow: hidden;
-  }
-  .window__bar {
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    padding: 14px 16px;
-    border-bottom: 1px solid rgb(255 255 255 / 0.08);
-  }
-  .window__bar span {
-    width: 11px;
-    height: 11px;
-    border-radius: 50%;
-    background: rgb(255 255 255 / 0.18);
-  }
-  .window__bar span:first-child {
-    background: var(--c-lime);
-  }
-  .window__bar em {
-    margin-left: auto;
-    font-style: normal;
-    font-size: 0.75rem;
-    color: rgb(255 255 255 / 0.45);
-  }
-  .window__code {
-    margin: 0;
-    padding: 24px 22px 28px;
-    font-family: ui-monospace, 'Cascadia Code', 'Fira Code', Menlo, monospace;
-    font-size: clamp(0.78rem, 1.3vw, 0.92rem);
-    line-height: 1.8;
-    color: #d6e2ea;
-    overflow-x: auto;
-  }
-  .k { color: #7fd3f0; }
-  .v { color: #fff; }
-  .f { color: var(--c-lime); }
-  .p { color: #9fb3c2; }
-  .s { color: #5fd0e6; }
-  .b { color: #f0b86e; }
-  .c { color: #6f8494; }
-
-  .float-card {
-    position: absolute;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 16px;
-    border-radius: 14px;
-    background: #fff;
-    color: var(--c-ink);
-    box-shadow: var(--shadow-lg);
-    animation: float 6s ease-in-out infinite;
-  }
-  .float-card div {
+    flex: 1;
     display: flex;
     flex-direction: column;
-    line-height: 1.25;
+    justify-content: center;
+    align-items: flex-start;
+    padding-block: 64px;
   }
-  .float-card strong {
-    font-size: 0.9rem;
+  .hero h1 {
+    max-width: 16ch;
+    font-size: clamp(3rem, 7.4vw, 4.5rem);
+    font-weight: 500;
+    line-height: 1.05;
+    letter-spacing: -0.035em;
   }
-  .float-card small {
-    font-size: 0.75rem;
-    color: var(--c-muted);
+  .hero__lead {
+    margin-top: 28px;
+    max-width: 36rem;
+    font-size: 1.125rem;
+    color: rgb(255 255 255 / 0.7);
   }
-  .float-card--a {
-    left: -18px;
-    bottom: -4px;
+  .hero__actions {
+    margin-top: 44px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 20px 32px;
   }
-  .float-card--a :global(svg) {
-    color: #6cc04a;
+  .hero__btn {
+    box-shadow: none;
   }
-  .float-card--b {
-    right: -8px;
-    top: 0;
-    animation-delay: -3s;
+  .hero__link {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: rgb(255 255 255 / 0.85);
+    border-bottom: 1px solid rgb(255 255 255 / 0.25);
+    padding-bottom: 3px;
+    transition:
+      color 0.2s ease,
+      border-color 0.2s ease;
   }
-  .float-card--b :global(svg) {
-    color: var(--c-blue);
+  .hero__link span {
+    display: inline-block;
+    transition: transform 0.2s ease;
   }
-  @keyframes float {
+  .hero__link:hover {
+    color: #fff;
+    border-color: var(--c-lime);
+  }
+  .hero__link:hover span {
+    transform: translateX(4px);
+  }
+
+  .hero__bar {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding-block: 22px;
+    border-top: 1px solid rgb(255 255 255 / 0.1);
+    font-size: 0.8rem;
+    letter-spacing: 0.04em;
+    color: rgb(255 255 255 / 0.55);
+  }
+  .hero__scroll:hover,
+  .hero__pause:hover {
+    color: #fff;
+  }
+  .hero__pause {
+    background: none;
+    border: 0;
+    padding: 6px 0;
+    font: inherit;
+    letter-spacing: inherit;
+    color: inherit;
+    cursor: pointer;
+  }
+  .hero__pause::before {
+    content: '';
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    margin-right: 10px;
+    border-radius: 50%;
+    background: var(--c-lime);
+    vertical-align: 1px;
+  }
+  .hero__pause[aria-pressed='true']::before {
+    background: rgb(255 255 255 / 0.35);
+  }
+  .hero__scroll span {
+    display: inline-block;
+    animation: nudge 2.4s ease-in-out infinite;
+  }
+  @keyframes nudge {
     50% {
-      transform: translateY(-10px);
+      transform: translateY(3px);
     }
   }
   @media (prefers-reduced-motion: reduce) {
-    .float-card {
+    .hero__scroll span {
       animation: none;
     }
   }
-
-  @media (max-width: 960px) {
-    /* minmax(0, …): el bloque de código no puede ensanchar la columna más allá de la pantalla. */
-    .hero__inner {
-      grid-template-columns: minmax(0, 1fr);
-      gap: 48px;
-    }
-    .hero__visual {
-      max-width: 560px;
-    }
-  }
   @media (max-width: 520px) {
-    .float-card--a {
-      left: 4px;
-    }
-    .float-card--b {
-      right: 8px;
-    }
-  }
-  /* En pantallas angostas el código parte sus líneas en vez de cortarse. */
-  @media (max-width: 420px) {
-    .window__code {
-      padding-inline: 16px;
-      font-size: 0.74rem;
-      white-space: pre-wrap;
+    .hero__inner {
+      padding-block: 48px;
     }
   }
 </style>
+
+<script>
+  const canvas = document.querySelector<HTMLCanvasElement>('[data-hero-canvas]');
+  const pauseBtn = document.querySelector<HTMLButtonElement>('[data-hero-pause]');
+  const ctx = canvas?.getContext('2d');
+
+  if (canvas && ctx && pauseBtn) {
+    type Node = { x: number; y: number; vx: number; vy: number };
+    const LIME = '166, 217, 54';
+    const LINK = 150;
+    const MOUSE_R = 170;
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+
+    let w = 0;
+    let h = 0;
+    let nodes: Node[] = [];
+    let raf = 0;
+    let userPaused = reduced.matches;
+    let visible = true;
+    const mouse = { x: -9999, y: -9999 };
+
+    const resize = () => {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      w = canvas.clientWidth;
+      h = canvas.clientHeight;
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      const count = Math.round(Math.min(110, Math.max(28, (w * h) / 15000)));
+      nodes = Array.from({ length: count }, () => ({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        vx: (Math.random() - 0.5) * 0.35,
+        vy: (Math.random() - 0.5) * 0.35,
+      }));
+      draw();
+    };
+
+    const step = () => {
+      for (const n of nodes) {
+        // Los nodos se apartan suavemente del cursor.
+        const dx = n.x - mouse.x;
+        const dy = n.y - mouse.y;
+        const d = Math.hypot(dx, dy);
+        if (d < MOUSE_R && d > 0) {
+          const f = ((MOUSE_R - d) / MOUSE_R) * 0.06;
+          n.vx += (dx / d) * f;
+          n.vy += (dy / d) * f;
+        }
+        n.vx *= 0.995;
+        n.vy *= 0.995;
+        n.x += n.vx;
+        n.y += n.vy;
+        if (n.x < 0 || n.x > w) n.vx *= -1;
+        if (n.y < 0 || n.y > h) n.vy *= -1;
+        n.x = Math.min(w, Math.max(0, n.x));
+        n.y = Math.min(h, Math.max(0, n.y));
+      }
+    };
+
+    const draw = () => {
+      ctx.clearRect(0, 0, w, h);
+      for (let i = 0; i < nodes.length; i++) {
+        const a = nodes[i];
+        for (let j = i + 1; j < nodes.length; j++) {
+          const b = nodes[j];
+          const d = Math.hypot(a.x - b.x, a.y - b.y);
+          if (d < LINK) {
+            ctx.strokeStyle = `rgba(${LIME}, ${(1 - d / LINK) * 0.8})`;
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(a.x, a.y);
+            ctx.lineTo(b.x, b.y);
+            ctx.stroke();
+          }
+        }
+        // Líneas hacia el cursor.
+        const dm = Math.hypot(a.x - mouse.x, a.y - mouse.y);
+        if (dm < MOUSE_R) {
+          ctx.strokeStyle = `rgba(${LIME}, ${(1 - dm / MOUSE_R) * 0.9})`;
+          ctx.beginPath();
+          ctx.moveTo(a.x, a.y);
+          ctx.lineTo(mouse.x, mouse.y);
+          ctx.stroke();
+        }
+        ctx.fillStyle = `rgba(${LIME}, 0.9)`;
+        ctx.beginPath();
+        ctx.arc(a.x, a.y, 1.8, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    };
+
+    const loop = () => {
+      step();
+      draw();
+      raf = requestAnimationFrame(loop);
+    };
+
+    const sync = () => {
+      const shouldRun = !userPaused && visible && !document.hidden;
+      if (shouldRun && !raf) raf = requestAnimationFrame(loop);
+      if (!shouldRun && raf) {
+        cancelAnimationFrame(raf);
+        raf = 0;
+      }
+    };
+
+    const renderButton = () => {
+      pauseBtn.setAttribute('aria-pressed', String(userPaused));
+      pauseBtn.textContent = userPaused ? pauseBtn.dataset.playLabel! : pauseBtn.dataset.pauseLabel!;
+    };
+
+    pauseBtn.addEventListener('click', () => {
+      userPaused = !userPaused;
+      renderButton();
+      sync();
+    });
+
+    const hero = canvas.parentElement!;
+    hero.addEventListener('pointermove', (e) => {
+      const r = canvas.getBoundingClientRect();
+      mouse.x = e.clientX - r.left;
+      mouse.y = e.clientY - r.top;
+    });
+    hero.addEventListener('pointerleave', () => {
+      mouse.x = mouse.y = -9999;
+    });
+
+    new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting;
+      sync();
+    }).observe(hero);
+    document.addEventListener('visibilitychange', sync);
+    window.addEventListener('resize', resize);
+
+    renderButton();
+    resize();
+    sync();
+  }
+</script>
