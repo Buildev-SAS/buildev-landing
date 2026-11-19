@@ -16,8 +16,10 @@ const names = { es: 'Español', en: 'English' };
 
 <div class:list={['lang', className]} role="group" aria-label={t.langAria}>
   {
-    langs.map((l) => (
-      <a
+    langs.map((l, i) => (
+      <>
+        {i > 0 && <span class="lang__sep" aria-hidden="true">/</span>}
+        <a
         href={alternates[l] ?? homePath(l)}
         hreflang={l}
         lang={l}
@@ -25,8 +27,9 @@ const names = { es: 'Español', en: 'English' };
         aria-current={l === lang ? 'true' : undefined}
         data-lang={l}
       >
-        {l.toUpperCase()}
-      </a>
+          {l.toUpperCase()}
+        </a>
+      </>
     ))
   }
 </div>
@@ -34,27 +37,42 @@ const names = { es: 'Español', en: 'English' };
 <style>
   .lang {
     display: inline-flex;
-    padding: 3px;
-    border: 1px solid rgb(255 255 255 / 0.22);
-    border-radius: 999px;
-    font-size: 0.74rem;
-    font-weight: 700;
-    letter-spacing: 0.06em;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+  }
+  .lang__sep {
+    color: rgb(255 255 255 / 0.22);
+    font-weight: 400;
   }
   a {
-    padding: 4px 9px;
-    border-radius: 999px;
-    color: rgb(255 255 255 / 0.7);
-    transition:
-      background-color 0.2s ease,
-      color 0.2s ease;
+    position: relative;
+    padding-block: 6px;
+    color: rgb(255 255 255 / 0.45);
+    transition: color 0.2s ease;
+  }
+  a::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    background: var(--c-lime);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s var(--ease-out, ease);
   }
   a:hover {
-    color: #fff;
+    color: rgb(255 255 255 / 0.85);
   }
   a[aria-current='true'] {
-    background: rgb(255 255 255 / 0.14);
     color: #fff;
+  }
+  a[aria-current='true']::after {
+    transform: scaleX(1);
   }
 </style>
 

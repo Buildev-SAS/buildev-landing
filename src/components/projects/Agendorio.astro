@@ -238,7 +238,7 @@ const brandColors = [
         </div>
       </div>
 
-      <div class="mock booking" data-view="link" aria-hidden="true">
+      <div class="mock booking" data-view="link">
         <div class="booking__bar">
           <span class="booking__dots"><i></i><i></i><i></i></span>
           <span class="booking__url"><Icon name="lock" size={11} /> {booking.url}</span>
@@ -278,17 +278,30 @@ const brandColors = [
           <div class="booking__days">
             {
               booking.days.map((d, i) => (
-                <span class:list={{ active: i === 0 }}>
+                <button type="button" class:list={{ active: i === 0 }} aria-pressed={i === 0 ? 'true' : 'false'} data-day={i}>
                   {d.label}
                   <b>{d.num}</b>
-                </span>
+                </button>
               ))
             }
           </div>
           <div class="booking__times">
-            {booking.times.map((t) => <span class:list={{ taken: t.taken, active: t.selected }}>{t.label}</span>)}
+            {
+              booking.times.map((t) => (
+                <button
+                  type="button"
+                  class:list={{ taken: t.taken, active: t.selected }}
+                  disabled={t.taken}
+                  aria-pressed={t.selected ? 'true' : 'false'}
+                  data-time
+                  data-taken={t.taken ? '' : undefined}
+                >
+                  {t.label}
+                </button>
+              ))
+            }
           </div>
-          <span class="booking__cta">
+          <span class="booking__cta" data-cta>
             {copy.next} <Icon name="arrow" size={15} />
           </span>
         </div>
@@ -325,6 +338,36 @@ const brandColors = [
         views.forEach((v) => v.classList.toggle('is-active', v.dataset.view === tab.dataset.view));
       });
     });
+
+    // Página de reservas: se puede elegir día y horario. Las 3:30 del miércoles ya las tomó Diego por WhatsApp;
+    // los otros días tienen todos los horarios libres.
+    const days = scope.querySelectorAll<HTMLButtonElement>('[data-day]');
+    const times = scope.querySelectorAll<HTMLButtonElement>('[data-time]');
+    const cta = scope.querySelector<HTMLElement>('[data-cta]');
+    const press = (list: NodeListOf<HTMLButtonElement>, on: HTMLButtonElement) =>
+      list.forEach((b) => {
+        b.classList.toggle('active', b === on);
+        b.setAttribute('aria-pressed', String(b === on));
+      });
+    const bump = () => {
+      cta?.classList.remove('is-bump');
+      void cta?.offsetWidth;
+      cta?.classList.add('is-bump');
+    };
+
+    times.forEach((btn) => btn.addEventListener('click', () => (press(times, btn), bump())));
+    days.forEach((day) =>
+      day.addEventListener('click', () => {
+        press(days, day);
+        const firstDay = day.dataset.day === '0';
+        times.forEach((t) => {
+          const taken = firstDay && t.hasAttribute('data-taken');
+          t.disabled = taken;
+          t.classList.toggle('taken', taken);
+          if (taken && t.classList.contains('active')) press(times, [...times].at(-1)!);
+        });
+      }),
+    );
 
     // Cambia el color de acento del mockup, como lo hace cada negocio desde su panel.
     const swatches = scope.querySelectorAll<HTMLButtonElement>('[data-brand-picker] button');
@@ -369,14 +412,14 @@ const brandColors = [
     color: var(--ag-text);
     box-shadow: 0 30px 60px -24px rgb(0 0 0 / 0.6);
     transition:
-      opacity 0.35s ease,
-      transform 0.35s ease,
-      visibility 0.35s;
+      opacity 0.5s var(--ease-out),
+      transform 0.6s var(--ease-out),
+      visibility 0.5s;
   }
   .mock:not(.is-active) {
     opacity: 0;
     visibility: hidden;
-    transform: translateY(8px);
+    transform: translateY(10px) scale(0.985);
   }
   .agenda__top {
     display: flex;
@@ -731,7 +774,14 @@ const brandColors = [
     gap: 6px;
     margin-top: 10px;
   }
-  .booking__days span {
+  .booking__days button {
+    font: inherit;
+    background: transparent;
+    cursor: pointer;
+    transition:
+      border-color 0.2s ease,
+      background-color 0.25s ease,
+      color 0.2s ease;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -741,6 +791,10 @@ const brandColors = [
     font-size: 0.64rem;
     line-height: 1.3;
     color: var(--ag-muted);
+  }
+  .booking__days button:not(.active):hover,
+  .booking__times button:not(.active, .taken):hover {
+    border-color: color-mix(in srgb, var(--accent) 55%, transparent);
   }
   .booking__days b {
     font-size: 0.88rem;
@@ -760,7 +814,14 @@ const brandColors = [
     gap: 6px;
     margin: 10px 0 14px;
   }
-  .booking__times span {
+  .booking__times button {
+    font: inherit;
+    color: var(--ag-text);
+    cursor: pointer;
+    transition:
+      border-color 0.2s ease,
+      background-color 0.25s ease,
+      color 0.2s ease;
     padding: 7px 4px;
     border-radius: 8px;
     border: 1px solid var(--ag-line);
@@ -771,6 +832,7 @@ const brandColors = [
     white-space: nowrap;
   }
   .booking__times .taken {
+    cursor: not-allowed;
     color: rgb(238 244 243 / 0.3);
     text-decoration: line-through;
     background: transparent;
@@ -779,6 +841,14 @@ const brandColors = [
     border-color: var(--accent);
     background: color-mix(in srgb, var(--accent) 26%, var(--ag-ink));
     color: #fff;
+  }
+  .booking__cta.is-bump {
+    animation: cta-bump 0.45s var(--ease-out);
+  }
+  @keyframes cta-bump {
+    40% {
+      transform: scale(1.025);
+    }
   }
   .booking__cta {
     display: flex;

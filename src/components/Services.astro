@@ -77,35 +77,61 @@ const services: {
     },
   },
 ];
+
+const num = (i: number) => String(i + 1).padStart(2, '0');
 ---
 
-<section class="section services" id="servicios">
-  <div class="container">
-    <header class="services__head reveal">
-      <span class="eyebrow">{copy.eyebrow}</span>
-      <h2 class="section-title">{copy.title}</h2>
-      <p class="section-lead">
-        {copy.lead}
-      </p>
-    </header>
+<!--
+  Escena anclada al scroll: mientras la persona baja, la sección se queda fija y los servicios aparecen
+  uno a uno; a la derecha cambia el número grande. El script calcula el avance (--p, de 0 a 1).
+  Si la pantalla es angosta o baja, o se pidió reducir movimiento, es una lista normal.
+-->
+<section class="services" id="servicios">
+  <div class="scene" data-scene style={`--n: ${services.length}; --p: 0`}>
+    <div class="scene__stick">
+      <div class="container scene__frame">
+        <div class="scene__content">
+          <header class="services__head">
+            <span class="eyebrow">{copy.eyebrow}</span>
+            <h2 class="section-title">{copy.title}</h2>
+            <p class="section-lead">{copy.lead}</p>
+          </header>
 
-    <div class="services__grid">
-      {
-        services.map((s, i) => (
-          <article class="card reveal" style={`transition-delay:${(i % 3) * 80}ms`}>
-            <span class="card__icon">
-              <Icon name={s.icon} size={26} />
-            </span>
-            <h3>{s.title[lang]}</h3>
-            <p>{s.text[lang]}</p>
-            {s.guide && (
-              <a class="card__link" href={s.guide.href[lang]}>
-                {s.guide.label[lang]} <Icon name="arrow" size={16} />
-              </a>
-            )}
-          </article>
-        ))
-      }
+          <ol class="steps">
+            {
+              services.map((s, i) => (
+                <li class="step reveal" style={`--k: ${i}`} data-step={i}>
+                  <span class="step__index">{num(i)}</span>
+                  <div class="step__body">
+                    <h3>
+                      <Icon name={s.icon} size={20} strokeWidth={1.5} class="step__icon" />
+                      {s.title[lang]}
+                    </h3>
+                    <div class="step__more">
+                      <div>
+                        <p>{s.text[lang]}</p>
+                        {s.guide && (
+                          <a class="step__link" href={s.guide.href[lang]}>
+                            {s.guide.label[lang]} <Icon name="arrow" size={15} />
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              ))
+            }
+          </ol>
+        </div>
+
+        <div class="scene__visual" aria-hidden="true">
+          <span class="scene__glow"></span>
+          {services.map((_, i) => <span class="scene__number" style={`--k: ${i}`}>{num(i)}</span>)}
+          <span class="scene__count">
+            <b data-count>01</b> / {num(services.length - 1)}
+          </span>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -114,86 +140,291 @@ const services: {
   .services {
     background: var(--c-bg-soft);
   }
+
+  /* ───── Lista (sin anclar: celular, pantallas bajas o movimiento reducido) ───── */
+  .scene__frame {
+    padding-block: clamp(96px, 12vw, 144px);
+  }
   .services__head {
-    max-width: 680px;
+    max-width: 640px;
   }
-  .services__grid {
-    margin-top: 56px;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 24px;
+  .steps {
+    list-style: none;
+    margin: clamp(40px, 5vw, 56px) 0 0;
+    padding: 0;
+    max-width: 620px;
   }
-  .card {
-    position: relative;
-    padding: 32px 28px;
-    border-radius: var(--radius);
-    background: #fff;
-    border: 1px solid var(--c-border);
-    overflow: hidden;
-    transition:
-      transform 0.25s ease,
-      box-shadow 0.25s ease,
-      border-color 0.25s ease,
-      opacity 0.7s ease;
+  .step {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    padding-block: 20px;
+    border-top: 1px solid var(--hairline-strong);
   }
-  .card::before {
-    content: '';
-    position: absolute;
-    inset: 0 0 auto;
-    height: 4px;
+  .step:first-child {
+    border-top: 0;
+    padding-top: 0;
+  }
+  .step__index {
+    flex-shrink: 0;
+    width: 2ch;
+    padding-top: 1px;
+    font-size: 1.05rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
     background: var(--grad-brand);
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform 0.35s ease;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
   }
-  .card:hover {
-    transform: translateY(-6px);
-    box-shadow: var(--shadow-lg);
-    border-color: transparent;
+  .step h3 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.12rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
   }
-  .card:hover::before {
-    transform: scaleX(1);
-  }
-  .card__icon {
-    display: grid;
-    place-items: center;
-    width: 56px;
-    height: 56px;
-    border-radius: 14px;
-    background: linear-gradient(135deg, rgb(166 217 54 / 0.16), rgb(0 184 217 / 0.16));
+  .step :global(.step__icon) {
+    flex-shrink: 0;
     color: var(--c-blue);
   }
-  .card h3 {
-    margin-top: 22px;
-    font-size: 1.18rem;
-  }
-  .card p {
-    margin-top: 10px;
+  .step p {
+    margin-top: 6px;
+    max-width: 36rem;
+    font-size: 0.95rem;
+    line-height: 1.6;
     color: var(--c-muted);
-    font-size: 0.96rem;
   }
-
-  .card__link {
+  .step__link {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    margin-top: 16px;
-    font-size: 0.92rem;
-    font-weight: 700;
+    margin-top: 10px;
+    font-size: 0.88rem;
+    font-weight: 600;
     color: var(--c-blue);
   }
-  .card__link:hover {
-    text-decoration: underline;
+  .step__link :global(svg) {
+    transition: transform 0.25s var(--ease-out);
+  }
+  .step__link:hover :global(svg) {
+    transform: translateX(3px);
+  }
+  .scene__visual {
+    display: none;
   }
 
-  @media (max-width: 960px) {
-    .services__grid {
-      grid-template-columns: repeat(2, 1fr);
+  /* ───── Escena anclada ───── */
+  .scene.is-pinned {
+    /* Recorrido de scroll: una pantalla más ~medio alto de pantalla por servicio. */
+    height: calc(100svh + var(--n) * 45svh);
+  }
+  .scene.is-pinned .scene__stick {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-top: var(--header-h);
+    overflow: hidden;
+  }
+  .scene.is-pinned .scene__frame {
+    --out: clamp(0, (var(--p) - 0.93) * 14, 1);
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+    align-items: center;
+    gap: 48px;
+    padding-block: 0;
+    /* Al terminar el recorrido, la escena se atenúa y sube un poco para dar paso a la siguiente. */
+    opacity: calc(1 - var(--out) * 0.55);
+    transform: translateY(calc(var(--out) * -24px));
+  }
+  .is-pinned .steps {
+    margin-top: 32px;
+  }
+  .is-pinned .step {
+    /* Cada servicio aparece cuando el avance llega a su turno. */
+    --o: clamp(0, (var(--p) * (var(--n) + 0.2) - var(--k) + 0.4) * 2.5, 1);
+    padding-block: 14px;
+    /* Aquí manda el scroll, no la animación de entrada de .reveal. */
+    transition: none;
+    opacity: var(--o);
+    transform: translateY(calc((1 - var(--o)) * 24px));
+  }
+  .is-pinned .step:first-child {
+    padding-top: 0;
+  }
+  /* Anclada: todos los títulos a la vista; la descripción se despliega solo en el servicio actual. */
+  .step__more {
+    display: grid;
+    grid-template-rows: 1fr;
+  }
+  .step__more > div {
+    overflow: hidden;
+  }
+  .is-pinned .step__more {
+    grid-template-rows: 0fr;
+    opacity: 0;
+    transition:
+      grid-template-rows 0.5s var(--ease-out),
+      opacity 0.4s ease;
+  }
+  .is-pinned .step.is-current .step__more {
+    grid-template-rows: 1fr;
+    opacity: 1;
+  }
+  .is-pinned .step p {
+    margin-top: 6px;
+  }
+  /* Los ya vistos bajan un poco de intensidad; el actual queda al frente. */
+  .is-pinned .step h3 {
+    transition: color 0.4s ease;
+  }
+  .is-pinned .step:not(.is-current) h3 {
+    color: rgb(46 58 68 / 0.55);
+  }
+
+  .is-pinned .scene__visual {
+    position: relative;
+    display: grid;
+    place-items: center;
+    height: min(60svh, 520px);
+  }
+  .scene__glow {
+    position: absolute;
+    width: min(480px, 90%);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background:
+      radial-gradient(closest-side, rgb(0 184 217 / 0.22), transparent 70%),
+      radial-gradient(closest-side at 65% 60%, rgb(166 217 54 / 0.26), transparent 70%);
+    filter: blur(20px);
+  }
+  .scene__number {
+    grid-area: 1 / 1;
+    position: relative;
+    font-size: clamp(9rem, 17vw, 15rem);
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.06em;
+    font-variant-numeric: tabular-nums;
+    background: var(--grad-brand);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    opacity: 0;
+    transform: translateY(28px) scale(0.96);
+    filter: blur(6px);
+    transition:
+      opacity 0.5s var(--ease-out),
+      transform 0.6s var(--ease-out),
+      filter 0.5s var(--ease-out);
+  }
+  .scene__number.is-before {
+    transform: translateY(-28px) scale(0.96);
+  }
+  .scene__number.is-current {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+  .scene__count {
+    position: absolute;
+    bottom: 0;
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    color: var(--c-muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .scene__count b {
+    font-weight: 600;
+    color: var(--c-ink);
+  }
+
+  /* Laptops de poca altura (1366×768): encabezado más compacto para que la escena quepa anclada. */
+  @media (max-height: 820px) {
+    .is-pinned .section-title {
+      font-size: clamp(1.9rem, 3.4vw, 2.4rem);
+    }
+    .is-pinned .section-lead {
+      display: none;
+    }
+    .is-pinned .steps {
+      margin-top: 24px;
+    }
+    .is-pinned .step {
+      padding-block: 10px;
     }
   }
-  @media (max-width: 620px) {
-    .services__grid {
-      grid-template-columns: 1fr;
+
+  .scene.is-measuring :global(*) {
+    transition: none !important;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .scene__number,
+    .step__more,
+    .step h3 {
+      transition: none;
     }
   }
 </style>
+
+<script>
+  const scene = document.querySelector<HTMLElement>('[data-scene]');
+
+  if (scene) {
+    const steps = [...scene.querySelectorAll<HTMLElement>('[data-step]')];
+    const numbers = [...scene.querySelectorAll<HTMLElement>('.scene__number')];
+    const count = scene.querySelector<HTMLElement>('[data-count]');
+    const content = scene.querySelector<HTMLElement>('.scene__content');
+    const n = steps.length;
+    const wide = matchMedia('(min-width: 900px)');
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+    let current = -1;
+    let frame = 0;
+
+    // Solo se ancla si la escena completa cabe en la pantalla; si no, queda como lista.
+    const decide = () => {
+      // Se mide sin transiciones, ya con el diseño compacto de la escena anclada.
+      scene.classList.add('is-pinned', 'is-measuring');
+      const header = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--header-h')) || 76;
+      const fits = wide.matches && !reduce.matches && (content?.offsetHeight ?? 0) + header + 32 <= window.innerHeight;
+      scene.classList.toggle('is-pinned', fits);
+      scene.classList.remove('is-measuring');
+      if (!fits) steps.forEach((s) => s.classList.remove('is-current'));
+      update();
+    };
+
+    const setCurrent = (i: number) => {
+      if (i === current) return;
+      current = i;
+      steps.forEach((s, k) => s.classList.toggle('is-current', k === i));
+      numbers.forEach((el, k) => {
+        el.classList.toggle('is-current', k === i);
+        el.classList.toggle('is-before', k < i);
+      });
+      if (count) count.textContent = String(i + 1).padStart(2, '0');
+    };
+
+    const update = () => {
+      frame = 0;
+      if (!scene.classList.contains('is-pinned')) return;
+      const rect = scene.getBoundingClientRect();
+      const run = rect.height - window.innerHeight;
+      const p = Math.min(1, Math.max(0, -rect.top / run));
+      scene.style.setProperty('--p', p.toFixed(4));
+      // Mismo umbral que usa el CSS: un servicio pasa a ser el actual cuando ya va por la mitad de su entrada.
+      setCurrent(Math.min(n - 1, Math.max(0, Math.floor(p * (n + 0.2) + 0.2))));
+    };
+
+    window.addEventListener('scroll', () => (frame ||= requestAnimationFrame(update)), { passive: true });
+    window.addEventListener('resize', decide);
+    wide.addEventListener('change', decide);
+    decide();
+  }
+</script>

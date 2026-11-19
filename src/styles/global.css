@@ -21,8 +21,14 @@
   --font: 'Montserrat Variable', 'Montserrat', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --radius: 16px;
   --radius-sm: 10px;
-  --shadow: 0 10px 30px -12px rgb(28 37 45 / 0.18);
-  --shadow-lg: 0 24px 60px -20px rgb(28 37 45 / 0.28);
+  /* Sombras en capas: un contacto mínimo y una difusa muy suave. */
+  --shadow: 0 1px 2px rgb(28 37 45 / 0.04), 0 12px 32px -16px rgb(28 37 45 / 0.14);
+  --shadow-lg: 0 1px 2px rgb(28 37 45 / 0.05), 0 32px 64px -32px rgb(28 37 45 / 0.28);
+  /* Bordes de 1px casi invisibles, sobre claro y sobre oscuro. */
+  --hairline: rgb(28 37 45 / 0.07);
+  --hairline-strong: rgb(28 37 45 / 0.12);
+  --hairline-inv: rgb(255 255 255 / 0.08);
+  --ease-out: cubic-bezier(0.22, 0.61, 0.36, 1);
   --container: 1180px;
   --header-h: 76px;
 }
@@ -66,9 +72,9 @@ h2,
 h3,
 h4 {
   margin: 0;
-  line-height: 1.15;
-  font-weight: 800;
-  letter-spacing: -0.02em;
+  line-height: 1.12;
+  font-weight: 600;
+  letter-spacing: -0.03em;
   text-wrap: balance;
 }
 
@@ -85,7 +91,7 @@ p {
 }
 
 .section {
-  padding-block: clamp(72px, 10vw, 120px);
+  padding-block: clamp(96px, 12vw, 144px);
 }
 
 .eyebrow {
@@ -93,30 +99,33 @@ p {
   align-items: center;
   gap: 10px;
   font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.18em;
+  font-weight: 600;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--c-blue);
 }
 
 .eyebrow::before {
   content: '';
-  width: 28px;
-  height: 3px;
-  border-radius: 3px;
+  width: 20px;
+  height: 2px;
+  border-radius: 2px;
   background: var(--c-lime);
 }
 
 .section-title {
-  font-size: clamp(1.9rem, 4vw, 2.75rem);
-  margin-top: 14px;
+  font-size: clamp(2rem, 4.2vw, 3rem);
+  line-height: 1.08;
+  letter-spacing: -0.035em;
+  margin-top: 18px;
 }
 
 .section-lead {
-  margin-top: 16px;
+  margin-top: 20px;
   font-size: 1.08rem;
+  line-height: 1.7;
   color: var(--c-muted);
-  max-width: 62ch;
+  max-width: 36rem;
 }
 
 .text-grad {
@@ -137,24 +146,42 @@ p {
   border-radius: 999px;
   border: 2px solid transparent;
   font: inherit;
-  font-weight: 700;
+  font-weight: 600;
   font-size: 0.95rem;
+  letter-spacing: -0.005em;
   cursor: pointer;
   transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease,
+    transform 0.25s var(--ease-out),
+    box-shadow 0.25s ease,
     background-color 0.2s ease,
+    border-color 0.2s ease,
     color 0.2s ease;
 }
 
 .btn:hover {
-  transform: translateY(-2px);
+  transform: translateY(-1px);
+}
+
+.btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* La flecha del botón avanza un poco al pasar el cursor. */
+.btn svg {
+  transition: transform 0.25s var(--ease-out);
+}
+
+.btn:hover svg {
+  transform: translateX(3px);
 }
 
 .btn--primary {
   background: var(--c-lime);
   color: var(--c-ink-900);
-  box-shadow: 0 10px 24px -10px rgb(166 217 54 / 0.8);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.35),
+    0 1px 2px rgb(28 37 45 / 0.12),
+    0 10px 24px -12px rgb(166 217 54 / 0.7);
 }
 
 .btn--primary:hover {
@@ -162,7 +189,8 @@ p {
 }
 
 .btn--ghost {
-  border-color: rgb(255 255 255 / 0.35);
+  border-width: 1px;
+  border-color: rgb(255 255 255 / 0.2);
   color: #fff;
 }
 
@@ -209,7 +237,8 @@ p {
     transform: none;
     transition: none;
   }
-  .btn {
+  .btn,
+  .btn svg {
     transition: none;
   }
 }

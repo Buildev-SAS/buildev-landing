@@ -14,8 +14,8 @@ export default defineConfig({
   ],
   vite: {
     server: {
-      // Permite abrir el dev server a través de túneles ngrok
-      allowedHosts: ['.ngrok-free.dev'],
+      // Permite abrir el dev server a través de túneles ngrok y Cloudflare
+      allowedHosts: ['.ngrok-free.dev', '.trycloudflare.com'],
     },
   },
 });

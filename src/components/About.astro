@@ -116,7 +116,7 @@ const reasons: { icon: IconName; title: Record<Lang, string>; text: Record<Lang,
     padding: 28px;
     border-radius: var(--radius);
     background: var(--c-bg-soft);
-    border: 1px solid var(--c-border);
+    border: 1px solid var(--hairline-strong);
   }
   .about__card :global(.about__logo) {
     font-size: 18px;
@@ -133,7 +133,7 @@ const reasons: { icon: IconName; title: Record<Lang, string>; text: Record<Lang,
     padding: 6px 14px;
     border-radius: 999px;
     background: #fff;
-    border: 1px solid var(--c-border);
+    border: 1px solid var(--hairline-strong);
     font-size: 0.82rem;
     font-weight: 600;
     color: var(--c-muted);
@@ -154,7 +154,7 @@ const reasons: { icon: IconName; title: Record<Lang, string>; text: Record<Lang,
     gap: 18px;
     padding: 22px;
     border-radius: var(--radius);
-    border: 1px solid var(--c-border);
+    border: 1px solid var(--hairline-strong);
     background: #fff;
     transition:
       box-shadow 0.25s ease,
@@ -163,7 +163,7 @@ const reasons: { icon: IconName; title: Record<Lang, string>; text: Record<Lang,
   }
   .why__item:hover {
     box-shadow: var(--shadow);
-    transform: translateX(4px);
+    transform: translateY(-2px);
   }
   .why__icon {
     flex-shrink: 0;
@@ -177,7 +177,7 @@ const reasons: { icon: IconName; title: Record<Lang, string>; text: Record<Lang,
   }
   .why__item h4 {
     font-size: 1.02rem;
-    font-weight: 700;
+    font-weight: 600;
     letter-spacing: -0.01em;
   }
   .why__item p {
