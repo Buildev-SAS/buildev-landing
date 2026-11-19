@@ -50,6 +50,14 @@ export const nav: { href: string; label: Record<Lang, string> }[] = [
   { href: '#contacto', label: { es: 'Contacto', en: 'Contact' } },
 ];
 
+/** Los cuatro enlaces esenciales de la barra superior. */
+export const headerNav: { href: string; label: Record<Lang, string> }[] = [
+  { href: '#servicios', label: { es: 'Servicios', en: 'Services' } },
+  { href: '#proyectos', label: { es: 'Productos', en: 'Products' } },
+  { href: '#nosotros', label: { es: 'Nosotros', en: 'About' } },
+  { href: '#contacto', label: { es: 'Contacto', en: 'Contact' } },
+];
+
 /** Fuera de la portada, las anclas del menú llevan a la portada del mismo idioma (ej: /en/#servicios). */
 export const navHref = (href: string, url: URL) => {
   const home = homePath(getLang(url));
